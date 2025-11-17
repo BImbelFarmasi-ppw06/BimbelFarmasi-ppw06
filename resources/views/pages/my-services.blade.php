@@ -136,17 +136,25 @@
                     <div class="rounded-2xl bg-white p-12 text-center shadow-lg">
                         <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
                             <svg class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900">Belum Ada Program</h3>
-                        <p class="mt-2 text-sm text-gray-600">Anda belum mengikuti program apapun. Jelajahi layanan kami dan mulai perjalanan belajar Anda!</p>
-                        <a href="{{ route('layanan') }}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-900">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            Jelajahi Layanan
-                        </a>
+                        <h3 class="text-lg font-bold text-gray-900">Belum Ada Layanan yang Dibeli</h3>
+                        <p class="mt-2 text-sm text-gray-600">Anda belum membeli layanan apapun. Mulai perjalanan belajar Anda dengan memilih paket yang sesuai!</p>
+                        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                            <a href="{{ route('bimbel.ukom') }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-900">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                Bimbel UKOM
+                            </a>
+                            <a href="{{ route('cpns.p3k') }}" class="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-[#2D3C8C] bg-white px-6 py-3 text-sm font-semibold text-[#2D3C8C] transition hover:bg-blue-50">
+                                CPNS & P3K
+                            </a>
+                            <a href="{{ route('joki.tugas') }}" class="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-[#2D3C8C] bg-white px-6 py-3 text-sm font-semibold text-[#2D3C8C] transition hover:bg-blue-50">
+                                Joki Tugas
+                            </a>
+                        </div>
                     </div>
                 @endforelse
             </div>

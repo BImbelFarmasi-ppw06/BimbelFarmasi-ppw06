@@ -52,40 +52,31 @@ class UserController extends Controller
      */
     public function myServices()
     {
-        // TODO: Get user's enrolled programs from database
-        // For now, using sample data
-        $enrollments = [
-            [
-                'id' => 1,
-                'program' => 'Bimbel UKOM D3 Farmasi - Reguler',
-                'status' => 'active',
-                'start_date' => '2025-09-15',
-                'end_date' => '2026-01-15',
-                'progress' => 65,
-                'total_sessions' => 24,
-                'completed_sessions' => 16,
-            ],
-            [
-                'id' => 2,
-                'program' => 'CPNS & P3K Farmasi - Paket Lengkap',
-                'status' => 'active',
-                'start_date' => '2025-10-01',
-                'end_date' => '2026-03-01',
-                'progress' => 30,
-                'total_sessions' => 30,
-                'completed_sessions' => 9,
-            ],
-            [
-                'id' => 3,
-                'program' => 'Joki Tugas - Basic Package',
-                'status' => 'completed',
-                'start_date' => '2025-08-01',
-                'end_date' => '2025-08-31',
-                'progress' => 100,
-                'total_sessions' => 5,
-                'completed_sessions' => 5,
-            ],
-        ];
+        $user = Auth::user();
+        
+        // Get user's verified orders (purchased programs)
+        $enrollments = $user->orders()
+            ->with('program', 'payment')
+            ->whereHas('payment', function($query) {
+                $query->where('status', 'verified');
+            })
+            ->get()
+            ->map(function($order) {
+                $startDate = $order->payment->verified_at ?? $order->created_at;
+                $endDate = $startDate->copy()->addMonths(4); // Durasi 4 bulan
+                
+                return [
+                    'id' => $order->program->id,
+                    'program' => $order->program->name,
+                    'status' => 'active', // Semua program yang sudah dibeli dianggap aktif
+                    'start_date' => $startDate->format('Y-m-d'),
+                    'end_date' => $endDate->format('Y-m-d'),
+                    'progress' => 0, // Dimulai dari 0%
+                    'total_sessions' => 24, // Default 24 sesi
+                    'completed_sessions' => 0, // Dimulai dari 0 sesi
+                ];
+            })
+            ->toArray();
 
         return view('pages.my-services', compact('enrollments'));
     }

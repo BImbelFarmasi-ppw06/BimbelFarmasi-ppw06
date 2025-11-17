@@ -107,7 +107,7 @@
                 </div>
                 <div class="relative flex flex-col rounded-3xl border-2 border-blue-200 bg-white p-8 shadow-2xl shadow-blue-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                     <span class="absolute -top-4 right-6 rounded-full bg-[#2D3C8C] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-lg">Best Seller</span>
-                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Premium</h3>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Intensif</h3>
                     <p class="text-sm text-slate-600 mb-6">Pendampingan intensif dengan jadwal fleksibel dan bimbingan personal.</p>
                     <ul class="space-y-2 text-sm text-slate-600 mb-6">
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Semua fasilitas Paket Reguler</li>
@@ -117,20 +117,20 @@
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Paket modul cetak & bank soal premium</li>
                     </ul>
                     <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp1.850.000</p>
-                    <a href="{{ route('order.create', ['slug' => 'bimbel-ukom-d3-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
+                    <a href="{{ route('order.create', ['slug' => 'bimbel-ukom-intensif']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                 </div>
                 <div class="flex flex-col rounded-3xl border border-blue-100 bg-white p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Ultimate</h3>
-                    <p class="text-sm text-slate-600 mb-6">Program eksklusif untuk target kelulusan tinggi dengan supervisi harian.</p>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Express</h3>
+                    <p class="text-sm text-slate-600 mb-6">Program cepat untuk target kelulusan dengan waktu terbatas.</p>
                     <ul class="space-y-2 text-sm text-slate-600 mb-6">
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Semua fasilitas Paket Premium</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Coaching harian & progress tracker</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Simulasi mini UKOM tiap minggu</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Konsultasi psikolog & breathing session</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Bonus webinar & workshop industri</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> 8 sesi intensif fokus</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Modul ringkas high-yield</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> 2x tryout & pembahasan</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Akses grup diskusi</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Bank soal digital</li>
                     </ul>
-                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp2.350.000</p>
-                    <a href="{{ route('order.create', ['slug' => 'bimbel-ukom-d3-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
+                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp750.000</p>
+                    <a href="{{ route('order.create', ['slug' => 'bimbel-ukom-express']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                 </div>
             </div>
         </div>

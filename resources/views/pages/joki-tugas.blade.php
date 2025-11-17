@@ -121,7 +121,7 @@
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Review literatur & sitasi</li>
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Support revisi minor</li>
                     </ul>
-                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Mulai Rp950.000</p>
+                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp500.000</p>
                     <div class="flex flex-col gap-2">
                         <a href="{{ route('order.create', ['slug' => 'joki-tugas-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                         <a href="{{ route('kontak') }}" class="inline-flex items-center justify-center rounded-full bg-transparent border-2 border-[#2D3C8C] px-6 py-3 text-sm font-semibold text-[#2D3C8C] transition-all duration-300 hover:bg-blue-50">Konsultasi Gratis</a>
@@ -137,9 +137,9 @@
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Editing referensi & anti-plagiarisme</li>
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Simulasi sidang & presentasi</li>
                     </ul>
-                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Mulai Rp2.450.000</p>
+                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp2.500.000</p>
                     <div class="flex flex-col gap-2">
-                        <a href="{{ route('order.create', ['slug' => 'joki-tugas-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
+                        <a href="{{ route('order.create', ['slug' => 'joki-tugas-premium']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                         <a href="{{ route('kontak') }}" class="inline-flex items-center justify-center rounded-full bg-transparent border-2 border-[#2D3C8C] px-6 py-3 text-sm font-semibold text-[#2D3C8C] transition-all duration-300 hover:bg-blue-50">Konsultasi Gratis</a>
                     </div>
                 </div>
@@ -152,10 +152,9 @@
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Proofreading bahasa Inggris</li>
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Strategi reviewer response</li>
                     </ul>
-                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Mulai Rp3.050.000</p>
+                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Custom</p>
                     <div class="flex flex-col gap-2">
-                        <a href="{{ route('order.create', ['slug' => 'joki-tugas-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
-                        <a href="{{ route('kontak') }}" class="inline-flex items-center justify-center rounded-full bg-transparent border-2 border-[#2D3C8C] px-6 py-3 text-sm font-semibold text-[#2D3C8C] transition-all duration-300 hover:bg-blue-50">Konsultasi Gratis</a>
+                        <a href="{{ route('kontak') }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Konsultasi Gratis</a>
                     </div>
                 </div>
             </div>

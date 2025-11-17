@@ -102,7 +102,7 @@
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Group coaching strategi CAT</li>
                     </ul>
                     <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp1.450.000</p>
-                    <a href="{{ route('order.create', ['slug' => 'cpns-p3k-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
+                    <a href="{{ route('order.create', ['slug' => 'cpns-p3k-skd']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                 </div>
                 <div class="relative flex flex-col rounded-3xl border-2 border-blue-200 bg-white p-8 shadow-2xl shadow-blue-200/50 hover:shadow-3xl transition-all duration-300 hover:scale-105">
                     <span class="absolute -top-4 right-6 rounded-full bg-[#2D3C8C] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-lg">Paling Dicari</span>
@@ -119,16 +119,16 @@
                     <a href="{{ route('order.create', ['slug' => 'cpns-p3k-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                 </div>
                 <div class="flex flex-col rounded-3xl border border-blue-100 bg-white p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Paket Fast Track</h3>
-                    <p class="text-sm text-slate-600 mb-6">Bootcamp 30 hari menjelang ujian dengan pendampingan penuh.</p>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-2">Paket SKB Farmasi</h3>
+                    <p class="text-sm text-slate-600 mb-6">Fokus khusus SKB kefarmasian dengan materi terpadu.</p>
                     <ul class="space-y-2 text-sm text-slate-600 mb-6">
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Sprint planner harian</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Tryout harian & review cepat</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> 1-on-1 coaching mingguan</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Modul ringkas high yield</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> 16x pertemuan SKB farmasi</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Bank soal farmasi klinik</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Simulasi SKB & pembahasan</li>
+                        <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Materi farmasi terkini</li>
                     </ul>
-                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp2.550.000</p>
-                    <a href="{{ route('order.create', ['slug' => 'cpns-p3k-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
+                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp1.250.000</p>
+                    <a href="{{ route('order.create', ['slug' => 'cpns-p3k-skb']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                 </div>
             </div>
         </div>
