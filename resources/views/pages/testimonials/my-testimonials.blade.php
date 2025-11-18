@@ -12,7 +12,7 @@
                     <h1 class="text-4xl font-bold text-gray-900 mb-2">Testimoni Saya</h1>
                     <p class="text-gray-600">Kelola semua testimoni yang Anda berikan</p>
                 </div>
-                <a href="{{ route('order.myOrders') }}" class="bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] text-white font-bold px-6 py-3 rounded-xl hover:shadow-xl transition-all">
+                <a href="{{ route('order.my-orders') }}" class="bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] text-white font-bold px-6 py-3 rounded-xl hover:shadow-xl transition-all">
                     Buat Testimoni Baru
                 </a>
             </div>
@@ -29,7 +29,7 @@
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Testimoni</h3>
                     <p class="text-gray-600 mb-6">Anda belum memberikan testimoni untuk program apapun</p>
-                    <a href="{{ route('order.myOrders') }}" class="inline-block bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] text-white font-bold px-6 py-3 rounded-xl hover:shadow-xl transition-all">
+                    <a href="{{ route('order.my-orders') }}" class="inline-block bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] text-white font-bold px-6 py-3 rounded-xl hover:shadow-xl transition-all">
                         Lihat Order Saya
                     </a>
                 </div>

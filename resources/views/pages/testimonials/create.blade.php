@@ -113,7 +113,7 @@
 
                     <!-- Buttons -->
                     <div class="flex gap-4">
-                        <a href="{{ route('order.myOrders') }}" class="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl text-center hover:bg-gray-300 transition-all">
+                        <a href="{{ route('order.my-orders') }}" class="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl text-center hover:bg-gray-300 transition-all">
                             Batal
                         </a>
                         <button 
