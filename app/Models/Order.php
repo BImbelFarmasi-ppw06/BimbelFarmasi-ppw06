@@ -37,6 +37,11 @@ class Order extends Model
         return $this->hasOne(Payment::class);
     }
 
+    public function testimonial()
+    {
+        return $this->hasOne(Testimonial::class);
+    }
+
     public static function generateOrderNumber()
     {
         return 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));

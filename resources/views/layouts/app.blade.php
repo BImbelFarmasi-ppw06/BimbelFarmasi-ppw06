@@ -115,8 +115,11 @@
     <header class="bg-[#2D3C8C] text-white shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between py-6">
-                <div class="flex items-center">
-                    <span class="text-2xl font-semibold tracking-wide">Bimbel Farmasi</span>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                        <img src="{{ asset('images/logo bimbel farmasi.jpg') }}" alt="Bimbel Farmasi Logo" class="h-12 w-12 rounded-full object-cover shadow-lg">
+                        <span class="text-2xl font-semibold tracking-wide hidden sm:inline">Bimbel Farmasi</span>
+                    </a>
                 </div>
                 <button id="mobile-menu-button" type="button" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-expanded="false" aria-label="Toggle menu">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,7 +132,7 @@
                     <a href="{{ route('bimbel.ukom') }}" class="@if(request()->routeIs('bimbel.ukom')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Bimbel UKOM</a>
                     <a href="{{ route('cpns.p3k') }}" class="@if(request()->routeIs('cpns.p3k')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">CPNS &amp; P3K</a>
                     <a href="{{ route('joki.tugas') }}" class="@if(request()->routeIs('joki.tugas')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Joki Tugas</a>
-                    <a href="{{ route('testimoni') }}" class="@if(request()->routeIs('testimoni')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Testimoni</a>
+                    <a href="{{ route('testimonials.index') }}" class="@if(request()->routeIs('testimonials.*')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Testimoni</a>
                     <a href="{{ route('kontak') }}" class="@if(request()->routeIs('kontak')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Kontak</a>
                 </nav>
                 <div class="hidden md:flex justify-center md:justify-end">
@@ -177,6 +180,12 @@
                                         </svg>
                                         Pesanan Saya
                                     </a>
+                                    <a href="{{ route('testimonials.myTestimonials') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-[#2D3C8C] transition">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                        </svg>
+                                        Testimoni Saya
+                                    </a>
                                     <a href="{{ route('user.transactions') }}" class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-[#2D3C8C] transition">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -216,7 +225,7 @@
                     <a href="{{ route('bimbel.ukom') }}" class="@if(request()->routeIs('bimbel.ukom')) font-semibold text-white @else text-white/80 hover:text-white @endif transition px-2 py-2">Bimbel UKOM</a>
                     <a href="{{ route('cpns.p3k') }}" class="@if(request()->routeIs('cpns.p3k')) font-semibold text-white @else text-white/80 hover:text-white @endif transition px-2 py-2">CPNS &amp; P3K</a>
                     <a href="{{ route('joki.tugas') }}" class="@if(request()->routeIs('joki.tugas')) font-semibold text-white @else text-white/80 hover:text-white @endif transition px-2 py-2">Joki Tugas</a>
-                    <a href="{{ route('testimoni') }}" class="@if(request()->routeIs('testimoni')) font-semibold text-white @else text-white/80 hover:text-white @endif transition px-2 py-2">Testimoni</a>
+                    <a href="{{ route('testimonials.index') }}" class="@if(request()->routeIs('testimonials.*')) font-semibold text-white @else text-white/80 hover:text-white @endif transition px-2 py-2">Testimoni</a>
                     <a href="{{ route('kontak') }}" class="@if(request()->routeIs('kontak')) font-semibold text-white @else text-white/80 hover:text-white @endif transition px-2 py-2">Kontak</a>
                     
                     @auth
@@ -320,7 +329,8 @@
         <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-sm mx-4">
             <div class="flex flex-col items-center gap-4">
                 <div class="relative">
-                    <svg class="animate-spin h-12 w-12 text-[#2D3C8C]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <img src="{{ asset('images/logo bimbel farmasi.jpg') }}" alt="Bimbel Farmasi" class="h-16 w-16 rounded-full object-cover shadow-lg mb-2">
+                    <svg class="animate-spin h-12 w-12 text-[#2D3C8C] absolute -bottom-2 left-1/2 -translate-x-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -341,8 +351,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="grid gap-8 md:grid-cols-3">
                 <div>
-                    <h3 class="text-lg font-semibold">Bimbel Farmasi</h3>
-                    <p class="mt-3 text-sm text-white/80">Pendampingan akademik dan karir kefarmasian dengan mentor berpengalaman dan kurikulum terstruktur.</p>
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="{{ asset('images/logo bimbel farmasi.jpg') }}" alt="Bimbel Farmasi Logo" class="h-16 w-16 rounded-full object-cover shadow-lg">
+                        <h3 class="text-lg font-semibold">Bimbel Farmasi</h3>
+                    </div>
+                    <p class="text-sm text-white/80 leading-relaxed">Pendampingan akademik dan karir kefarmasian dengan mentor berpengalaman dan kurikulum terstruktur.</p>
+                    <p class="mt-2 text-xs text-white/60 italic">"Raih Pangkal Kompeten"</p>
                 </div>
                 <div class="space-y-3">
                     <h4 class="text-sm font-semibold uppercase tracking-wide text-white/70">Navigasi</h4>

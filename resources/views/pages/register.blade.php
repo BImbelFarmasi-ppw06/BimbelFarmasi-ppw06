@@ -7,6 +7,13 @@
         <div class="mx-auto max-w-xl px-4 py-16 sm:px-6 lg:px-8 w-full">
             <!-- Form Register (Tengah) -->
             <div class="rounded-3xl border border-blue-200 bg-white p-10 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                <!-- Logo -->
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('images/logo bimbel farmasi.jpg') }}" alt="Bimbel Farmasi Logo" class="h-24 w-24 rounded-full object-cover shadow-lg">
+                </div>
+                <h2 class="text-center text-2xl font-bold text-[#2D3C8C] mb-2">Bimbel Farmasi</h2>
+                <p class="text-center text-sm text-slate-600 mb-8 italic">"Raih Pangkal Kompeten"</p>
+                
                 <div class="flex w-full flex-col gap-8">
                     <!-- Tab Masuk/Daftar -->
                     <div class="flex items-center gap-4 border-b border-blue-200 pb-4 text-sm font-semibold">

@@ -58,4 +58,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+
+    /**
+     * Get the testimonials for the user
+     */
+    public function testimonials()
+    {
+        return $this->hasMany(Testimonial::class);
+    }
 }

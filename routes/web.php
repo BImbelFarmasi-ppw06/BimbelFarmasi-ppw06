@@ -8,6 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
+use App\Http\Controllers\TestimonialController;
 
 // =================== PUBLIC PAGES ===================
 Route::view('/', 'pages.home')->name('home');
@@ -15,7 +16,7 @@ Route::view('/layanan', 'pages.layanan')->name('layanan');
 Route::view('/bimbel-ukom-d3-farmasi', 'pages.bimbel-ukom')->name('bimbel.ukom');
 Route::view('/cpns-p3k-farmasi', 'pages.cpns-p3k')->name('cpns.p3k');
 Route::view('/joki-tugas-farmasi', 'pages.joki-tugas')->name('joki.tugas');
-Route::view('/testimoni', 'pages.testimoni')->name('testimoni');
+Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimonials.index');
 Route::view('/kontak', 'pages.kontak')->name('kontak');
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
 
@@ -70,6 +71,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])->name('order.payment.process');
     Route::get('/order/{orderNumber}/success', [OrderController::class, 'success'])->name('order.success');
     Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('order.my-orders');
+
+    // Testimonial Routes
+    Route::get('/testimoni-saya', [TestimonialController::class, 'myTestimonials'])->name('testimonials.myTestimonials');
+    Route::get('/order/{orderNumber}/testimoni/create', [TestimonialController::class, 'create'])->name('testimonials.create');
+    Route::post('/order/{orderNumber}/testimoni', [TestimonialController::class, 'store'])->name('testimonials.store');
+    Route::get('/testimoni/{id}/edit', [TestimonialController::class, 'edit'])->name('testimonials.edit');
+    Route::put('/testimoni/{id}', [TestimonialController::class, 'update'])->name('testimonials.update');
+    Route::delete('/testimoni/{id}', [TestimonialController::class, 'destroy'])->name('testimonials.destroy');
 });
 
 // =================== ADMIN AUTH ===================

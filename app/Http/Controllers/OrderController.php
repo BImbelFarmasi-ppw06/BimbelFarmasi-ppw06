@@ -74,47 +74,32 @@ class OrderController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // Debug: Check if file exists
-        if (!$request->hasFile('proof')) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['proof' => 'File bukti pembayaran tidak terdeteksi. Pastikan Anda sudah memilih file.']);
-        }
-
-        // Validate request
         $validated = $request->validate([
             'payment_method' => ['required', 'in:bank_transfer,ewallet,qris'],
-            'proof' => ['required', 'file', 'mimes:jpeg,jpg,png', 'max:2048'], // 2MB max
+            'proof' => ['required', 'image', 'max:2048'], // 2MB max
         ], [
             'payment_method.required' => 'Metode pembayaran wajib dipilih.',
             'proof.required' => 'Bukti pembayaran wajib diupload.',
-            'proof.file' => 'File tidak valid.',
-            'proof.mimes' => 'File harus berupa gambar (JPG, JPEG, atau PNG).',
+            'proof.image' => 'File harus berupa gambar.',
             'proof.max' => 'Ukuran file maksimal 2MB.',
         ]);
 
-        try {
-            // Upload proof
-            $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+        // Upload proof
+        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
 
-            // Create or update payment
-            Payment::updateOrCreate(
-                ['order_id' => $order->id],
-                [
-                    'payment_method' => $validated['payment_method'],
-                    'amount' => $order->amount,
-                    'status' => 'pending',
-                    'proof_url' => $proofPath,
-                ]
-            );
+        // Create or update payment
+        Payment::updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'payment_method' => $validated['payment_method'],
+                'amount' => $order->amount,
+                'status' => 'pending',
+                'proof_url' => $proofPath,
+            ]
+        );
 
-            return redirect()->route('order.success', $orderNumber)
-                ->with('success', 'Bukti pembayaran berhasil diupload! Kami akan memverifikasi dalam 1x24 jam.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['proof' => 'Gagal mengupload bukti pembayaran. Silakan coba lagi. Error: ' . $e->getMessage()]);
-        }
+        return redirect()->route('order.success', $orderNumber)
+            ->with('success', 'Bukti pembayaran berhasil diupload! Kami akan memverifikasi dalam 1x24 jam.');
     }
 
     /**
