@@ -86,37 +86,27 @@ class UserController extends Controller
      */
     public function transactions()
     {
-        // TODO: Get user's transactions from database
-        // For now, using sample data
-        $transactions = [
-            [
-                'id' => 'TRX-2025-001',
-                'date' => '2025-10-01',
-                'program' => 'CPNS & P3K Farmasi - Paket Lengkap',
-                'amount' => 2050000,
-                'status' => 'paid',
-                'payment_method' => 'Bank Transfer',
+        $user = Auth::user();
+        
+        // Get only orders that have payment record (user already uploaded proof)
+        $orders = $user->orders()
+            ->with(['program', 'payment'])
+            ->whereHas('payment') // Only orders with payment record
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Transform to match view format
+        $transactions = $orders->map(function ($order) {
+            return [
+                'id' => $order->order_number,
+                'date' => $order->created_at->format('Y-m-d'),
+                'program' => $order->program->name,
+                'amount' => $order->amount,
+                'status' => $order->payment->status, // pending, verified, or rejected
+                'payment_method' => ucwords(str_replace('_', ' ', $order->payment->payment_method)),
                 'invoice_url' => '#',
-            ],
-            [
-                'id' => 'TRX-2025-002',
-                'date' => '2025-09-15',
-                'program' => 'Bimbel UKOM D3 Farmasi - Reguler',
-                'amount' => 1250000,
-                'status' => 'paid',
-                'payment_method' => 'E-Wallet',
-                'invoice_url' => '#',
-            ],
-            [
-                'id' => 'TRX-2025-003',
-                'date' => '2025-08-01',
-                'program' => 'Joki Tugas - Basic Package',
-                'amount' => 500000,
-                'status' => 'paid',
-                'payment_method' => 'Bank Transfer',
-                'invoice_url' => '#',
-            ],
-        ];
+            ];
+        })->toArray();
 
         return view('pages.transactions', compact('transactions'));
     }
