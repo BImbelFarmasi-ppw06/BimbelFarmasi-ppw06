@@ -17,12 +17,18 @@ class TestimonialController extends Controller
         $testimonials = Testimonial::with(['user', 'program'])
             ->approved()
             ->latest()
-            ->paginate(12);
+            ->paginate(6);
 
-        $averageRating = Testimonial::approved()->avg('rating');
+        $averageRating = Testimonial::approved()->avg('rating') ?? 0;
         $totalTestimonials = Testimonial::approved()->count();
+        
+        // Calculate satisfaction rate (percentage of ratings >= 4)
+        $highRatings = Testimonial::approved()->where('rating', '>=', 4)->count();
+        $satisfactionRate = $totalTestimonials > 0 
+            ? round(($highRatings / $totalTestimonials) * 100) 
+            : 0;
 
-        return view('pages.testimonials.index', compact('testimonials', 'averageRating', 'totalTestimonials'));
+        return view('pages.testimonials.index', compact('testimonials', 'averageRating', 'totalTestimonials', 'satisfactionRate'));
     }
 
     /**
@@ -37,7 +43,7 @@ class TestimonialController extends Controller
 
         // Check if payment is approved
         if (!$order->payment || $order->payment->status !== 'approved') {
-            return redirect()->route('order.myOrders')
+            return redirect()->route('order.my-orders')
                 ->with('error', 'Anda hanya bisa memberikan testimoni setelah pembayaran disetujui.');
         }
 
@@ -86,7 +92,7 @@ class TestimonialController extends Controller
             'is_approved' => false, // Needs admin approval
         ]);
 
-        return redirect()->route('order.myOrders')
+        return redirect()->route('order.my-orders')
             ->with('success', 'Terima kasih! Testimoni Anda telah dikirim dan menunggu persetujuan admin.');
     }
 
@@ -132,7 +138,7 @@ class TestimonialController extends Controller
             'is_approved' => false, // Reset approval status
         ]);
 
-        return redirect()->route('order.myOrders')
+        return redirect()->route('order.my-orders')
             ->with('success', 'Testimoni Anda telah diupdate dan menunggu persetujuan admin.');
     }
 
@@ -147,7 +153,7 @@ class TestimonialController extends Controller
 
         $testimonial->delete();
 
-        return redirect()->route('order.myOrders')
+        return redirect()->route('order.my-orders')
             ->with('success', 'Testimoni Anda telah dihapus.');
     }
 

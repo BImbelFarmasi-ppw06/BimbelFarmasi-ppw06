@@ -106,9 +106,13 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-12">
-                    {{ $testimonials->links() }}
+                @if($testimonials->hasPages())
+                <div class="mt-12 flex justify-center">
+                    <div class="bg-white rounded-xl shadow-lg p-2">
+                        {{ $testimonials->links() }}
+                    </div>
                 </div>
+                @endif
             </div>
         @endif
 
@@ -118,7 +122,7 @@
             <div class="bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] rounded-2xl shadow-xl p-8 text-center text-white">
                 <h2 class="text-3xl font-bold mb-4">Sudah Mengikuti Program Kami?</h2>
                 <p class="text-lg mb-6 text-blue-100">Bagikan pengalaman Anda dan bantu mahasiswa lain menentukan pilihan!</p>
-                <a href="{{ route('order.myOrders') }}" class="inline-block bg-white text-[#2D3C8C] font-bold px-8 py-4 rounded-xl hover:shadow-xl transition-all">
+                <a href="{{ route('order.my-orders') }}" class="inline-block bg-white text-[#2D3C8C] font-bold px-8 py-4 rounded-xl hover:shadow-xl transition-all">
                     Lihat Order Saya
                 </a>
             </div>
