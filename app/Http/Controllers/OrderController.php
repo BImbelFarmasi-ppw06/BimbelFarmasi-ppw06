@@ -77,11 +77,11 @@ class OrderController extends Controller
         // Validate request
         $validated = $request->validate([
             'payment_method' => ['required', 'in:bank_transfer,ewallet,qris'],
-            'proof' => ['required', 'file', 'mimes:jpeg,jpg,png', 'max:2048'], // 2MB max
+            'proof' => ['required', 'image', 'mimes:jpeg,jpg,png', 'max:2048'], // 2MB max
         ], [
             'payment_method.required' => 'Metode pembayaran wajib dipilih.',
             'proof.required' => 'Bukti pembayaran wajib diupload.',
-            'proof.file' => 'File bukti pembayaran tidak valid.',
+            'proof.image' => 'File harus berupa gambar.',
             'proof.mimes' => 'File harus berupa gambar (JPG, JPEG, atau PNG).',
             'proof.max' => 'Ukuran file maksimal 2MB.',
         ]);

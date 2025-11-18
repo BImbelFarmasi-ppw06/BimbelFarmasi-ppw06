@@ -54,7 +54,7 @@
                     <div class="space-y-4 mb-8">
                         <!-- Bank Transfer -->
                         <label class="block cursor-pointer">
-                            <input type="radio" name="payment_method" value="bank_transfer" class="peer sr-only" x-model="selectedMethod">
+                            <input type="radio" name="payment_method" value="bank_transfer" class="peer sr-only" x-model="selectedMethod" required>
                             <div class="border-2 border-gray-200 peer-checked:border-[#2D3C8C] peer-checked:bg-blue-50 rounded-xl p-4 transition-all hover:border-gray-300">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
@@ -75,7 +75,7 @@
 
                         <!-- E-Wallet -->
                         <label class="block cursor-pointer">
-                            <input type="radio" name="payment_method" value="ewallet" class="peer sr-only" x-model="selectedMethod">
+                            <input type="radio" name="payment_method" value="ewallet" class="peer sr-only" x-model="selectedMethod" required>
                             <div class="border-2 border-gray-200 peer-checked:border-[#2D3C8C] peer-checked:bg-blue-50 rounded-xl p-4 transition-all hover:border-gray-300">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center flex-shrink-0">
@@ -96,7 +96,7 @@
 
                         <!-- QRIS -->
                         <label class="block cursor-pointer">
-                            <input type="radio" name="payment_method" value="qris" class="peer sr-only" x-model="selectedMethod">
+                            <input type="radio" name="payment_method" value="qris" class="peer sr-only" x-model="selectedMethod" required>
                             <div class="border-2 border-gray-200 peer-checked:border-[#2D3C8C] peer-checked:bg-blue-50 rounded-xl p-4 transition-all hover:border-gray-300">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -158,30 +158,69 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-3">
                             Upload Bukti Pembayaran <span class="text-red-500">*</span>
                         </label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#2D3C8C] transition-colors cursor-pointer" onclick="document.getElementById('proof-input').click()">
-                            <input type="file" name="proof" accept="image/*,image/png,image/jpeg,image/jpg" class="hidden" id="proof-input" onchange="previewImage(event)" required>
-                            <div id="preview-container" class="hidden mb-4">
-                                <img id="preview-image" class="max-w-xs mx-auto rounded-lg shadow-md" alt="Preview">
-                            </div>
-                            <div id="upload-placeholder">
-                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        
+                        <!-- Upload Button -->
+                        <div class="flex items-center gap-4 mb-4">
+                            <button type="button" onclick="document.getElementById('proof-input').click()" class="inline-flex items-center gap-2 px-6 py-3 bg-[#2D3C8C] text-white font-semibold rounded-lg hover:bg-blue-900 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                                 </svg>
-                                <p class="text-gray-600 mb-1 font-semibold">Klik untuk upload gambar</p>
-                                <p class="text-sm text-gray-500">PNG, JPG maksimal 2MB</p>
+                                Pilih File
+                            </button>
+                            <input type="file" name="proof" accept="image/png,image/jpeg,image/jpg" style="display:none" id="proof-input" onchange="showPreview(this)">
+                            <span class="text-sm text-gray-500">Format: PNG, JPG, JPEG (Max: 2MB)</span>
+                        </div>
+
+                        <!-- File Preview Area -->
+                        <div id="file-preview-area" style="display:none" class="mt-4 border-2 border-green-300 bg-green-50 rounded-lg p-4">
+                            <div class="flex items-start gap-4">
+                                <!-- Thumbnail Preview -->
+                                <div class="flex-shrink-0">
+                                    <img id="preview-thumbnail" src="" class="w-24 h-24 object-cover rounded-lg border-2 border-gray-300" alt="Preview">
+                                </div>
+                                
+                                <!-- File Info -->
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                <span class="font-bold text-green-800">File berhasil dipilih</span>
+                                            </div>
+                                            <p class="text-sm text-gray-700 font-medium" id="preview-filename"></p>
+                                            <p class="text-xs text-gray-600" id="preview-filesize"></p>
+                                        </div>
+                                        <button type="button" onclick="removeFile()" class="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-lg transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="mt-3 bg-white rounded-lg p-3 border border-green-200">
+                                        <p class="text-xs text-gray-600 mb-2">Preview:</p>
+                                        <img id="preview-full" src="" class="max-w-full max-h-48 rounded border border-gray-200" alt="Preview Full">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         @error('proof')
-                            <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                            <div class="mt-3 bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <p class="text-red-700 text-sm font-semibold">{{ $message }}</p>
+                            </div>
                         @enderror
-                        <p class="text-xs text-gray-500 mt-2" id="file-name"></p>
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] text-white font-bold py-4 rounded-xl hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-                        Kirim Bukti Pembayaran
+                    <button type="submit" id="submit-btn" disabled class="w-full bg-gray-400 text-white font-bold py-4 rounded-xl cursor-not-allowed transition-all duration-200">
+                        <span id="submit-text">Pilih Bukti Pembayaran Terlebih Dahulu</span>
                         <svg class="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                     </button>
                 </form>
@@ -200,45 +239,107 @@
 
 @push('scripts')
 <script>
-function previewImage(event) {
-    const file = event.target.files[0];
-    const previewContainer = document.getElementById('preview-container');
-    const previewImage = document.getElementById('preview-image');
-    const uploadPlaceholder = document.getElementById('upload-placeholder');
-    const fileNameDisplay = document.getElementById('file-name');
+// Global variables
+var hasFileUploaded = false;
+
+function showPreview(input) {
+    var file = input.files[0];
     
-    if (file) {
-        // Validate file type
-        if (!file.type.match('image.*')) {
-            alert('File harus berupa gambar!');
-            event.target.value = '';
-            return;
-        }
-        
-        // Validate file size (max 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            alert('Ukuran file maksimal 2MB!');
-            event.target.value = '';
-            return;
-        }
-        
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            previewImage.src = e.target.result;
-            previewContainer.classList.remove('hidden');
-            uploadPlaceholder.classList.add('hidden');
-            fileNameDisplay.textContent = '✓ File: ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
-            fileNameDisplay.classList.remove('hidden');
-        }
-        reader.readAsDataURL(file);
+    if (!file) {
+        hidePreview();
+        return;
+    }
+    
+    // Validate file type
+    var validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+        alert('❌ File harus berupa gambar!\n\nFormat yang diizinkan: PNG, JPG, atau JPEG');
+        input.value = '';
+        hidePreview();
+        return;
+    }
+    
+    // Validate file size (max 2MB)
+    var maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+        alert('❌ Ukuran file terlalu besar!\n\nUkuran maksimal: 2MB\nUkuran file Anda: ' + (file.size / 1024 / 1024).toFixed(2) + ' MB');
+        input.value = '';
+        hidePreview();
+        return;
+    }
+    
+    // Show file info
+    document.getElementById('preview-filename').textContent = '📄 ' + file.name;
+    document.getElementById('preview-filesize').textContent = '💾 ' + formatFileSize(file.size);
+    
+    // Read and display image
+    var reader = new FileReader();
+    
+    reader.onload = function(e) {
+        var imageData = e.target.result;
+        document.getElementById('preview-thumbnail').src = imageData;
+        document.getElementById('preview-full').src = imageData;
+        document.getElementById('file-preview-area').style.display = 'block';
+        hasFileUploaded = true;
+        updateSubmitButton();
+    };
+    
+    reader.onerror = function() {
+        alert('❌ Gagal membaca file. Silakan coba lagi.');
+        hidePreview();
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function removeFile() {
+    if (hasFileUploaded && !confirm('Apakah Anda yakin ingin menghapus file ini?')) {
+        return;
+    }
+    hidePreview();
+}
+
+function hidePreview() {
+    document.getElementById('proof-input').value = '';
+    document.getElementById('file-preview-area').style.display = 'none';
+    document.getElementById('preview-thumbnail').src = '';
+    document.getElementById('preview-full').src = '';
+    document.getElementById('preview-filename').textContent = '';
+    document.getElementById('preview-filesize').textContent = '';
+    hasFileUploaded = false;
+    updateSubmitButton();
+}
+
+function updateSubmitButton() {
+    var submitBtn = document.getElementById('submit-btn');
+    var submitText = document.getElementById('submit-text');
+    var submitIcon = submitBtn.querySelector('svg path');
+    
+    if (hasFileUploaded) {
+        submitBtn.disabled = false;
+        submitBtn.className = 'w-full bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] text-white font-bold py-4 rounded-xl hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200';
+        submitText.textContent = 'Kirim Bukti Pembayaran';
+        submitIcon.setAttribute('d', 'M5 13l4 4L19 7');
     } else {
-        // Reset if no file
-        previewContainer.classList.add('hidden');
-        uploadPlaceholder.classList.remove('hidden');
-        fileNameDisplay.textContent = '';
+        submitBtn.disabled = true;
+        submitBtn.className = 'w-full bg-gray-400 text-white font-bold py-4 rounded-xl cursor-not-allowed transition-all duration-200';
+        submitText.textContent = 'Pilih Bukti Pembayaran Terlebih Dahulu';
+        submitIcon.setAttribute('d', 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z');
     }
 }
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    var k = 1024;
+    var sizes = ['Bytes', 'KB', 'MB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Initialize on page load
+window.onload = function() {
+    updateSubmitButton();
+};
 </script>
 @endpush
 @endsection
