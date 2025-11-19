@@ -65,22 +65,22 @@
             <p class="mt-3 text-base text-slate-600">Pilih pendampingan terbaik sesuai kebutuhanmu.</p>
         </div>
         <div class="mt-12 grid gap-8 md:grid-cols-3">
-            <div class="rounded-3xl bg-white p-8 shadow-lg shadow-blue-100/60">
+            <div class="flex flex-col rounded-3xl bg-white p-8 shadow-lg shadow-blue-100/60">
                 <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#2D3C8C]">🎓</div>
                 <h3 class="mt-6 text-xl font-semibold text-slate-900">Bimbel UKOM D3 Farmasi</h3>
-                <p class="mt-3 text-sm leading-relaxed text-slate-600">Program intensif persiapan UKOM dengan bank soal adaptif dan sesi klinis.</p>
+                <p class="mt-3 flex-grow text-sm leading-relaxed text-slate-600">Program intensif persiapan UKOM dengan bank soal adaptif dan sesi klinis.</p>
                 <a href="{{ route('bimbel.ukom') }}" class="mt-6 inline-flex items-center text-sm font-semibold text-[#2D3C8C] hover:underline">Pelajari Selengkapnya →</a>
             </div>
-            <div class="rounded-3xl bg-white p-8 shadow-lg shadow-blue-100/60">
+            <div class="flex flex-col rounded-3xl bg-white p-8 shadow-lg shadow-blue-100/60">
                 <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#2D3C8C]">🏥</div>
                 <h3 class="mt-6 text-xl font-semibold text-slate-900">Bimbel CPNS &amp; P3K Kefarmasian</h3>
-                <p class="mt-3 text-sm leading-relaxed text-slate-600">Strategi SKD &amp; SKB dengan simulasi CAT, kisi-kisi terbaru, dan coaching karir.</p>
+                <p class="mt-3 flex-grow text-sm leading-relaxed text-slate-600">Strategi SKD &amp; SKB dengan simulasi CAT, kisi-kisi terbaru, dan coaching karir.</p>
                 <a href="{{ route('cpns.p3k') }}" class="mt-6 inline-flex items-center text-sm font-semibold text-[#2D3C8C] hover:underline">Pelajari Selengkapnya →</a>
             </div>
-            <div class="rounded-3xl bg-white p-8 shadow-lg shadow-blue-100/60">
+            <div class="flex flex-col rounded-3xl bg-white p-8 shadow-lg shadow-blue-100/60">
                 <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#2D3C8C]">📝</div>
                 <h3 class="mt-6 text-xl font-semibold text-slate-900">Joki Tugas Akademik Farmasi</h3>
-                <p class="mt-3 text-sm leading-relaxed text-slate-600">Pendampingan penyusunan tugas, skripsi, KTI, dan publikasi ilmiah secara etis.</p>
+                <p class="mt-3 flex-grow text-sm leading-relaxed text-slate-600">Pendampingan penyusunan tugas, skripsi, KTI, dan publikasi ilmiah secara etis.</p>
                 <a href="{{ route('joki.tugas') }}" class="mt-6 inline-flex items-center text-sm font-semibold text-[#2D3C8C] hover:underline">Pelajari Selengkapnya →</a>
             </div>
         </div>

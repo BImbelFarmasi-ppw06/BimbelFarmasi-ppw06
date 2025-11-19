@@ -90,7 +90,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // =================== ADMIN PROTECTED PAGES ===================
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
-    Route::view('/', 'admin.dashboard')->name('dashboard');
+    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
     // Student Management
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
