@@ -116,7 +116,7 @@
                         <h3 class="text-xl font-semibold text-slate-900">Konsultasi Akademik</h3>
                         <span class="text-2xl">🧑‍🏫</span>
                     </div>
-                    <p class="mt-4 text-sm text-slate-600">Sesi diskusi privat dengan mentor untuk kurikulum, penelitian, atau karir farmasi.</p>
+                    <p class="mt-4 flex-grow text-sm text-slate-600">Sesi diskusi privat dengan mentor untuk kurikulum, penelitian, atau karir farmasi.</p>
                     <ul class="mt-6 space-y-1 text-sm text-slate-600">
                         <li>• Review rencana studi</li>
                         <li>• Konsultasi pemilihan topik riset</li>
@@ -133,7 +133,7 @@
                         <h3 class="text-xl font-semibold text-slate-900">Kelas Reguler</h3>
                         <span class="text-2xl">📚</span>
                     </div>
-                    <p class="mt-4 text-sm text-slate-600">Program mingguan dengan fokus teori dan praktik kefarmasian dasar.</p>
+                    <p class="mt-4 flex-grow text-sm text-slate-600">Program mingguan dengan fokus teori dan praktik kefarmasian dasar.</p>
                     <ul class="mt-6 space-y-1 text-sm text-slate-600">
                         <li>• 12x pertemuan tatap muka/online</li>
                         <li>• Modul praktikum &amp; studi kasus</li>
@@ -150,7 +150,7 @@
                         <h3 class="text-xl font-semibold text-slate-900">Program Intensif</h3>
                         <span class="text-2xl">⚡</span>
                     </div>
-                    <p class="mt-4 text-sm text-slate-600">Bootcamp singkat untuk kebutuhan mendesak dengan pendampingan penuh.</p>
+                    <p class="mt-4 flex-grow text-sm text-slate-600">Bootcamp singkat untuk kebutuhan mendesak dengan pendampingan penuh.</p>
                     <ul class="mt-6 space-y-1 text-sm text-slate-600">
                         <li>• 7 hari pendampingan personal</li>
                         <li>• Kelas malam &amp; akhir pekan</li>
@@ -174,7 +174,7 @@
                     <p class="text-sm leading-relaxed text-white/80">Tim akademik kami siap merekomendasikan paket terbaik sesuai timeline ujian dan kebutuhan karirmu.</p>
                 </div>
                 <div class="flex justify-start lg:justify-end">
-                    <a href="{{ route('home') }}#kontak" class="inline-flex items-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#2D3C8C] shadow-lg shadow-black/20 transition hover:bg-blue-50">Konsultasi Gratis →</a>
+                    <a href="https://wa.me/6281234567890?text=Halo%20Bimbel%20Farmasi,%20saya%20ingin%20konsultasi%20mengenai%20program%20yang%20tersedia" target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#2D3C8C] shadow-lg shadow-black/20 transition hover:bg-blue-50">Konsultasi Gratis →</a>
                 </div>
             </div>
         </div>
