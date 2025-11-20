@@ -381,7 +381,7 @@
             </div>
             <hr class="my-8 border-white/20">
             <div class="flex flex-col gap-4 text-center text-sm text-white/70 md:flex-row md:items-center md:justify-between">
-                <p>© 2025 FarmasiPro. Semua hak dilindungi.</p>
+                <p>© 2025 BimbelFarmasi. Semua hak dilindungi.</p>
                 <div class="flex flex-wrap justify-center gap-4">
                     <a class="hover:text-white" href="#">Kebijakan Privasi</a>
                     <a class="hover:text-white" href="#">Syarat &amp; Ketentuan</a>

@@ -5,31 +5,35 @@
 ### Metode 1: Download Manual (RECOMMENDED)
 
 1. **Download Node.js:**
-   - Buka: https://nodejs.org/
-   - Klik tombol hijau "LTS" (Long Term Support)
-   - Download installer untuk Windows
+
+    - Buka: https://nodejs.org/
+    - Klik tombol hijau "LTS" (Long Term Support)
+    - Download installer untuk Windows
 
 2. **Install Node.js:**
-   - Jalankan file installer yang sudah didownload
-   - Klik "Next" → "Next" → "Install"
-   - **PENTING:** Centang "Automatically install necessary tools"
-   - Tunggu hingga selesai
-   - Klik "Finish"
+
+    - Jalankan file installer yang sudah didownload
+    - Klik "Next" → "Next" → "Install"
+    - **PENTING:** Centang "Automatically install necessary tools"
+    - Tunggu hingga selesai
+    - Klik "Finish"
 
 3. **Restart Terminal:**
-   - Tutup semua terminal/PowerShell yang terbuka
-   - Buka PowerShell baru
-   - Test instalasi:
-   ```powershell
-   node --version
-   npm --version
-   ```
+
+    - Tutup semua terminal/PowerShell yang terbuka
+    - Buka PowerShell baru
+    - Test instalasi:
+
+    ```powershell
+    node --version
+    npm --version
+    ```
 
 4. **Install React Dependencies:**
-   ```bash
-   cd D:\BimbelFarmasi-ppw06
-   npm install
-   ```
+    ```bash
+    cd D:\BimbelFarmasi-ppw06
+    npm install
+    ```
 
 ### Metode 2: Menggunakan Winget (Windows 10/11)
 
@@ -66,6 +70,7 @@ npm install
 ## ✅ Setelah Node.js Terinstall
 
 ### 1. Verifikasi Instalasi
+
 ```bash
 node --version
 # Harus muncul: v20.x.x atau lebih
@@ -75,12 +80,14 @@ npm --version
 ```
 
 ### 2. Install Dependencies Project
+
 ```bash
 cd D:\BimbelFarmasi-ppw06
 npm install
 ```
 
 Output yang diharapkan:
+
 ```
 added 245 packages in 30s
 ```
@@ -88,16 +95,19 @@ added 245 packages in 30s
 ### 3. Jalankan Development Server
 
 **Terminal 1 - Laravel:**
+
 ```bash
 php artisan serve
 ```
 
 **Terminal 2 - Vite/React (PowerShell baru):**
+
 ```bash
 npm run dev
 ```
 
 Output yang diharapkan:
+
 ```
 VITE v7.0.7  ready in 500 ms
 
@@ -107,6 +117,7 @@ VITE v7.0.7  ready in 500 ms
 ```
 
 ### 4. Akses Website
+
 ```
 http://127.0.0.1:8000
 ```
@@ -114,24 +125,31 @@ http://127.0.0.1:8000
 ## 🔧 Troubleshooting
 
 ### Problem: "npm is not recognized"
+
 **Solution:**
+
 1. Pastikan Node.js sudah terinstall
 2. Restart terminal/PowerShell
 3. Jika masih error, restart komputer
 4. Check PATH environment variable
 
 ### Problem: "Module not found"
+
 **Solution:**
+
 ```bash
 rm -rf node_modules
 npm install
 ```
 
 ### Problem: "Permission denied"
+
 **Solution:** Jalankan PowerShell sebagai Administrator
 
 ### Problem: Port 5173 sudah digunakan
+
 **Solution:**
+
 ```bash
 # Tutup aplikasi yang menggunakan port atau
 npm run dev -- --port 5174
@@ -139,17 +157,17 @@ npm run dev -- --port 5174
 
 ## 📊 Progress Checklist
 
-- [ ] Download Node.js dari nodejs.org
-- [ ] Install Node.js
-- [ ] Restart terminal
-- [ ] Verify: `node --version`
-- [ ] Verify: `npm --version`
-- [ ] Navigate to project: `cd D:\BimbelFarmasi-ppw06`
-- [ ] Install dependencies: `npm install`
-- [ ] Run Laravel: `php artisan serve`
-- [ ] Run Vite: `npm run dev`
-- [ ] Open browser: http://127.0.0.1:8000
-- [ ] Check React components working
+-   [ ] Download Node.js dari nodejs.org
+-   [ ] Install Node.js
+-   [ ] Restart terminal
+-   [ ] Verify: `node --version`
+-   [ ] Verify: `npm --version`
+-   [ ] Navigate to project: `cd D:\BimbelFarmasi-ppw06`
+-   [ ] Install dependencies: `npm install`
+-   [ ] Run Laravel: `php artisan serve`
+-   [ ] Run Vite: `npm run dev`
+-   [ ] Open browser: http://127.0.0.1:8000
+-   [ ] Check React components working
 
 ## 🎯 Quick Commands
 
@@ -176,6 +194,7 @@ npm cache clean --force
 ## 📞 Need Help?
 
 Jika masih ada masalah:
+
 1. Screenshot error message
 2. Check Node.js version: `node --version`
 3. Check npm version: `npm --version`
@@ -183,10 +202,10 @@ Jika masih ada masalah:
 
 ## 🌐 Links
 
-- Node.js Official: https://nodejs.org/
-- NPM Documentation: https://docs.npmjs.com/
-- Vite Documentation: https://vitejs.dev/
-- React Documentation: https://react.dev/
+-   Node.js Official: https://nodejs.org/
+-   NPM Documentation: https://docs.npmjs.com/
+-   Vite Documentation: https://vitejs.dev/
+-   React Documentation: https://react.dev/
 
 ---
 

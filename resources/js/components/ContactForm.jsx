@@ -1,55 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const ContactForm = () => {
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
     });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
-        
+        setError("");
+
         try {
-            const response = await fetch('/api/contact', {
-                method: 'POST',
+            const response = await fetch("/api/contact", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
-            
+
             if (response.ok) {
                 setSuccess(true);
                 setFormData({
-                    name: '',
-                    email: '',
-                    phone: '',
-                    subject: '',
-                    message: ''
+                    name: "",
+                    email: "",
+                    phone: "",
+                    subject: "",
+                    message: "",
                 });
-                
+
                 setTimeout(() => setSuccess(false), 5000);
             } else {
-                throw new Error('Gagal mengirim pesan');
+                throw new Error("Gagal mengirim pesan");
             }
         } catch (err) {
-            setError(err.message || 'Terjadi kesalahan. Silakan coba lagi.');
+            setError(err.message || "Terjadi kesalahan. Silakan coba lagi.");
         } finally {
             setLoading(false);
         }
@@ -57,23 +59,29 @@ const ContactForm = () => {
 
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Hubungi Kami</h2>
-            
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                Hubungi Kami
+            </h2>
+
             {success && (
                 <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                    Pesan Anda berhasil dikirim! Kami akan segera menghubungi Anda.
+                    Pesan Anda berhasil dikirim! Kami akan segera menghubungi
+                    Anda.
                 </div>
             )}
-            
+
             {error && (
                 <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
                     {error}
                 </div>
             )}
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label
+                        htmlFor="name"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
                         Nama Lengkap *
                     </label>
                     <input
@@ -87,10 +95,13 @@ const ContactForm = () => {
                         placeholder="Masukkan nama lengkap"
                     />
                 </div>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-semibold text-gray-700 mb-2"
+                        >
                             Email *
                         </label>
                         <input
@@ -104,9 +115,12 @@ const ContactForm = () => {
                             placeholder="email@example.com"
                         />
                     </div>
-                    
+
                     <div>
-                        <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label
+                            htmlFor="phone"
+                            className="block text-sm font-semibold text-gray-700 mb-2"
+                        >
                             No. WhatsApp *
                         </label>
                         <input
@@ -121,9 +135,12 @@ const ContactForm = () => {
                         />
                     </div>
                 </div>
-                
+
                 <div>
-                    <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label
+                        htmlFor="subject"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
                         Subjek *
                     </label>
                     <input
@@ -137,9 +154,12 @@ const ContactForm = () => {
                         placeholder="Topik pesan Anda"
                     />
                 </div>
-                
+
                 <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label
+                        htmlFor="message"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
                         Pesan *
                     </label>
                     <textarea
@@ -153,7 +173,7 @@ const ContactForm = () => {
                         placeholder="Tulis pesan Anda di sini..."
                     />
                 </div>
-                
+
                 <button
                     type="submit"
                     disabled={loading}
@@ -161,14 +181,29 @@ const ContactForm = () => {
                 >
                     {loading ? (
                         <span className="flex items-center justify-center gap-2">
-                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                            <svg
+                                className="animate-spin h-5 w-5"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                    fill="none"
+                                />
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                />
                             </svg>
                             Mengirim...
                         </span>
                     ) : (
-                        'Kirim Pesan'
+                        "Kirim Pesan"
                     )}
                 </button>
             </form>

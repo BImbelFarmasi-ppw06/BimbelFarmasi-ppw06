@@ -54,44 +54,61 @@ class UserController extends Controller
     {
         $user = Auth::user();
         
-        // Get user's courses
-        $courses = \App\Models\Course::where('user_id', $user->id)
-            ->with('order.program')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Try to get courses if Course model exists
+        $courses = collect([]);
+        if (class_exists('\App\Models\Course')) {
+            try {
+                $courses = \App\Models\Course::where('user_id', $user->id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            } catch (\Exception $e) {
+                // Table doesn't exist yet
+            }
+        }
 
-        // Get user's quiz banks
-        $quizBanks = \App\Models\QuizBank::where('user_id', $user->id)
-            ->with('order.program')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Try to get quiz banks if QuizBank model exists
+        $quizBanks = collect([]);
+        if (class_exists('\App\Models\QuizBank')) {
+            try {
+                $quizBanks = \App\Models\QuizBank::where('user_id', $user->id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            } catch (\Exception $e) {
+                // Table doesn't exist yet
+            }
+        }
 
         // Check if user has any courses or quiz banks
         $hasContent = $courses->count() > 0 || $quizBanks->count() > 0;
 
         // Get user's verified orders (purchased programs)
-        $enrollments = $user->orders()
-            ->with('program', 'payment')
-            ->whereHas('payment', function($query) {
-                $query->where('status', 'verified');
-            })
-            ->get()
-            ->map(function($order) {
-                $startDate = $order->payment->verified_at ?? $order->created_at;
-                $endDate = $startDate->copy()->addMonths(4); // Durasi 4 bulan
-                
-                return [
-                    'id' => $order->program->id,
-                    'program' => $order->program->name,
-                    'status' => 'active', // Semua program yang sudah dibeli dianggap aktif
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
-                    'progress' => 0, // Dimulai dari 0%
-                    'total_sessions' => 24, // Default 24 sesi
-                    'completed_sessions' => 0, // Dimulai dari 0 sesi
-                ];
-            })
-            ->toArray();
+        try {
+            $enrollments = $user->orders()
+                ->with('program', 'payment')
+                ->whereHas('payment', function($query) {
+                    $query->where('status', 'verified');
+                })
+                ->get()
+                ->map(function($order) {
+                    $startDate = $order->payment->verified_at ?? $order->created_at;
+                    $endDate = $startDate->copy()->addMonths($order->program->duration_months ?? 4);
+                    
+                    return [
+                        'id' => $order->program->id,
+                        'program' => $order->program->name,
+                        'status' => 'active',
+                        'start_date' => $startDate->format('Y-m-d'),
+                        'end_date' => $endDate->format('Y-m-d'),
+                        'progress' => 0,
+                        'total_sessions' => $order->program->total_sessions ?? 24,
+                        'completed_sessions' => 0,
+                    ];
+                })
+                ->toArray();
+        } catch (\Exception $e) {
+            // If no orders yet, show empty array
+            $enrollments = [];
+        }
 
         return view('pages.my-services', compact('enrollments', 'courses', 'quizBanks', 'hasContent'));
     }
