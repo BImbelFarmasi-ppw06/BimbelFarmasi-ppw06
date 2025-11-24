@@ -70,36 +70,49 @@ class OrderController extends Controller
      */
     public function processPayment(Request $request, $orderNumber)
     {
-        $order = Order::where('order_number', $orderNumber)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        try {
+            $order = Order::where('order_number', $orderNumber)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
 
-        $validated = $request->validate([
-            'payment_method' => ['required', 'in:bank_transfer,ewallet,qris'],
-            'proof' => ['required', 'image', 'max:2048'], // 2MB max
-        ], [
-            'payment_method.required' => 'Metode pembayaran wajib dipilih.',
-            'proof.required' => 'Bukti pembayaran wajib diupload.',
-            'proof.image' => 'File harus berupa gambar.',
-            'proof.max' => 'Ukuran file maksimal 2MB.',
-        ]);
+            $validated = $request->validate([
+                'payment_method' => ['required', 'in:bank_transfer,ewallet,qris'],
+                'proof' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], // 2MB max
+            ], [
+                'payment_method.required' => 'Metode pembayaran wajib dipilih.',
+                'proof.required' => 'Bukti pembayaran wajib diupload.',
+                'proof.image' => 'File harus berupa gambar.',
+                'proof.mimes' => 'File harus berformat JPEG, PNG, atau JPG.',
+                'proof.max' => 'Ukuran file maksimal 2MB.',
+            ]);
 
-        // Upload proof
-        $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+            // Upload proof
+            $proofPath = $request->file('proof')->store('payment-proofs', 'public');
 
-        // Create or update payment
-        Payment::updateOrCreate(
-            ['order_id' => $order->id],
-            [
-                'payment_method' => $validated['payment_method'],
-                'amount' => $order->amount,
-                'status' => 'pending',
-                'proof_url' => $proofPath,
-            ]
-        );
+            // Create or update payment
+            Payment::updateOrCreate(
+                ['order_id' => $order->id],
+                [
+                    'payment_method' => $validated['payment_method'],
+                    'amount' => $order->amount,
+                    'status' => 'pending',
+                    'proof_url' => $proofPath,
+                ]
+            );
 
-        return redirect()->route('order.success', $orderNumber)
-            ->with('success', 'Bukti pembayaran berhasil diupload! Kami akan memverifikasi dalam 1x24 jam.');
+            // Update order status
+            $order->update(['status' => 'waiting_verification']);
+
+            return redirect()->route('order.success', $orderNumber)
+                ->with('success', 'Bukti pembayaran berhasil diupload! Kami akan memverifikasi dalam 1x24 jam.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Payment upload error: ' . $e->getMessage());
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal mengupload bukti pembayaran. Pastikan MySQL/XAMPP sudah running. Error: ' . $e->getMessage());
+        }
     }
 
     /**
