@@ -81,16 +81,16 @@ class UserController extends Controller
         // Check if user has any courses or quiz banks
         $hasContent = $courses->count() > 0 || $quizBanks->count() > 0;
 
-        // Get user's verified orders (purchased programs)
+        // Get user's paid orders (purchased programs)
         try {
             $enrollments = $user->orders()
                 ->with('program', 'payment')
                 ->whereHas('payment', function($query) {
-                    $query->where('status', 'verified');
+                    $query->where('status', 'paid');
                 })
                 ->get()
                 ->map(function($order) {
-                    $startDate = $order->payment->verified_at ?? $order->created_at;
+                    $startDate = $order->payment->paid_at ?? $order->created_at;
                     $endDate = $startDate->copy()->addMonths($order->program->duration_months ?? 4);
                     
                     return [

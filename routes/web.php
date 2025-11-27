@@ -15,6 +15,9 @@ use App\Http\Controllers\TestimonialController;
 Route::view('/', 'pages.home')->name('home');
 Route::view('/layanan', 'pages.layanan')->name('layanan');
 Route::view('/bimbel-ukom-d3-farmasi', 'pages.bimbel-ukom')->name('bimbel.ukom');
+
+// Midtrans Notification Callback (No Auth Required)
+Route::post('/midtrans/notification', [OrderController::class, 'handleNotification'])->name('midtrans.notification');
 Route::view('/cpns-p3k-farmasi', 'pages.cpns-p3k')->name('cpns.p3k');
 Route::view('/joki-tugas-farmasi', 'pages.joki-tugas')->name('joki.tugas');
 Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimonials.index');
@@ -70,6 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/order', [OrderController::class, 'store'])->name('order.store');
     Route::get('/order/{orderNumber}/payment', [OrderController::class, 'payment'])->name('order.payment');
     Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])->name('order.payment.process');
+    Route::get('/order/{orderNumber}/snap-token', [OrderController::class, 'createSnapToken'])->name('order.snap-token');
+    Route::get('/order/{orderNumber}/check-status', [OrderController::class, 'checkPaymentStatus'])->name('order.check-status');
     Route::get('/order/{orderNumber}/success', [OrderController::class, 'success'])->name('order.success');
     Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('order.my-orders');
 
@@ -91,7 +96,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // =================== ADMIN PROTECTED PAGES ===================
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Student Management
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');

@@ -9,8 +9,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Peserta Aktif</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">120</p>
-                    <p class="mt-1 text-xs text-green-600">↑ 12% dari bulan lalu</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $activeUsers }}</p>
+                    <p class="mt-1 text-xs text-gray-600">dari {{ $totalUsers }} total user</p>
                 </div>
                 <div class="rounded-full bg-blue-100 p-3">
                     <svg class="h-8 w-8 text-[#2D3C8C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,9 +23,9 @@
         <div class="rounded-xl bg-white p-6 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Kelas Berjalan</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">4</p>
-                    <p class="mt-1 text-xs text-gray-500">2 UKOM, 2 CPNS/P3K</p>
+                    <p class="text-sm font-medium text-gray-500">Program Tersedia</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $totalPrograms }}</p>
+                    <p class="mt-1 text-xs text-gray-500">Program aktif</p>
                 </div>
                 <div class="rounded-full bg-purple-100 p-3">
                     <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,13 +38,13 @@
         <div class="rounded-xl bg-white p-6 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Soal Tersedia</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">5,300</p>
-                    <p class="mt-1 text-xs text-blue-600">↑ 150 soal ditambahkan</p>
+                    <p class="text-sm font-medium text-gray-500">Pembayaran Pending</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $pendingPaymentsCount }}</p>
+                    <p class="mt-1 text-xs text-orange-600">Menunggu konfirmasi</p>
                 </div>
-                <div class="rounded-full bg-green-100 p-3">
-                    <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div class="rounded-full bg-orange-100 p-3">
+                    <svg class="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
             </div>
@@ -54,8 +54,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Pendapatan Bulan Ini</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">Rp 180jt</p>
-                    <p class="mt-1 text-xs text-green-600">↑ 8% dari target</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">Rp {{ number_format($revenueThisMonth / 1000000, 1) }}jt</p>
+                    <p class="mt-1 text-xs text-gray-600">Total: Rp {{ number_format($totalRevenue / 1000000, 1) }}jt</p>
                 </div>
                 <div class="rounded-full bg-yellow-100 p-3">
                     <svg class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,46 +162,33 @@
                 <a href="{{ route('admin.students.index') }}" class="text-sm font-medium text-[#2D3C8C] hover:underline">Lihat Semua →</a>
             </div>
             <div class="space-y-4">
+                @forelse($recentUsers as $user)
                 <div class="flex items-center justify-between border-b border-gray-100 pb-3">
                     <div class="flex items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name=Siti+Rahma&background=random" alt="" class="h-10 w-10 rounded-full">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random" alt="" class="h-10 w-10 rounded-full">
                         <div>
-                            <p class="font-medium text-gray-900">Siti Rahma</p>
-                            <p class="text-xs text-gray-500">UKOM D3 Farmasi</p>
+                            <p class="font-medium text-gray-900">{{ $user->name }}</p>
+                            <p class="text-xs text-gray-500">
+                                @if($user->orders->isNotEmpty())
+                                    {{ $user->orders->first()->program->name ?? 'Belum ada order' }}
+                                @else
+                                    Belum ada order
+                                @endif
+                            </p>
                         </div>
                     </div>
-                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Aktif</span>
+                    @php
+                        $hasPaidOrder = $user->orders->filter(function($order) {
+                            return $order->payment && $order->payment->status === 'paid';
+                        })->isNotEmpty();
+                    @endphp
+                    <span class="rounded-full {{ $hasPaidOrder ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }} px-3 py-1 text-xs font-semibold">
+                        {{ $hasPaidOrder ? 'Aktif' : 'Baru' }}
+                    </span>
                 </div>
-                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                    <div class="flex items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=random" alt="" class="h-10 w-10 rounded-full">
-                        <div>
-                            <p class="font-medium text-gray-900">Budi Santoso</p>
-                            <p class="text-xs text-gray-500">CPNS Farmasi</p>
-                        </div>
-                    </div>
-                    <span class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">Pending</span>
-                </div>
-                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                    <div class="flex items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name=Dewi+Lestari&background=random" alt="" class="h-10 w-10 rounded-full">
-                        <div>
-                            <p class="font-medium text-gray-900">Dewi Lestari</p>
-                            <p class="text-xs text-gray-500">Joki Tugas</p>
-                        </div>
-                    </div>
-                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Aktif</span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name=Ahmad+Fauzi&background=random" alt="" class="h-10 w-10 rounded-full">
-                        <div>
-                            <p class="font-medium text-gray-900">Ahmad Fauzi</p>
-                            <p class="text-xs text-gray-500">P3K Farmasi</p>
-                        </div>
-                    </div>
-                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Aktif</span>
-                </div>
+                @empty
+                <p class="text-sm text-gray-500 text-center py-4">Belum ada pendaftar</p>
+                @endforelse
             </div>
         </div>
 
@@ -212,46 +199,20 @@
                 <a href="{{ route('admin.payments.index') }}" class="text-sm font-medium text-[#2D3C8C] hover:underline">Lihat Semua →</a>
             </div>
             <div class="space-y-4">
+                @forelse($pendingPayments as $payment)
                 <div class="flex items-center justify-between border-b border-gray-100 pb-3">
                     <div>
-                        <p class="font-medium text-gray-900">Rina Wijaya</p>
-                        <p class="text-xs text-gray-500">UKOM D3 - Paket Reguler</p>
+                        <p class="font-medium text-gray-900">{{ $payment->order->user->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $payment->order->program->name }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="font-semibold text-gray-900">Rp 1.250.000</p>
-                        <button class="mt-1 text-xs font-medium text-[#2D3C8C] hover:underline">Konfirmasi</button>
+                        <p class="font-semibold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.') }}</p>
+                        <a href="{{ route('admin.payments.show', $payment->id) }}" class="mt-1 text-xs font-medium text-[#2D3C8C] hover:underline">Konfirmasi</a>
                     </div>
                 </div>
-                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                    <div>
-                        <p class="font-medium text-gray-900">Budi Santoso</p>
-                        <p class="text-xs text-gray-500">CPNS - Paket Lengkap</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-gray-900">Rp 2.050.000</p>
-                        <button class="mt-1 text-xs font-medium text-[#2D3C8C] hover:underline">Konfirmasi</button>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                    <div>
-                        <p class="font-medium text-gray-900">Fitri Handayani</p>
-                        <p class="text-xs text-gray-500">Joki Tugas - Complete Writing</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-gray-900">Rp 2.450.000</p>
-                        <button class="mt-1 text-xs font-medium text-[#2D3C8C] hover:underline">Konfirmasi</button>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="font-medium text-gray-900">Anton Prasetyo</p>
-                        <p class="text-xs text-gray-500">UKOM D3 - Paket Premium</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-gray-900">Rp 1.950.000</p>
-                        <button class="mt-1 text-xs font-medium text-[#2D3C8C] hover:underline">Konfirmasi</button>
-                    </div>
-                </div>
+                @empty
+                <p class="text-sm text-gray-500 text-center py-4">Tidak ada pembayaran pending</p>
+                @endforelse
             </div>
         </div>
     </div>
@@ -303,13 +264,14 @@
         // Distribution Chart
         const distributionCtx = document.getElementById('distributionChart');
         if (distributionCtx) {
+            const programData = @json($programDistribution);
             new Chart(distributionCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['UKOM D3', 'CPNS Farmasi', 'P3K Farmasi', 'Joki Tugas'],
+                    labels: programData.map(p => p.name),
                     datasets: [{
-                        data: [45, 30, 18, 27],
-                        backgroundColor: ['#2D3C8C', '#8b5cf6', '#10b981', '#f59e0b'],
+                        data: programData.map(p => p.count),
+                        backgroundColor: ['#2D3C8C', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#f97316', '#84cc16'],
                         borderWidth: 0
                     }]
                 },
@@ -328,13 +290,14 @@
         // Enrollment Trend Chart
         const enrollmentCtx = document.getElementById('enrollmentChart');
         if (enrollmentCtx) {
+            const enrollmentData = @json($monthlyEnrollment);
             new Chart(enrollmentCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+                    labels: enrollmentData.map(e => e.month),
                     datasets: [{
                         label: 'Peserta Baru',
-                        data: [12, 19, 15, 25, 22, 30, 28, 35, 32, 40],
+                        data: enrollmentData.map(e => e.count),
                         borderColor: '#2D3C8C',
                         backgroundColor: 'rgba(45, 60, 140, 0.1)',
                         fill: true,
@@ -361,13 +324,14 @@
         // Revenue Trend Chart
         const revenueCtx = document.getElementById('revenueChart');
         if (revenueCtx) {
+            const revenueData = @json($monthlyRevenue);
             new Chart(revenueCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+                    labels: revenueData.map(r => r.month),
                     datasets: [{
                         label: 'Pendapatan (Juta Rp)',
-                        data: [15, 24, 20, 32, 28, 38, 35, 42, 38, 50],
+                        data: revenueData.map(r => r.revenue.toFixed(1)),
                         backgroundColor: '#10b981',
                     }]
                 },

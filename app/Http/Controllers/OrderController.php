@@ -8,6 +8,9 @@ use App\Models\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class OrderController extends Controller
 {
@@ -107,7 +110,7 @@ class OrderController extends Controller
                 ->with('success', 'Bukti pembayaran berhasil diupload! Kami akan memverifikasi dalam 1x24 jam.');
                 
         } catch (\Exception $e) {
-            \Log::error('Payment upload error: ' . $e->getMessage());
+            Log::error('Payment upload error: ' . $e->getMessage());
             
             return back()
                 ->withInput()
@@ -141,5 +144,181 @@ class OrderController extends Controller
             ->get();
 
         return view('pages.order.my-orders', compact('orders'));
+    }
+
+    /**
+     * Create Midtrans Snap Token
+     */
+    public function createSnapToken($orderNumber)
+    {
+        try {
+            $order = Order::with('program', 'user')
+                ->where('order_number', $orderNumber)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+
+            // Configure Midtrans
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$isProduction = config('midtrans.is_production');
+            Config::$isSanitized = config('midtrans.is_sanitized');
+            Config::$is3ds = config('midtrans.is_3ds');
+
+            // Create transaction details
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $order->order_number,
+                    'gross_amount' => (int) $order->amount,
+                ],
+                'customer_details' => [
+                    'first_name' => $order->user->name,
+                    'email' => $order->user->email,
+                    'phone' => $order->user->phone ?? '',
+                ],
+                'item_details' => [
+                    [
+                        'id' => $order->program->id,
+                        'price' => (int) $order->amount,
+                        'quantity' => 1,
+                        'name' => $order->program->name,
+                    ]
+                ],
+            ];
+
+            // Get Snap Token
+            $snapToken = Snap::getSnapToken($params);
+
+            return response()->json([
+                'snap_token' => $snapToken,
+                'order_number' => $order->order_number,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Midtrans Snap Token Error: ' . $e->getMessage());
+            
+            return response()->json([
+                'error' => 'Gagal membuat token pembayaran: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Handle Midtrans notification callback
+     */
+    public function handleNotification(Request $request)
+    {
+        try {
+            // Configure Midtrans
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$isProduction = config('midtrans.is_production');
+
+            $notification = new \Midtrans\Notification();
+
+            $orderNumber = $notification->order_id;
+            $transactionStatus = $notification->transaction_status;
+            $fraudStatus = $notification->fraud_status;
+
+            Log::info('Midtrans Notification: ', [
+                'order_number' => $orderNumber,
+                'transaction_status' => $transactionStatus,
+                'fraud_status' => $fraudStatus,
+            ]);
+
+            $order = Order::where('order_number', $orderNumber)->firstOrFail();
+
+            // Handle transaction status
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'accept') {
+                    $this->updatePaymentStatus($order, 'paid');
+                }
+            } elseif ($transactionStatus == 'settlement') {
+                $this->updatePaymentStatus($order, 'paid');
+            } elseif ($transactionStatus == 'pending') {
+                $this->updatePaymentStatus($order, 'pending');
+            } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+                $this->updatePaymentStatus($order, 'failed');
+            }
+
+            return response()->json(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            Log::error('Midtrans Notification Error: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Check payment status and update if paid (called from frontend after payment)
+     */
+    public function checkPaymentStatus($orderNumber)
+    {
+        try {
+            $order = Order::where('order_number', $orderNumber)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+
+            // Configure Midtrans
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$isProduction = config('midtrans.is_production');
+
+            // Get transaction status from Midtrans
+            $status = \Midtrans\Transaction::status($orderNumber);
+
+            $transactionStatus = $status->transaction_status;
+            $fraudStatus = $status->fraud_status ?? null;
+
+            Log::info('Payment Status Check: ', [
+                'order_number' => $orderNumber,
+                'transaction_status' => $transactionStatus,
+                'fraud_status' => $fraudStatus,
+            ]);
+
+            // Update payment status based on transaction status
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'accept') {
+                    $this->updatePaymentStatus($order, 'paid');
+                }
+            } elseif ($transactionStatus == 'settlement') {
+                $this->updatePaymentStatus($order, 'paid');
+            } elseif ($transactionStatus == 'pending') {
+                $this->updatePaymentStatus($order, 'pending');
+            } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+                $this->updatePaymentStatus($order, 'failed');
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'transaction_status' => $transactionStatus,
+                'payment_status' => $order->fresh()->payment->status ?? 'pending'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Payment Status Check Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update payment status
+     */
+    private function updatePaymentStatus($order, $status)
+    {
+        Payment::updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'payment_method' => 'midtrans',
+                'amount' => $order->amount,
+                'status' => $status,
+                'paid_at' => $status === 'paid' ? now() : null,
+            ]
+        );
+
+        if ($status === 'paid') {
+            $order->update(['status' => 'processing']);
+        } elseif ($status === 'failed') {
+            $order->update(['status' => 'cancelled']);
+        }
     }
 }
