@@ -8,6 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
+use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\TestimonialController;
 
 // =================== PUBLIC PAGES ===================
@@ -96,7 +97,15 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
     Route::get('/students/{id}', [AdminStudentController::class, 'show'])->name('students.show');
 
-    Route::view('/classes', 'admin.classes.index')->name('classes.index');
+    // Class/Program Management
+    Route::get('/classes', [AdminClassController::class, 'index'])->name('classes.index');
+    Route::get('/classes/create', [AdminClassController::class, 'create'])->name('classes.create');
+    Route::post('/classes', [AdminClassController::class, 'store'])->name('classes.store');
+    Route::get('/classes/{id}', [AdminClassController::class, 'show'])->name('classes.show');
+    Route::get('/classes/{id}/edit', [AdminClassController::class, 'edit'])->name('classes.edit');
+    Route::put('/classes/{id}', [AdminClassController::class, 'update'])->name('classes.update');
+    Route::delete('/classes/{id}', [AdminClassController::class, 'destroy'])->name('classes.destroy');
+
     Route::view('/questions', 'admin.questions.index')->name('questions.index');
 
     // Payment Management

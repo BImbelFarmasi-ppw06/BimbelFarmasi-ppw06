@@ -72,11 +72,21 @@
         <div class="mb-6">
             <h4 class="text-sm font-semibold text-gray-700 mb-3">Bukti Pembayaran</h4>
             <div class="bg-gray-50 rounded-lg p-4">
-                <img src="{{ asset('storage/' . $payment->proof_url) }}" 
-                     alt="Bukti Pembayaran" 
-                     class="w-full rounded-lg border border-gray-200 cursor-pointer"
-                     onclick="window.open(this.src, '_blank')">
-                <p class="text-xs text-gray-500 mt-2 text-center">Klik gambar untuk memperbesar</p>
+                @if($payment->proof_url)
+                    <img src="{{ asset('storage/' . $payment->proof_url) }}" 
+                         alt="Bukti Pembayaran" 
+                         class="w-full rounded-lg border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
+                         onclick="openImageModal('{{ asset('storage/' . $payment->proof_url) }}')"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'18\' fill=\'%23666\'%3EGambar tidak ditemukan%3C/text%3E%3C/svg%3E';">
+                    <p class="text-xs text-gray-500 mt-2 text-center">Klik gambar untuk memperbesar</p>
+                @else
+                    <div class="text-center py-8 text-gray-400">
+                        <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-sm">Bukti pembayaran belum diupload</p>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -166,4 +176,52 @@
     function hideRejectForm() {
         document.getElementById('rejectForm').classList.add('hidden');
     }
+
+    // Image modal/lightbox function
+    function openImageModal(imageUrl) {
+        // Create modal overlay
+        const modal = document.createElement('div');
+        modal.id = 'imageLightbox';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-90 z-[9999] flex items-center justify-center p-4';
+        modal.onclick = function(e) {
+            if (e.target === modal) closeImageModal();
+        };
+
+        // Create modal content
+        modal.innerHTML = `
+            <div class="relative max-w-6xl max-h-full">
+                <button onclick="closeImageModal()" 
+                        class="absolute -top-10 right-0 text-white hover:text-gray-300 text-3xl font-bold">
+                    ✕
+                </button>
+                <img src="${imageUrl}" 
+                     alt="Bukti Pembayaran" 
+                     class="max-w-full max-h-[90vh] rounded-lg shadow-2xl">
+                <div class="text-center mt-4">
+                    <a href="${imageUrl}" 
+                       target="_blank" 
+                       download
+                       class="inline-block px-4 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 text-sm font-medium">
+                        📥 Download Gambar
+                    </a>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageLightbox');
+        if (modal) {
+            modal.remove();
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Close on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeImageModal();
+    });
 </script>
