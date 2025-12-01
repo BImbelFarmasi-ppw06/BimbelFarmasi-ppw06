@@ -89,7 +89,13 @@ class AdminPaymentController extends Controller
             return redirect()->route('admin.payments.index')->with('success', 'Pembayaran berhasil dikonfirmasi! Order #' . $payment->order->order_number . ' sekarang dalam status processing.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal mengonfirmasi pembayaran: ' . $e->getMessage());
+            \Log::error('Payment approval failed', [
+                'payment_id' => $id,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal mengonfirmasi pembayaran. Silakan coba lagi.');
         }
     }
 
@@ -128,25 +134,32 @@ class AdminPaymentController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.payments.index')->with('success', 'Pembayaran berhasil ditolak. User perlu upload ulang bukti pembayaran.');
+            return back()->with('success', 'Pembayaran berhasil ditolak. User perlu upload ulang bukti pembayaran.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menolak pembayaran: ' . $e->getMessage());
+            \Log::error('Payment rejection failed', [
+                'payment_id' => $id,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal menolak pembayaran. Silakan coba lagi.');
         }
     }
 
     /**
-     * View payment proof image
+     * View payment proof image (admin only)
      */
     public function viewProof($id)
     {
+        // Authorization check happens via admin auth middleware in route
         $payment = Payment::findOrFail($id);
 
         if (!$payment->proof_url) {
             abort(404, 'Bukti pembayaran tidak ditemukan');
         }
 
-        $path = storage_path('app/public/' . $payment->proof_url);
+        $path = storage_path('app/private/payment-proofs/' . $payment->proof_url);
 
         if (!file_exists($path)) {
             abort(404, 'File bukti pembayaran tidak ditemukan');

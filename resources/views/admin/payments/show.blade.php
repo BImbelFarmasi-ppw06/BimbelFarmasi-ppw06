@@ -73,10 +73,10 @@
             <h4 class="text-sm font-semibold text-gray-700 mb-3">Bukti Pembayaran</h4>
             <div class="bg-gray-50 rounded-lg p-4">
                 @if($payment->proof_url)
-                    <img src="{{ asset('storage/' . $payment->proof_url) }}" 
+                    <img src="{{ route('admin.payments.proof', $payment->id) }}" 
                          alt="Bukti Pembayaran" 
                          class="w-full rounded-lg border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
-                         onclick="openImageModal('{{ asset('storage/' . $payment->proof_url) }}')"
+                         onclick="openImageModal('{{ route('admin.payments.proof', $payment->id) }}')"
                          onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'18\' fill=\'%23666\'%3EGambar tidak ditemukan%3C/text%3E%3C/svg%3E';">
                     <p class="text-xs text-gray-500 mt-2 text-center">Klik gambar untuk memperbesar</p>
                 @else

@@ -76,9 +76,15 @@ class AdminClassController extends Controller
                 ->with('success', 'Program berhasil ditambahkan!');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Program creation failed', [
+                'admin_id' => auth()->id(),
+                'data' => $request->except(['_token']),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()
                 ->withInput()
-                ->with('error', 'Gagal menambahkan program: ' . $e->getMessage());
+                ->with('error', 'Gagal menambahkan program. Silakan coba lagi.');
         }
     }
 
@@ -132,9 +138,15 @@ class AdminClassController extends Controller
                 ->with('success', 'Program berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Program update failed', [
+                'program_id' => $id,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()
                 ->withInput()
-                ->with('error', 'Gagal mengupdate program: ' . $e->getMessage());
+                ->with('error', 'Gagal mengupdate program. Silakan coba lagi.');
         }
     }
 
@@ -172,7 +184,13 @@ class AdminClassController extends Controller
             return redirect()->route('admin.classes.index')
                 ->with('success', 'Program berhasil dihapus!');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus program: ' . $e->getMessage());
+            \Log::error('Program deletion failed', [
+                'program_id' => $id,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal menghapus program. Silakan coba lagi.');
         }
     }
 }

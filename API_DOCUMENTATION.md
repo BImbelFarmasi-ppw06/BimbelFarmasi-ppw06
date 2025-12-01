@@ -3,9 +3,10 @@
 ## ✅ API Implementation Complete!
 
 Implementasi REST API untuk platform BimbelFarmasi telah selesai dibuat dengan lengkap menggunakan:
-- **Laravel Sanctum** untuk authentication
-- **L5-Swagger (OpenAPI 3.0)** untuk API documentation
-- **31 API Endpoints** yang siap digunakan
+
+-   **Laravel Sanctum** untuk authentication
+-   **L5-Swagger (OpenAPI 3.0)** untuk API documentation
+-   **31 API Endpoints** yang siap digunakan
 
 ---
 
@@ -80,78 +81,79 @@ File: `bootstrap/app.php`
 ## 📡 API Endpoints
 
 ### Base URL
-- **Local**: `http://127.0.0.1:8000/api/v1`
-- **Production**: `https://api.bimbelfarmasi.com/api/v1`
+
+-   **Local**: `http://127.0.0.1:8000/api/v1`
+-   **Production**: `https://api.bimbelfarmasi.com/api/v1`
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/register` | Register new user | ❌ |
-| POST | `/login` | Login user | ❌ |
-| POST | `/logout` | Logout user | ✅ |
-| POST | `/forgot-password` | Send reset link | ❌ |
+| Method | Endpoint           | Description       | Auth Required |
+| ------ | ------------------ | ----------------- | ------------- |
+| POST   | `/register`        | Register new user | ❌            |
+| POST   | `/login`           | Login user        | ❌            |
+| POST   | `/logout`          | Logout user       | ✅            |
+| POST   | `/forgot-password` | Send reset link   | ❌            |
 
 ### User Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/user` | Get user profile | ✅ |
-| PUT | `/user/profile` | Update profile | ✅ |
-| PUT | `/user/password` | Change password | ✅ |
-| DELETE | `/user/account` | Delete account | ✅ |
-| GET | `/user/services` | Get enrolled programs | ✅ |
-| GET | `/user/transactions` | Get order history | ✅ |
+| Method | Endpoint             | Description           | Auth Required |
+| ------ | -------------------- | --------------------- | ------------- |
+| GET    | `/user`              | Get user profile      | ✅            |
+| PUT    | `/user/profile`      | Update profile        | ✅            |
+| PUT    | `/user/password`     | Change password       | ✅            |
+| DELETE | `/user/account`      | Delete account        | ✅            |
+| GET    | `/user/services`     | Get enrolled programs | ✅            |
+| GET    | `/user/transactions` | Get order history     | ✅            |
 
 ### Programs Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/programs` | List all programs | ❌ |
-| GET | `/programs/{slug}` | Get program details | ❌ |
-| GET | `/programs/{id}/materials` | Get course materials | ✅ |
-| GET | `/programs/{id}/schedule` | Get program schedule | ✅ |
-| GET | `/programs/{id}/exercises` | Get exercises | ✅ |
-| GET | `/programs/{id}/tryouts` | Get try-outs | ✅ |
+| Method | Endpoint                   | Description          | Auth Required |
+| ------ | -------------------------- | -------------------- | ------------- |
+| GET    | `/programs`                | List all programs    | ❌            |
+| GET    | `/programs/{slug}`         | Get program details  | ❌            |
+| GET    | `/programs/{id}/materials` | Get course materials | ✅            |
+| GET    | `/programs/{id}/schedule`  | Get program schedule | ✅            |
+| GET    | `/programs/{id}/exercises` | Get exercises        | ✅            |
+| GET    | `/programs/{id}/tryouts`   | Get try-outs         | ✅            |
 
 ### Orders Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/user/orders` | List user orders | ✅ |
-| POST | `/orders` | Create new order | ✅ |
-| GET | `/orders/{orderNumber}` | Get order details | ✅ |
+| Method | Endpoint                | Description       | Auth Required |
+| ------ | ----------------------- | ----------------- | ------------- |
+| GET    | `/user/orders`          | List user orders  | ✅            |
+| POST   | `/orders`               | Create new order  | ✅            |
+| GET    | `/orders/{orderNumber}` | Get order details | ✅            |
 
 ### Payments Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/orders/{orderNumber}/payment` | Upload payment proof | ✅ |
+| Method | Endpoint                        | Description          | Auth Required |
+| ------ | ------------------------------- | -------------------- | ------------- |
+| POST   | `/orders/{orderNumber}/payment` | Upload payment proof | ✅            |
 
 ### Testimonials Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/testimonials` | List approved testimonials | ❌ |
-| GET | `/user/testimonials` | Get user's testimonials | ✅ |
-| POST | `/testimonials` | Create testimonial | ✅ |
-| GET | `/testimonials/{id}` | Get testimonial detail | ✅ |
-| PUT | `/testimonials/{id}` | Update testimonial | ✅ |
-| DELETE | `/testimonials/{id}` | Delete testimonial | ✅ |
+| Method | Endpoint             | Description                | Auth Required |
+| ------ | -------------------- | -------------------------- | ------------- |
+| GET    | `/testimonials`      | List approved testimonials | ❌            |
+| GET    | `/user/testimonials` | Get user's testimonials    | ✅            |
+| POST   | `/testimonials`      | Create testimonial         | ✅            |
+| GET    | `/testimonials/{id}` | Get testimonial detail     | ✅            |
+| PUT    | `/testimonials/{id}` | Update testimonial         | ✅            |
+| DELETE | `/testimonials/{id}` | Delete testimonial         | ✅            |
 
 ### Quiz/Exercise Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/exercises/{exerciseId}/submit` | Submit exercise answers | ✅ |
-| POST | `/tryouts/{tryoutId}/submit` | Submit tryout answers | ✅ |
-| GET | `/results/{resultId}` | View quiz result | ✅ |
+| Method | Endpoint                         | Description             | Auth Required |
+| ------ | -------------------------------- | ----------------------- | ------------- |
+| POST   | `/exercises/{exerciseId}/submit` | Submit exercise answers | ✅            |
+| POST   | `/tryouts/{tryoutId}/submit`     | Submit tryout answers   | ✅            |
+| GET    | `/results/{resultId}`            | View quiz result        | ✅            |
 
 ### Contact Endpoint
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/contact` | Send contact message | ❌ |
+| Method | Endpoint   | Description          | Auth Required |
+| ------ | ---------- | -------------------- | ------------- |
+| POST   | `/contact` | Send contact message | ❌            |
 
 ---
 
@@ -162,6 +164,7 @@ File: `bootstrap/app.php`
 #### 1. Register User
 
 **Request:**
+
 ```http
 POST /api/v1/register
 Content-Type: application/json
@@ -178,21 +181,23 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
-  "message": "User registered successfully",
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com"
-  },
-  "token": "1|abc123xyz..."
+    "message": "User registered successfully",
+    "user": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com"
+    },
+    "token": "1|abc123xyz..."
 }
 ```
 
 #### 2. Login
 
 **Request:**
+
 ```http
 POST /api/v1/login
 Content-Type: application/json
@@ -204,6 +209,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Login successful",
@@ -224,15 +230,17 @@ Authorization: Bearer 2|def456uvw...
 #### 4. Logout
 
 **Request:**
+
 ```http
 POST /api/v1/logout
 Authorization: Bearer 2|def456uvw...
 ```
 
 **Response:**
+
 ```json
 {
-  "message": "Logout successful"
+    "message": "Logout successful"
 }
 ```
 
@@ -243,20 +251,22 @@ Authorization: Bearer 2|def456uvw...
 ### Accessing Swagger Documentation
 
 1. **Start your Laravel server:**
-   ```bash
-   php artisan serve
-   ```
+
+    ```bash
+    php artisan serve
+    ```
 
 2. **Open Swagger UI in browser:**
-   ```
-   http://127.0.0.1:8000/api/documentation
-   ```
+
+    ```
+    http://127.0.0.1:8000/api/documentation
+    ```
 
 3. **Authenticate in Swagger:**
-   - Click "Authorize" button (🔓)
-   - Enter: `Bearer {your_token}`
-   - Click "Authorize"
-   - Now you can test protected endpoints!
+    - Click "Authorize" button (🔓)
+    - Enter: `Bearer {your_token}`
+    - Click "Authorize"
+    - Now you can test protected endpoints!
 
 ### Regenerate Swagger Docs
 
@@ -273,6 +283,7 @@ php artisan l5-swagger:generate
 ### Using cURL
 
 #### Register
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/register \
   -H "Content-Type: application/json" \
@@ -285,6 +296,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/register \
 ```
 
 #### Login
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/login \
   -H "Content-Type: application/json" \
@@ -295,12 +307,14 @@ curl -X POST http://127.0.0.1:8000/api/v1/login \
 ```
 
 #### Get Profile (with token)
+
 ```bash
 curl -X GET http://127.0.0.1:8000/api/v1/user \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
 #### Get Programs
+
 ```bash
 curl -X GET http://127.0.0.1:8000/api/v1/programs
 ```
@@ -308,21 +322,24 @@ curl -X GET http://127.0.0.1:8000/api/v1/programs
 ### Using Postman
 
 1. **Import Collection:**
-   - Create new collection "BimbelFarmasi API"
-   - Set base URL: `http://127.0.0.1:8000/api/v1`
+
+    - Create new collection "BimbelFarmasi API"
+    - Set base URL: `http://127.0.0.1:8000/api/v1`
 
 2. **Setup Environment:**
-   - Variable: `base_url` = `http://127.0.0.1:8000/api/v1`
-   - Variable: `token` = (will be set after login)
+
+    - Variable: `base_url` = `http://127.0.0.1:8000/api/v1`
+    - Variable: `token` = (will be set after login)
 
 3. **Test Authentication:**
-   - POST to `/register` or `/login`
-   - Copy the token from response
-   - Set it in environment variable or collection Authorization
+
+    - POST to `/register` or `/login`
+    - Copy the token from response
+    - Set it in environment variable or collection Authorization
 
 4. **Test Protected Endpoints:**
-   - Set Authorization: Bearer Token
-   - Use `{{token}}` variable
+    - Set Authorization: Bearer Token
+    - Use `{{token}}` variable
 
 ---
 
@@ -331,6 +348,7 @@ curl -X GET http://127.0.0.1:8000/api/v1/programs
 ### Standard Response Format
 
 **Success Response:**
+
 ```json
 {
   "success": true,
@@ -340,62 +358,68 @@ curl -X GET http://127.0.0.1:8000/api/v1/programs
 ```
 
 **Error Response:**
+
 ```json
 {
-  "success": false,
-  "message": "Error message here",
-  "errors": {
-    "field": ["Validation error"]
-  }
+    "success": false,
+    "message": "Error message here",
+    "errors": {
+        "field": ["Validation error"]
+    }
 }
 ```
 
 ### HTTP Status Codes
 
-| Code | Meaning | Example |
-|------|---------|---------|
-| 200 | OK | Successful GET, PUT, DELETE |
-| 201 | Created | Successful POST |
-| 400 | Bad Request | Invalid request format |
-| 401 | Unauthorized | Missing or invalid token |
-| 403 | Forbidden | No permission to access |
-| 404 | Not Found | Resource not found |
-| 422 | Unprocessable Entity | Validation failed |
-| 500 | Server Error | Internal server error |
+| Code | Meaning              | Example                     |
+| ---- | -------------------- | --------------------------- |
+| 200  | OK                   | Successful GET, PUT, DELETE |
+| 201  | Created              | Successful POST             |
+| 400  | Bad Request          | Invalid request format      |
+| 401  | Unauthorized         | Missing or invalid token    |
+| 403  | Forbidden            | No permission to access     |
+| 404  | Not Found            | Resource not found          |
+| 422  | Unprocessable Entity | Validation failed           |
+| 500  | Server Error         | Internal server error       |
 
 ### Common Errors
 
 #### 1. Unauthenticated
+
 ```json
 {
-  "message": "Unauthenticated."
+    "message": "Unauthenticated."
 }
 ```
+
 **Solution:** Add `Authorization: Bearer {token}` header
 
 #### 2. Validation Error
+
 ```json
 {
-  "message": "The email has already been taken.",
-  "errors": {
-    "email": ["The email has already been taken."]
-  }
+    "message": "The email has already been taken.",
+    "errors": {
+        "email": ["The email has already been taken."]
+    }
 }
 ```
 
 #### 3. Not Found
+
 ```json
 {
-  "success": false,
-  "message": "Order not found"
+    "success": false,
+    "message": "Order not found"
 }
 ```
 
 #### 4. Access Denied
+
 ```json
 {
-  "success": false,
-  "message": "You do not have access to this program"
+    "success": false,
+    "message": "You do not have access to this program"
 }
 ```
 
@@ -447,15 +471,17 @@ RateLimiter::for('api', function (Request $request) {
 ## 📝 Summary
 
 ✅ **Completed:**
-- ✅ Laravel Sanctum installed & configured
-- ✅ 31 API endpoints created
-- ✅ 7 API Controllers with full CRUD operations
-- ✅ Swagger/OpenAPI documentation generated
-- ✅ Authentication with Bearer tokens
-- ✅ Proper error handling & validation
-- ✅ JSON responses for all endpoints
+
+-   ✅ Laravel Sanctum installed & configured
+-   ✅ 31 API endpoints created
+-   ✅ 7 API Controllers with full CRUD operations
+-   ✅ Swagger/OpenAPI documentation generated
+-   ✅ Authentication with Bearer tokens
+-   ✅ Proper error handling & validation
+-   ✅ JSON responses for all endpoints
 
 ✅ **API Controllers Created:**
+
 1. `AuthController` - Registration, Login, Logout
 2. `UserController` - Profile management
 3. `ProgramController` - Programs & learning materials
@@ -465,10 +491,11 @@ RateLimiter::for('api', function (Request $request) {
 7. `ContactController` - Contact form submission
 
 ✅ **Documentation:**
-- Swagger UI: `http://127.0.0.1:8000/api/documentation`
-- All endpoints documented with OpenAPI annotations
-- Request/response examples included
-- Authentication flow documented
+
+-   Swagger UI: `http://127.0.0.1:8000/api/documentation`
+-   All endpoints documented with OpenAPI annotations
+-   Request/response examples included
+-   Authentication flow documented
 
 ---
 
@@ -500,12 +527,13 @@ php artisan l5-swagger:generate
 API implementation untuk BimbelFarmasi **100% COMPLETE!**
 
 Anda sekarang memiliki:
-- ✅ REST API yang lengkap dan terstruktur
-- ✅ Authentication dengan Laravel Sanctum
-- ✅ Dokumentasi otomatis dengan Swagger
-- ✅ 31 endpoints siap pakai
-- ✅ Proper error handling
-- ✅ Security best practices
+
+-   ✅ REST API yang lengkap dan terstruktur
+-   ✅ Authentication dengan Laravel Sanctum
+-   ✅ Dokumentasi otomatis dengan Swagger
+-   ✅ 31 endpoints siap pakai
+-   ✅ Proper error handling
+-   ✅ Security best practices
 
 **Nilai Review Dosen sekarang: A (95/100)** 🎯
 
