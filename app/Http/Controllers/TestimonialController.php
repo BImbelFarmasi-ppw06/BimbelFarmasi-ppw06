@@ -41,16 +41,10 @@ class TestimonialController extends Controller
      */
     public function create($orderNumber)
     {
-        $order = Order::with(['program', 'payment'])
+        $order = Order::with(['program'])
             ->where('order_number', $orderNumber)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-
-        // Check if payment is approved
-        if (!$order->payment || $order->payment->status !== 'approved') {
-            return redirect()->route('order.my-orders')
-                ->with('error', 'Anda hanya bisa memberikan testimoni setelah pembayaran disetujui.');
-        }
 
         // Check if testimonial already exists
         $existingTestimonial = Testimonial::where('order_id', $order->id)
