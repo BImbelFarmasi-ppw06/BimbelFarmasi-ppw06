@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -320,5 +321,8 @@ class OrderController extends Controller
         } elseif ($status === 'failed') {
             $order->update(['status' => 'cancelled']);
         }
+
+        // Invalidate dashboard cache when payment status changes
+        Cache::tags(['dashboard'])->flush();
     }
 }

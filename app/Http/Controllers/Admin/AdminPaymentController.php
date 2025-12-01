@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class AdminPaymentController extends Controller
 {
@@ -84,6 +85,9 @@ class AdminPaymentController extends Controller
                 'status' => 'processing',
             ]);
 
+            // Invalidate dashboard cache
+            Cache::tags(['dashboard'])->flush();
+
             DB::commit();
 
             return redirect()->route('admin.payments.index')->with('success', 'Pembayaran berhasil dikonfirmasi! Order #' . $payment->order->order_number . ' sekarang dalam status processing.');
@@ -123,8 +127,11 @@ class AdminPaymentController extends Controller
 
             // Update order status
             $payment->order->update([
-                'status' => 'cancelled',
+                'status' => 'rejected',
             ]);
+
+            // Invalidate dashboard cache
+            Cache::tags(['dashboard'])->flush();
 
             DB::commit();
 

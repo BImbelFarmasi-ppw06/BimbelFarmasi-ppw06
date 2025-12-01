@@ -10,6 +10,11 @@ use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\HealthCheckController;
+
+// =================== HEALTH CHECK ENDPOINTS ===================
+Route::get('/ping', [HealthCheckController::class, 'ping'])->name('health.ping');
+Route::get('/health', [HealthCheckController::class, 'health'])->name('health.check');
 
 // =================== PUBLIC PAGES ===================
 Route::view('/', 'pages.home')->name('home');
@@ -97,6 +102,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // =================== ADMIN PROTECTED PAGES ===================
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Metrics endpoint (admin only)
+    Route::get('/metrics', [HealthCheckController::class, 'metrics'])->name('metrics');
 
     // Student Management
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');

@@ -1,0 +1,183 @@
+/* Accessibility Utilities */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Show on focus (for skip links) */
+.sr-only.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Keyboard navigation focus styles */
+body.keyboard-nav *:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+body:not(.keyboard-nav) *:focus {
+  outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+
+  button,
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus visible polyfill for better keyboard navigation */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Ensure interactive elements have sufficient click/tap targets (44x44px minimum) */
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Exception for small text inputs */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='url'],
+textarea {
+  min-width: auto;
+  min-height: 44px;
+}
+
+/* Improve text readability */
+p,
+li,
+td {
+  max-width: 70ch; /* Optimal line length for readability */
+}
+
+/* Ensure sufficient color contrast - override if needed */
+.text-gray-500 {
+  color: #6b7280; /* WCAG AA compliant on white background */
+}
+
+.text-gray-400 {
+  color: #9ca3af; /* Use sparingly, may not meet WCAG AA */
+}
+
+/* Link underlines for better accessibility */
+main a:not(.button):not(.btn) {
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 99, 235, 0.3);
+  text-underline-offset: 2px;
+}
+
+main a:not(.button):not(.btn):hover {
+  text-decoration-color: rgba(37, 99, 235, 1);
+}
+
+/* Form field focus improvements */
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Error state for form fields */
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  border-color: #dc2626;
+}
+
+input[aria-invalid='true']:focus,
+select[aria-invalid='true']:focus,
+textarea[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Loading/busy state indicator */
+[aria-busy='true'] {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+/* Modal/dialog overlay */
+[role='dialog'],
+[role='alertdialog'] {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Skip link styling */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #2563eb;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Print styles for accessibility */
+@media print {
+  /* Show URLs for links */
+  a[href]:after {
+    content: ' (' attr(href) ')';
+  }
+
+  /* Hide navigation and non-essential elements */
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure text is black on white for printing */
+  * {
+    background: white !important;
+    color: black !important;
+  }
+}

@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "prettier:check": "prettier --check 'resources/**/*.{js,jsx,css,json}'",
+        "prettier:write": "prettier --write 'resources/**/*.{js,jsx,css,json}'"
     },
     "dependencies": {
         "react": "^18.3.1",
