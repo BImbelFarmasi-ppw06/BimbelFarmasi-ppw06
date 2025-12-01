@@ -86,7 +86,7 @@ class AdminPaymentController extends Controller
 
             DB::commit();
 
-            return back()->with('success', 'Pembayaran berhasil dikonfirmasi! Order #' . $payment->order->order_number . ' sekarang dalam status processing.');
+            return redirect()->route('admin.payments.index')->with('success', 'Pembayaran berhasil dikonfirmasi! Order #' . $payment->order->order_number . ' sekarang dalam status processing.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal mengonfirmasi pembayaran: ' . $e->getMessage());
@@ -128,7 +128,7 @@ class AdminPaymentController extends Controller
 
             DB::commit();
 
-            return back()->with('success', 'Pembayaran berhasil ditolak. User perlu upload ulang bukti pembayaran.');
+            return redirect()->route('admin.payments.index')->with('success', 'Pembayaran berhasil ditolak. User perlu upload ulang bukti pembayaran.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menolak pembayaran: ' . $e->getMessage());
