@@ -114,11 +114,11 @@
 <body class="min-h-screen flex flex-col bg-[#F7F9FF] text-slate-800">
     <header class="bg-[#2D3C8C] text-white shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between py-6">
-                <div class="flex items-center gap-3">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center gap-3 flex-shrink-0">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
                         <img src="{{ asset('images/logo bimbel farmasi.jpg') }}" alt="Bimbel Farmasi Logo" class="h-12 w-12 rounded-full object-cover shadow-lg">
-                        <span class="text-2xl font-semibold tracking-wide hidden sm:inline">Bimbel Farmasi</span>
+                        <span class="text-2xl font-semibold tracking-wide hidden sm:inline whitespace-nowrap">Bimbel Farmasi</span>
                     </a>
                 </div>
                 <button id="mobile-menu-button" type="button" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-expanded="false" aria-label="Toggle menu">
@@ -126,16 +126,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <nav class="hidden md:flex flex-wrap items-center justify-center gap-4 text-sm font-medium">
-                    <a href="{{ route('home') }}" class="@if(request()->routeIs('home')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Beranda</a>
-                    <a href="{{ route('layanan') }}" class="@if(request()->routeIs('layanan')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Layanan</a>
-                    <a href="{{ route('bimbel.ukom') }}" class="@if(request()->routeIs('bimbel.ukom')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Bimbel UKOM</a>
-                    <a href="{{ route('cpns.p3k') }}" class="@if(request()->routeIs('cpns.p3k')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">CPNS &amp; P3K</a>
-                    <a href="{{ route('joki.tugas') }}" class="@if(request()->routeIs('joki.tugas')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Joki Tugas</a>
-                    <a href="{{ route('testimonials.index') }}" class="@if(request()->routeIs('testimonials.*')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Testimoni</a>
-                    <a href="{{ route('kontak') }}" class="@if(request()->routeIs('kontak')) font-semibold text-white @else text-white/80 hover:text-white @endif transition">Kontak</a>
+                <nav class="hidden md:flex items-center gap-3 lg:gap-4 text-sm font-medium flex-shrink-0">
+                    <a href="{{ route('home') }}" class="@if(request()->routeIs('home')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">Beranda</a>
+                    <a href="{{ route('layanan') }}" class="@if(request()->routeIs('layanan')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">Layanan</a>
+                    <a href="{{ route('bimbel.ukom') }}" class="@if(request()->routeIs('bimbel.ukom')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">Bimbel UKOM</a>
+                    <a href="{{ route('cpns.p3k') }}" class="@if(request()->routeIs('cpns.p3k')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">CPNS &amp; P3K</a>
+                    <a href="{{ route('joki.tugas') }}" class="@if(request()->routeIs('joki.tugas')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">Joki Tugas</a>
+                    <a href="{{ route('testimonials.index') }}" class="@if(request()->routeIs('testimonials.*')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">Testimoni</a>
+                    <a href="{{ route('kontak') }}" class="@if(request()->routeIs('kontak')) font-semibold text-white @else text-white/80 hover:text-white @endif transition whitespace-nowrap">Kontak</a>
                 </nav>
-                <div class="hidden md:flex justify-center md:justify-end">
+                <div class="hidden md:flex justify-end flex-shrink-0">
                     @auth
                         <!-- User Dropdown Menu -->
                         <div class="relative" x-data="{ open: false }">
@@ -381,7 +381,7 @@
             </div>
             <hr class="my-8 border-white/20">
             <div class="flex flex-col gap-4 text-center text-sm text-white/70 md:flex-row md:items-center md:justify-between">
-                <p>© 2025 BimbelFarmasi. Semua hak dilindungi.</p>
+                <p>© 2025 FarmasiPro. Semua hak dilindungi.</p>
                 <div class="flex flex-wrap justify-center gap-4">
                     <a class="hover:text-white" href="#">Kebijakan Privasi</a>
                     <a class="hover:text-white" href="#">Syarat &amp; Ketentuan</a>
