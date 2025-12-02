@@ -66,6 +66,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/exercises/{exerciseId}/submit', [ProgramController::class, 'submitExercise']);
     Route::post('/tryouts/{tryoutId}/submit', [ProgramController::class, 'submitTryout']);
     Route::get('/results/{resultId}', [ProgramController::class, 'viewResult']);
+    
+    // Quiz History & Statistics
+    Route::get('/quiz-attempts/history', [ProgramController::class, 'quizHistory']);
+    Route::get('/quiz-attempts/statistics', [ProgramController::class, 'quizStatistics']);
 });
 
 // Admin API Routes (Future enhancement)

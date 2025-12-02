@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quiz_attempts', function (Blueprint $table) {
-            $table->integer('time_spent_seconds')->nullable()->after('completed_at');
-            $table->json('answers')->nullable()->change();
+            // Tambah kolom time_spent_seconds jika belum ada
+            if (!Schema::hasColumn('quiz_attempts', 'time_spent_seconds')) {
+                $table->integer('time_spent_seconds')->nullable()->after('completed_at');
+            }
+            
+            // Tambah kolom answers jika belum ada
+            if (!Schema::hasColumn('quiz_attempts', 'answers')) {
+                $table->json('answers')->nullable()->after('is_passed');
+            }
         });
     }
 
@@ -23,7 +30,13 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('quiz_attempts', function (Blueprint $table) {
-            $table->dropColumn('time_spent_seconds');
+            if (Schema::hasColumn('quiz_attempts', 'time_spent_seconds')) {
+                $table->dropColumn('time_spent_seconds');
+            }
+            
+            if (Schema::hasColumn('quiz_attempts', 'answers')) {
+                $table->dropColumn('answers');
+            }
         });
     }
 };
