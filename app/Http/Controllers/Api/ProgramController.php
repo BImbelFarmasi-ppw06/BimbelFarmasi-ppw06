@@ -197,38 +197,84 @@ class ProgramController extends Controller
     public function submitExercise(Request $request, $exerciseId)
     {
         $request->validate([
-            'answers' => 'required|array'
+            'answers' => 'required|array',
+            'started_at' => 'nullable|date',
+            'time_spent_seconds' => 'nullable|integer',
         ]);
 
         $quiz = QuizBank::with('questions')->findOrFail($exerciseId);
         $answers = $request->answers;
-        $score = 0;
+        $correctCount = 0;
         $totalQuestions = $quiz->questions->count();
+        $detailedAnswers = [];
 
-        foreach ($quiz->questions as $question) {
-            if (isset($answers[$question->id]) && $answers[$question->id] === $question->correct_answer) {
-                $score++;
+        // Hitung jawaban benar dan buat detail per soal
+        foreach ($quiz->questions as $index => $question) {
+            $userAnswer = $answers[$question->id] ?? null;
+            $isCorrect = $userAnswer === $question->correct_answer;
+            
+            if ($isCorrect) {
+                $correctCount++;
             }
+
+            $detailedAnswers[$question->id] = [
+                'question_number' => $index + 1,
+                'question' => $question->question,
+                'user_answer' => $userAnswer,
+                'correct_answer' => $question->correct_answer,
+                'is_correct' => $isCorrect,
+                'explanation' => $question->explanation,
+                'options' => [
+                    'A' => $question->option_a,
+                    'B' => $question->option_b,
+                    'C' => $question->option_c,
+                    'D' => $question->option_d,
+                    'E' => $question->option_e,
+                ]
+            ];
         }
 
-        $percentage = ($score / $totalQuestions) * 100;
+        // Hitung persentase skor
+        $scorePercentage = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
+        
+        // Cek apakah lulus
+        $isPassed = $scorePercentage >= $quiz->passing_score;
 
+        // Simpan attempt
         $attempt = QuizAttempt::create([
             'user_id' => $request->user()->id,
             'quiz_bank_id' => $exerciseId,
-            'score' => $percentage,
-            'answers' => json_encode($answers),
+            'score' => round($scorePercentage, 2),
+            'correct_answers' => $correctCount,
+            'total_questions' => $totalQuestions,
+            'is_passed' => $isPassed,
+            'answers' => $detailedAnswers,
+            'started_at' => $request->started_at ?? now(),
             'completed_at' => now(),
+            'time_spent_seconds' => $request->time_spent_seconds,
         ]);
+
+        // Load relasi untuk response
+        $attempt->load('quizBank', 'user');
 
         return response()->json([
             'success' => true,
-            'message' => 'Exercise submitted successfully',
+            'message' => $isPassed ? 'Selamat! Anda lulus!' : 'Mohon maaf, Anda belum lulus. Silakan coba lagi.',
             'data' => [
-                'score' => $percentage,
-                'correct' => $score,
-                'total' => $totalQuestions,
-                'attempt_id' => $attempt->id
+                'attempt_id' => $attempt->id,
+                'score' => round($scorePercentage, 2),
+                'correct_answers' => $correctCount,
+                'wrong_answers' => $totalQuestions - $correctCount,
+                'total_questions' => $totalQuestions,
+                'passing_score' => $quiz->passing_score,
+                'is_passed' => $isPassed,
+                'grade' => $attempt->grade,
+                'status' => $attempt->status_text,
+                'feedback' => $attempt->feedback,
+                'time_spent' => $attempt->time_spent_formatted,
+                'quiz_title' => $quiz->title,
+                'quiz_category' => $quiz->category,
+                'completed_at' => $attempt->completed_at->format('d M Y H:i:s'),
             ]
         ]);
     }
@@ -275,7 +321,7 @@ class ProgramController extends Controller
 
     public function viewResult(Request $request, $resultId)
     {
-        $attempt = QuizAttempt::with('quizBank')->findOrFail($resultId);
+        $attempt = QuizAttempt::with('quizBank', 'user')->findOrFail($resultId);
         
         if ($attempt->user_id !== $request->user()->id) {
             return response()->json([
@@ -283,10 +329,132 @@ class ProgramController extends Controller
                 'message' => 'Unauthorized'
             ], 403);
         }
+
+        // Format detail hasil
+        $result = [
+            'id' => $attempt->id,
+            'quiz_title' => $attempt->quizBank->title,
+            'quiz_category' => $attempt->quizBank->category,
+            'quiz_description' => $attempt->quizBank->description,
+            
+            // Informasi Peserta
+            'user_name' => $attempt->user->name,
+            'user_email' => $attempt->user->email,
+            
+            // Skor dan Hasil
+            'score' => $attempt->score,
+            'grade' => $attempt->grade,
+            'correct_answers' => $attempt->correct_answers,
+            'wrong_answers' => $attempt->total_questions - $attempt->correct_answers,
+            'total_questions' => $attempt->total_questions,
+            'passing_score' => $attempt->quizBank->passing_score,
+            'is_passed' => $attempt->is_passed,
+            'status' => $attempt->status_text,
+            'feedback' => $attempt->feedback,
+            
+            // Waktu
+            'started_at' => $attempt->started_at?->format('d M Y H:i:s'),
+            'completed_at' => $attempt->completed_at?->format('d M Y H:i:s'),
+            'time_spent' => $attempt->time_spent_formatted,
+            'duration_limit' => $attempt->quizBank->duration_minutes . ' menit',
+            
+            // Detail Jawaban
+            'answers' => $attempt->answers,
+            
+            // Statistik
+            'accuracy_percentage' => $attempt->score,
+            'wrong_percentage' => round(100 - $attempt->score, 2),
+        ];
         
         return response()->json([
             'success' => true,
-            'data' => $attempt
+            'data' => $result
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/quiz-attempts/history",
+     *     summary="Get user's quiz attempt history",
+     *     tags={"Quiz"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(response=200, description="Quiz attempt history")
+     * )
+     */
+    public function quizHistory(Request $request)
+    {
+        $attempts = QuizAttempt::with('quizBank')
+            ->where('user_id', $request->user()->id)
+            ->orderBy('completed_at', 'desc')
+            ->get()
+            ->map(function($attempt) {
+                return [
+                    'id' => $attempt->id,
+                    'quiz_title' => $attempt->quizBank->title,
+                    'quiz_category' => $attempt->quizBank->category,
+                    'score' => $attempt->score,
+                    'grade' => $attempt->grade,
+                    'correct_answers' => $attempt->correct_answers,
+                    'total_questions' => $attempt->total_questions,
+                    'is_passed' => $attempt->is_passed,
+                    'status' => $attempt->status_text,
+                    'completed_at' => $attempt->completed_at?->format('d M Y H:i:s'),
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $attempts
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/quiz-attempts/statistics",
+     *     summary="Get user's quiz statistics",
+     *     tags={"Quiz"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(response=200, description="Quiz statistics")
+     * )
+     */
+    public function quizStatistics(Request $request)
+    {
+        $userId = $request->user()->id;
+        
+        $totalAttempts = QuizAttempt::where('user_id', $userId)->count();
+        $passedAttempts = QuizAttempt::where('user_id', $userId)->where('is_passed', true)->count();
+        $averageScore = QuizAttempt::where('user_id', $userId)->avg('score');
+        $highestScore = QuizAttempt::where('user_id', $userId)->max('score');
+        $lowestScore = QuizAttempt::where('user_id', $userId)->min('score');
+
+        // Statistik per kategori
+        $categoryStats = QuizAttempt::with('quizBank')
+            ->where('user_id', $userId)
+            ->get()
+            ->groupBy('quizBank.category')
+            ->map(function($attempts, $category) {
+                return [
+                    'category' => $category,
+                    'total_attempts' => $attempts->count(),
+                    'passed' => $attempts->where('is_passed', true)->count(),
+                    'average_score' => round($attempts->avg('score'), 2),
+                    'highest_score' => round($attempts->max('score'), 2),
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_attempts' => $totalAttempts,
+                'passed_attempts' => $passedAttempts,
+                'failed_attempts' => $totalAttempts - $passedAttempts,
+                'pass_rate' => $totalAttempts > 0 ? round(($passedAttempts / $totalAttempts) * 100, 2) : 0,
+                'average_score' => round($averageScore, 2),
+                'highest_score' => round($highestScore, 2),
+                'lowest_score' => round($lowestScore, 2),
+                'category_statistics' => $categoryStats,
+            ]
         ]);
     }
 }
