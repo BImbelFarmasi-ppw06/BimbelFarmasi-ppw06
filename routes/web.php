@@ -73,9 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/order/{slug}', [OrderController::class, 'create'])->name('order.create');
     Route::post('/order', [OrderController::class, 'store'])->name('order.store');
     Route::get('/order/{orderNumber}/payment', [OrderController::class, 'payment'])->name('order.payment');
-    Route::post('/order/{orderNumber}/payment/upload', [OrderController::class, 'processPayment'])->name('payment.upload');
-    Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])->name('order.payment.process');
-    Route::get('/order/{orderNumber}/snap-token', [OrderController::class, 'createSnapToken'])->name('order.snap-token');
+    Route::post('/order/{orderNumber}/payment/snap', [OrderController::class, 'createSnapToken'])->name('payment.snap');
     Route::get('/order/{orderNumber}/check-status', [OrderController::class, 'checkPaymentStatus'])->name('order.check-status');
     Route::get('/order/{orderNumber}/success', [OrderController::class, 'success'])->name('order.success');
     Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('order.my-orders');
