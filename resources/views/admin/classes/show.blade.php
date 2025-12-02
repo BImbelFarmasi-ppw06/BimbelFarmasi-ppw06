@@ -12,7 +12,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">{{ $program->name }}</h1>
-                <p class="mt-1 text-sm text-gray-500">{{ $program->duration }} • {{ $program->orders_count ?? 0 }} Peserta Terdaftar</p>
+                <p class="mt-1 text-sm text-gray-500">{{ $program->duration_months ? $program->duration_months . ' bulan' : ucfirst($program->type) }} • {{ $program->orders_count ?? 0 }} Peserta Terdaftar</p>
             </div>
             <a href="{{ route('admin.classes.edit', $program->id) }}" 
                class="inline-flex items-center gap-2 rounded-lg bg-[#2D3C8C] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-900">
@@ -31,58 +31,51 @@
             <div class="rounded-lg bg-white p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Program</h3>
                 
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <div>
-                        <label class="text-sm font-medium text-gray-500">Deskripsi</label>
-                        <p class="mt-1 text-gray-900">{{ $program->description }}</p>
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Deskripsi</label>
+                        <p class="text-gray-900 leading-relaxed">{{ $program->description }}</p>
                     </div>
 
-                    <div class="grid gap-4 md:grid-cols-2">
+                    <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="text-sm font-medium text-gray-500">Harga</label>
-                            <p class="mt-1 text-lg font-semibold text-gray-900">Rp {{ number_format($program->price, 0, ',', '.') }}</p>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Harga</label>
+                            <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($program->price, 0, ',', '.') }}</p>
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-gray-500">Durasi</label>
-                            <p class="mt-1 text-gray-900">{{ $program->duration }}</p>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Tipe</label>
+                            <p class="text-lg font-medium text-gray-900">{{ ucfirst($program->type) }}</p>
                         </div>
                     </div>
 
-                    @if($program->tutor)
-                    <div>
-                        <label class="text-sm font-medium text-gray-500">Pengajar</label>
-                        <p class="mt-1 text-gray-900">{{ $program->tutor }}</p>
-                    </div>
-                    @endif
-
-                    @if($program->schedule)
-                    <div>
-                        <label class="text-sm font-medium text-gray-500">Jadwal</label>
-                        <p class="mt-1 text-gray-900">{{ $program->schedule }}</p>
-                    </div>
-                    @endif
-
-                    <div>
-                        <label class="text-sm font-medium text-gray-500">Status</label>
-                        <div class="mt-1">
-                            <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold
-                                {{ $program->status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
-                                {{ $program->status === 'active' ? 'Active' : 'Inactive' }}
-                            </span>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Durasi</label>
+                            <p class="text-lg font-medium text-gray-900">{{ $program->duration_months ?? '-' }} bulan</p>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Total Sesi</label>
+                            <p class="text-lg font-medium text-gray-900">{{ $program->total_sessions ?? '-' }} sesi</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 mb-2">Status</label>
+                        <span class="inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold
+                            {{ $program->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
+                            <span class="mr-2 h-2 w-2 rounded-full {{ $program->is_active ? 'bg-green-500' : 'bg-gray-500' }}"></span>
+                            {{ $program->is_active ? 'Active' : 'Inactive' }}
+                        </span>
                     </div>
                 </div>
             </div>
 
             <!-- Features -->
-            @php
-                $features = json_decode($program->features ?? '[]', true);
-            @endphp
-            @if(!empty($features))
+            @if(!empty($program->features) && is_array($program->features))
             <div class="rounded-lg bg-white p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Fitur & Benefit</h3>
                 <ul class="space-y-2">
-                    @foreach($features as $feature)
+                    @foreach($program->features as $feature)
                         @if($feature)
                         <li class="flex items-start gap-2">
                             <svg class="h-5 w-5 text-green-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
