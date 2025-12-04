@@ -84,17 +84,33 @@
                 </div>
 
                 <div>
-                    <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">
-                        Durasi <span class="text-red-500">*</span>
+                    <label for="duration_months" class="block text-sm font-medium text-gray-700 mb-2">
+                        Durasi (bulan)
                     </label>
                     <input 
-                        type="text" 
-                        name="duration" 
-                        id="duration" 
-                        value="{{ old('duration', $program->duration) }}"
-                        required
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('duration') border-red-500 @enderror">
-                    @error('duration')
+                        type="number" 
+                        name="duration_months" 
+                        id="duration_months" 
+                        value="{{ old('duration_months', $program->duration_months) }}"
+                        min="1"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('duration_months') border-red-500 @enderror">
+                    @error('duration_months')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="total_sessions" class="block text-sm font-medium text-gray-700 mb-2">
+                        Total Sesi
+                    </label>
+                    <input 
+                        type="number" 
+                        name="total_sessions" 
+                        id="total_sessions" 
+                        value="{{ old('total_sessions', $program->total_sessions) }}"
+                        min="1"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('total_sessions') border-red-500 @enderror">
+                    @error('total_sessions')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -102,44 +118,20 @@
         </div>
 
         <div class="rounded-lg bg-white p-6 shadow-sm">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Detail Kelas</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Status Program</h3>
             
             <div class="mb-4">
-                <label for="tutor" class="block text-sm font-medium text-gray-700 mb-2">
-                    Pengajar / Tutor
+                <label for="is_active" class="flex items-center space-x-2">
+                    <input 
+                        type="checkbox" 
+                        name="is_active" 
+                        id="is_active" 
+                        value="1"
+                        {{ old('is_active', $program->is_active) ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-sm font-medium text-gray-700">Program Aktif</span>
                 </label>
-                <input 
-                    type="text" 
-                    name="tutor" 
-                    id="tutor" 
-                    value="{{ old('tutor', $program->tutor) }}"
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-            </div>
-
-            <div class="mb-4">
-                <label for="schedule" class="block text-sm font-medium text-gray-700 mb-2">
-                    Jadwal Kelas
-                </label>
-                <input 
-                    type="text" 
-                    name="schedule" 
-                    id="schedule" 
-                    value="{{ old('schedule', $program->schedule) }}"
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-            </div>
-
-            <div class="mb-4">
-                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                    Status <span class="text-red-500">*</span>
-                </label>
-                <select 
-                    name="status" 
-                    id="status" 
-                    required
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <option value="active" {{ old('status', $program->status) === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $program->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
+                <p class="mt-1 text-sm text-gray-500">Program yang aktif akan ditampilkan di halaman publik</p>
             </div>
         </div>
 
@@ -147,7 +139,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Fitur Program</h3>
             
             @php
-                $existingFeatures = old('features', json_decode($program->features ?? '[]', true));
+                $existingFeatures = old('features', $program->features ?? []);
                 if (empty($existingFeatures)) {
                     $existingFeatures = [''];
                 }

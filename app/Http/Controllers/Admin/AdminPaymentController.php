@@ -54,6 +54,11 @@ class AdminPaymentController extends Controller
     {
         $payment = Payment::with(['order.user', 'order.program'])->findOrFail($id);
 
+        // If it's an AJAX request, return modal view
+        if (request()->ajax() || request()->wantsJson()) {
+            return view('admin.payments.modal', compact('payment'))->render();
+        }
+
         return view('admin.payments.show', compact('payment'));
     }
 

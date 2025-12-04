@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
+use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\TestimonialController;
 
 // =================== PUBLIC PAGES ===================
@@ -72,8 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/order/{slug}', [OrderController::class, 'create'])->name('order.create');
     Route::post('/order', [OrderController::class, 'store'])->name('order.store');
     Route::get('/order/{orderNumber}/payment', [OrderController::class, 'payment'])->name('order.payment');
-    Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])->name('order.payment.process');
-    Route::get('/order/{orderNumber}/snap-token', [OrderController::class, 'createSnapToken'])->name('order.snap-token');
+    Route::post('/order/{orderNumber}/payment/snap', [OrderController::class, 'createSnapToken'])->name('payment.snap');
     Route::get('/order/{orderNumber}/check-status', [OrderController::class, 'checkPaymentStatus'])->name('order.check-status');
     Route::get('/order/{orderNumber}/success', [OrderController::class, 'success'])->name('order.success');
     Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('order.my-orders');
@@ -111,7 +111,20 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::put('/classes/{id}', [AdminClassController::class, 'update'])->name('classes.update');
     Route::delete('/classes/{id}', [AdminClassController::class, 'destroy'])->name('classes.destroy');
 
-    Route::view('/questions', 'admin.questions.index')->name('questions.index');
+    // Question Bank Management
+    Route::get('/questions', [AdminQuestionController::class, 'index'])->name('questions.index');
+    Route::get('/questions/create', [AdminQuestionController::class, 'create'])->name('questions.create');
+    Route::post('/questions', [AdminQuestionController::class, 'store'])->name('questions.store');
+    Route::get('/questions/{quizBank}', [AdminQuestionController::class, 'show'])->name('questions.show');
+    Route::get('/questions/{quizBank}/edit', [AdminQuestionController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{quizBank}', [AdminQuestionController::class, 'update'])->name('questions.update');
+    Route::delete('/questions/{quizBank}', [AdminQuestionController::class, 'destroy'])->name('questions.destroy');
+    
+    // Question Management within a Bank
+    Route::post('/questions/{quizBank}/add-question', [AdminQuestionController::class, 'addQuestion'])->name('questions.addQuestion');
+    Route::get('/questions/{quizBank}/question/{question}/edit', [AdminQuestionController::class, 'editQuestion'])->name('questions.editQuestion');
+    Route::put('/questions/{quizBank}/question/{question}', [AdminQuestionController::class, 'updateQuestion'])->name('questions.updateQuestion');
+    Route::delete('/questions/{quizBank}/question/{question}', [AdminQuestionController::class, 'destroyQuestion'])->name('questions.destroyQuestion');
 
     // Payment Management
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
