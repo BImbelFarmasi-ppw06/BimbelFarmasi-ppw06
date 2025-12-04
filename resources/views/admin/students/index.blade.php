@@ -104,7 +104,6 @@
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Program</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Total Order</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Tgl Daftar</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Aksi</th>
                     </tr>
                 </thead>
@@ -156,22 +155,7 @@
                             {{ $student->created_at->format('d M Y') }}
                         </td>
                         <td class="px-6 py-4">
-                            @if($student->is_suspended)
-                                <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
-                                    <i class="fas fa-ban mr-2"></i>Suspended
-                                </span>
-                                @if($student->suspend_reason)
-                                    <p class="mt-1 text-xs text-gray-500">{{ Str::limit($student->suspend_reason, 30) }}</p>
-                                @endif
-                            @else
-                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                                    <i class="fas fa-check-circle mr-2"></i>Aktif
-                                </span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-1">
-                                <!-- View Detail -->
+                            <div class="flex items-center gap-2">
                                 <a href="{{ route('admin.students.show', $student->id) }}" 
                                    class="rounded p-1 text-blue-600 hover:bg-blue-50"
                                    title="Lihat Detail">
@@ -180,21 +164,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </a>
-
-                                <!-- Suspend/Activate -->
-                                @if(!$student->is_suspended)
-                                <button onclick="suspendStudent({{ $student->id }})"
-                                        class="rounded p-1 text-orange-600 hover:bg-orange-50"
-                                        title="Suspend Akun">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
-                                    </svg>
-                                </button>
-                                @else
-                                <button onclick="activateStudent({{ $student->id }})"
-                                        class="rounded p-1 text-green-600 hover:bg-green-50"
-                                        title="Aktifkan Akun">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </button>

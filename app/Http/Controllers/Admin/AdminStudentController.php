@@ -56,7 +56,7 @@ class AdminStudentController extends Controller
 
         $students = $query->orderBy('created_at', 'desc')->paginate(20);
 
-        // Statistics
+        // Statistics - count unique users by their payment status
         $stats = [
             'total_students' => User::where('is_admin', 0)
                 ->whereHas('orders')

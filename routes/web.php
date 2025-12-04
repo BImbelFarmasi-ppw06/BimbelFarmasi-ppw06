@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
+use App\Http\Controllers\Admin\AdminQuestionController;
 use App\Http\Controllers\Admin\AdminProgramController;
 use App\Http\Controllers\TestimonialController;
 
@@ -30,18 +31,24 @@ Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store
 
 // =================== USER AUTH ===================
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:5,1')
+    ->name('login.submit');
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+Route::post('/register', [AuthController::class, 'register'])
+    ->middleware('throttle:3,1')
+    ->name('register.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // 🔹 GOOGLE LOGIN (GET semua)
 Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])
+    ->middleware('throttle:10,1')
     ->name('login.google');
 
 Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])
+    ->middleware('throttle:10,1')
     ->name('login.google.callback');
 
 // =================== USER PROTECTED ROUTES ===================
@@ -73,10 +80,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/order/{slug}', [OrderController::class, 'create'])->name('order.create');
     Route::post('/order', [OrderController::class, 'store'])->name('order.store');
     Route::get('/order/{orderNumber}/payment', [OrderController::class, 'payment'])->name('order.payment');
-    Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])->name('order.payment.process');
+    Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])
+        ->middleware('throttle:10,1')
+        ->name('order.payment.process');
     Route::get('/order/{orderNumber}/snap-token', [OrderController::class, 'createSnapToken'])->name('order.snap-token');
     Route::get('/order/{orderNumber}/check-status', [OrderController::class, 'checkPaymentStatus'])->name('order.check-status');
     Route::get('/order/{orderNumber}/success', [OrderController::class, 'success'])->name('order.success');
+    Route::get('/order/{orderNumber}/payment-proof', [OrderController::class, 'viewMyPaymentProof'])->name('order.payment-proof');
     Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('order.my-orders');
 
     // Testimonial Routes
@@ -91,7 +101,9 @@ Route::middleware('auth')->group(function () {
 // =================== ADMIN AUTH ===================
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('/login', [AdminAuthController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('login.submit');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });
 
@@ -120,7 +132,20 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::put('/classes/{id}', [AdminClassController::class, 'update'])->name('classes.update');
     Route::delete('/classes/{id}', [AdminClassController::class, 'destroy'])->name('classes.destroy');
 
-    Route::view('/questions', 'admin.questions.index')->name('questions.index');
+    // Question Bank Management
+    Route::get('/questions', [AdminQuestionController::class, 'index'])->name('questions.index');
+    Route::get('/questions/create', [AdminQuestionController::class, 'create'])->name('questions.create');
+    Route::post('/questions', [AdminQuestionController::class, 'store'])->name('questions.store');
+    Route::get('/questions/{quizBank}', [AdminQuestionController::class, 'show'])->name('questions.show');
+    Route::get('/questions/{quizBank}/edit', [AdminQuestionController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{quizBank}', [AdminQuestionController::class, 'update'])->name('questions.update');
+    Route::delete('/questions/{quizBank}', [AdminQuestionController::class, 'destroy'])->name('questions.destroy');
+    
+    // Question Management within a Bank
+    Route::post('/questions/{quizBank}/add-question', [AdminQuestionController::class, 'addQuestion'])->name('questions.addQuestion');
+    Route::get('/questions/{quizBank}/question/{question}/edit', [AdminQuestionController::class, 'editQuestion'])->name('questions.editQuestion');
+    Route::put('/questions/{quizBank}/question/{question}', [AdminQuestionController::class, 'updateQuestion'])->name('questions.updateQuestion');
+    Route::delete('/questions/{quizBank}/question/{question}', [AdminQuestionController::class, 'destroyQuestion'])->name('questions.destroyQuestion');
 
     // Payment Management
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');

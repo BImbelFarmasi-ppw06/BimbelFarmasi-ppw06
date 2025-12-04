@@ -89,8 +89,8 @@ class OrderController extends Controller
                 'proof.max' => 'Ukuran file maksimal 2MB.',
             ]);
 
-            // Upload proof
-            $proofPath = $request->file('proof')->store('payment-proofs', 'public');
+            // Upload proof to private disk
+            $proofPath = $request->file('proof')->store('', 'payment_proofs');
 
             // Create or update payment
             Payment::updateOrCreate(
@@ -110,11 +110,16 @@ class OrderController extends Controller
                 ->with('success', 'Bukti pembayaran berhasil diupload! Kami akan memverifikasi dalam 1x24 jam.');
                 
         } catch (\Exception $e) {
-            Log::error('Payment upload error: ' . $e->getMessage());
+            \Log::error('Payment upload failed', [
+                'order_number' => $orderNumber,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return back()
                 ->withInput()
-                ->with('error', 'Gagal mengupload bukti pembayaran. Pastikan MySQL/XAMPP sudah running. Error: ' . $e->getMessage());
+                ->with('error', 'Gagal mengupload bukti pembayaran. Silakan coba lagi atau hubungi admin jika masalah berlanjut.');
         }
     }
 
@@ -320,5 +325,29 @@ class OrderController extends Controller
         } elseif ($status === 'failed') {
             $order->update(['status' => 'cancelled']);
         }
+    }
+
+    /**
+     * View user's own payment proof (protected)
+     */
+    public function viewMyPaymentProof($orderNumber)
+    {
+        $order = Order::where('order_number', $orderNumber)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $payment = Payment::where('order_id', $order->id)->first();
+
+        if (!$payment || !$payment->proof_url) {
+            abort(404, 'Bukti pembayaran tidak ditemukan');
+        }
+
+        $path = storage_path('app/private/payment-proofs/' . $payment->proof_url);
+
+        if (!file_exists($path)) {
+            abort(404, 'File bukti pembayaran tidak ditemukan');
+        }
+
+        return response()->file($path);
     }
 }

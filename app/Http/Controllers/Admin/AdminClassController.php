@@ -36,12 +36,13 @@ class AdminClassController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', 'unique:programs,slug'],
+            'type' => ['required', 'in:bimbel,cpns,joki'],
             'description' => ['required', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
-            'duration' => ['required', 'string', 'max:100'],
-            'tutor' => ['nullable', 'string', 'max:255'],
-            'schedule' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'in:active,inactive'],
+            'duration_months' => ['nullable', 'integer', 'min:1'],
+            'total_sessions' => ['nullable', 'integer', 'min:1'],
+            'is_active' => ['required', 'boolean'],
             'features' => ['nullable', 'array'],
             'features.*' => ['string', 'max:255'],
         ], [
@@ -61,13 +62,14 @@ class AdminClassController extends Controller
 
             $program = Program::create([
                 'name' => $validated['name'],
+                'slug' => $validated['slug'],
+                'type' => $validated['type'],
                 'description' => $validated['description'],
                 'price' => $validated['price'],
-                'duration' => $validated['duration'],
-                'tutor' => $validated['tutor'] ?? null,
-                'schedule' => $validated['schedule'] ?? null,
-                'status' => $validated['status'],
-                'features' => json_encode($features),
+                'duration_months' => $validated['duration_months'] ?? null,
+                'total_sessions' => $validated['total_sessions'] ?? null,
+                'is_active' => $validated['is_active'],
+                'features' => $features,
             ]);
 
             DB::commit();
@@ -76,9 +78,15 @@ class AdminClassController extends Controller
                 ->with('success', 'Program berhasil ditambahkan!');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Program creation failed', [
+                'admin_id' => auth()->id(),
+                'data' => $request->except(['_token']),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()
                 ->withInput()
-                ->with('error', 'Gagal menambahkan program: ' . $e->getMessage());
+                ->with('error', 'Gagal menambahkan program. Silakan coba lagi.');
         }
     }
 
@@ -100,12 +108,13 @@ class AdminClassController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', 'unique:programs,slug,' . $id],
+            'type' => ['required', 'in:bimbel,cpns,joki'],
             'description' => ['required', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
-            'duration' => ['required', 'string', 'max:100'],
-            'tutor' => ['nullable', 'string', 'max:255'],
-            'schedule' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'in:active,inactive'],
+            'duration_months' => ['nullable', 'integer', 'min:1'],
+            'total_sessions' => ['nullable', 'integer', 'min:1'],
+            'is_active' => ['required', 'boolean'],
             'features' => ['nullable', 'array'],
             'features.*' => ['string', 'max:255'],
         ]);
@@ -117,13 +126,14 @@ class AdminClassController extends Controller
 
             $program->update([
                 'name' => $validated['name'],
+                'slug' => $validated['slug'],
+                'type' => $validated['type'],
                 'description' => $validated['description'],
                 'price' => $validated['price'],
-                'duration' => $validated['duration'],
-                'tutor' => $validated['tutor'] ?? null,
-                'schedule' => $validated['schedule'] ?? null,
-                'status' => $validated['status'],
-                'features' => json_encode($features),
+                'duration_months' => $validated['duration_months'] ?? null,
+                'total_sessions' => $validated['total_sessions'] ?? null,
+                'is_active' => $validated['is_active'],
+                'features' => $features,
             ]);
 
             DB::commit();
@@ -132,9 +142,15 @@ class AdminClassController extends Controller
                 ->with('success', 'Program berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Program update failed', [
+                'program_id' => $id,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()
                 ->withInput()
-                ->with('error', 'Gagal mengupdate program: ' . $e->getMessage());
+                ->with('error', 'Gagal mengupdate program. Silakan coba lagi.');
         }
     }
 
@@ -144,7 +160,9 @@ class AdminClassController extends Controller
     public function show($id)
     {
         $program = Program::withCount('orders')
-            ->with(['orders.user', 'orders.payment'])
+            ->with(['orders' => function($query) {
+                $query->with(['user', 'payment'])->latest();
+            }])
             ->findOrFail($id);
 
         return view('admin.classes.show', compact('program'));
@@ -172,7 +190,13 @@ class AdminClassController extends Controller
             return redirect()->route('admin.classes.index')
                 ->with('success', 'Program berhasil dihapus!');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus program: ' . $e->getMessage());
+            \Log::error('Program deletion failed', [
+                'program_id' => $id,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal menghapus program. Silakan coba lagi.');
         }
     }
 }

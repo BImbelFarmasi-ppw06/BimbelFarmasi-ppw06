@@ -177,20 +177,29 @@
             // Show modal
             document.getElementById('paymentModal').classList.remove('hidden');
             
-            // Load content
-            fetch(`/admin/payments/${paymentId}`)
+            // Load content via AJAX to get modal view
+            fetch(`/admin/payments/${paymentId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json, text/html'
+                }
+            })
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('modalContent').innerHTML = html;
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.getElementById('modalContent').innerHTML = '<p class="p-8 text-center text-red-600">Gagal memuat data</p>';
+                    document.getElementById('modalContent').innerHTML = '<div class="p-8 text-center text-red-600">Gagal memuat data</div>';
                 });
         }
 
         function closePaymentModal() {
             document.getElementById('paymentModal').classList.add('hidden');
+            // Reload page to refresh data after approve/reject
+            if (document.getElementById('modalContent').innerHTML.includes('berhasil')) {
+                window.location.reload();
+            }
         }
 
         // Close modal on ESC key

@@ -3,311 +3,225 @@
 @section('title', 'Detail Peserta')
 
 @section('content')
-    <div class="space-y-6">
-        <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Detail Peserta</h1>
-                <p class="text-gray-600">Informasi lengkap peserta dan riwayat transaksi</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-arrow-left mr-2"></i>Kembali
-                </a>
-                <button onclick="deleteStudent({{ $student->id }}, '{{ $student->name }}')" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
-                    <i class="fas fa-trash mr-2"></i>Hapus Peserta
-                </button>
+    <div class="mb-6">
+        <a href="{{ route('admin.students.index') }}" class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Kembali ke Daftar Peserta
+        </a>
+    </div>
+
+    <!-- Student Profile Card -->
+    <div class="mb-8 rounded-2xl bg-gradient-to-br from-white to-blue-50 shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] px-8 py-6">
+            <div class="flex items-center gap-6">
+                <div class="flex-shrink-0">
+                    <div class="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-4xl font-bold ring-4 ring-white/30">
+                        {{ strtoupper(substr($student->name, 0, 1)) }}
+                    </div>
+                </div>
+                <div class="flex-1 text-white">
+                    <h2 class="text-3xl font-bold mb-2">{{ $student->name }}</h2>
+                    <div class="flex items-center gap-4 text-blue-100">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            {{ $student->email }}
+                        </span>
+                        @if($student->phone)
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            {{ $student->phone }}
+                        </span>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-3">
-            <!-- Student Profile -->
-            <div class="lg:col-span-1">
-                <div class="rounded-xl bg-white p-6 shadow-sm">
-                    <div class="flex flex-col items-center text-center">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=random&size=120" 
-                             class="h-24 w-24 rounded-full border-4 border-gray-100">
-                        <h2 class="mt-4 text-xl font-bold text-gray-900">{{ $student->name }}</h2>
-                        <p class="text-gray-600">{{ $student->email }}</p>
-                        
-                        @if($student->phone)
-                        <div class="mt-2 flex items-center gap-2 text-sm text-gray-500">
-                            <i class="fas fa-phone"></i>
-                            <span>{{ $student->phone }}</span>
-                        </div>
-                        @endif
-
-                        @if($student->whatsapp)
-                        <div class="mt-1 flex items-center gap-2 text-sm text-gray-500">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>{{ $student->whatsapp }}</span>
-                        </div>
-                        @endif
-
-                        <!-- Account Status -->
-                        <div class="mt-4">
-                            @if(!$student->is_suspended)
-                            <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
-                                <i class="fas fa-check-circle mr-2"></i>Akun Aktif
-                            </span>
-                            @else
-                            <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">
-                                <i class="fas fa-ban mr-2"></i>Akun Suspended
-                            </span>
-                            @if($student->suspend_reason)
-                            <p class="mt-2 text-xs text-red-600">Alasan: {{ $student->suspend_reason }}</p>
-                            @endif
-                            @endif
-                        </div>
+        <!-- Statistics Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-8">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                     </div>
-
-                    <!-- Account Info -->
-                    <div class="mt-6 border-t pt-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Akun</h3>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">ID Peserta:</span>
-                                <span class="font-medium">#{{ $student->id }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Tgl Daftar:</span>
-                                <span class="font-medium">{{ $student->created_at->format('d M Y, H:i') }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Terakhir Update:</span>
-                                <span class="font-medium">{{ $student->updated_at->format('d M Y, H:i') }}</span>
-                            </div>
-                            @if($student->last_login_at)
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Login Terakhir:</span>
-                                <span class="font-medium">{{ $student->last_login_at->format('d M Y, H:i') }}</span>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="mt-6 border-t pt-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Aksi Cepat</h3>
-                        <div class="space-y-2">
-                            @if(!$student->is_suspended)
-                            <button onclick="suspendStudent({{ $student->id }})" class="w-full rounded-lg bg-orange-100 px-4 py-2 text-sm font-medium text-orange-800 hover:bg-orange-200">
-                                <i class="fas fa-ban mr-2"></i>Suspend Akun
-                            </button>
-                            @else
-                            <button onclick="activateStudent({{ $student->id }})" class="w-full rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-200">
-                                <i class="fas fa-check mr-2"></i>Aktifkan Akun
-                            </button>
-                            @endif
-                            
-                            @if($student->whatsapp)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $student->whatsapp) }}" target="_blank" 
-                               class="w-full block rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-200 text-center">
-                                <i class="fab fa-whatsapp mr-2"></i>Chat WhatsApp
-                            </a>
-                            @endif
-                            
-                            <a href="mailto:{{ $student->email }}" 
-                               class="w-full block rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800 hover:bg-blue-200 text-center">
-                                <i class="fas fa-envelope mr-2"></i>Kirim Email
-                            </a>
-                        </div>
-                    </div>
+                    <p class="text-xs text-gray-500 font-medium">Terdaftar Sejak</p>
                 </div>
+                <p class="text-lg font-bold text-gray-900">{{ $student->created_at->format('d M Y') }}</p>
             </div>
 
-            <!-- Orders & Payments -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Statistics Cards -->
-                <div class="grid gap-4 sm:grid-cols-3">
-                    <div class="rounded-lg bg-white p-4 shadow-sm">
-                        <div class="flex items-center">
-                            <div class="rounded-lg bg-blue-100 p-2">
-                                <i class="fas fa-shopping-cart text-blue-600"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-600">Total Order</p>
-                                <p class="text-xl font-bold text-gray-900">{{ $student->orders->count() }}</p>
-                            </div>
-                        </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
                     </div>
-
-                    <div class="rounded-lg bg-white p-4 shadow-sm">
-                        <div class="flex items-center">
-                            <div class="rounded-lg bg-green-100 p-2">
-                                <i class="fas fa-check-circle text-green-600"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-600">Order Berhasil</p>
-                                <p class="text-xl font-bold text-gray-900">{{ $student->orders->count() }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="rounded-lg bg-white p-4 shadow-sm">
-                        <div class="flex items-center">
-                            <div class="rounded-lg bg-purple-100 p-2">
-                                <i class="fas fa-graduation-cap text-purple-600"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-600">Program Diikuti</p>
-                                <p class="text-xl font-bold text-gray-900">
-                                    {{ $student->orders->pluck('program.name')->unique()->count() }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-xs text-gray-500 font-medium">Total Pembelian</p>
                 </div>
+                <p class="text-lg font-bold text-gray-900">{{ $student->orders->count() }} <span class="text-sm font-normal text-gray-500">program</span></p>
+            </div>
 
-                <!-- Orders List -->
-                <div class="rounded-xl bg-white shadow-sm">
-                    <div class="border-b px-6 py-4">
-                        <h3 class="text-lg font-medium text-gray-900">Riwayat Order</h3>
-                        <p class="text-sm text-gray-600">Daftar semua program yang pernah diorder peserta (pembayaran diproses via Midtrans)</p>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                     </div>
-
-                    @if($student->orders->isEmpty())
-                    <div class="p-12 text-center">
-                        <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
-                        <h4 class="text-lg font-medium text-gray-900">Belum ada order</h4>
-                        <p class="text-gray-600">Peserta belum pernah melakukan order apapun.</p>
-                    </div>
-                    @else
-                    <div class="divide-y">
-                        @foreach($student->orders as $order)
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <h4 class="text-lg font-medium text-gray-900">{{ $order->program->name }}</h4>
-                                        @php
-                                            $colors = [
-                                                'bimbel-ukom-d3-farmasi' => 'bg-blue-100 text-blue-800',
-                                                'cpns-p3k-farmasi' => 'bg-purple-100 text-purple-800',
-                                                'joki-tugas-farmasi' => 'bg-yellow-100 text-yellow-800'
-                                            ];
-                                            $color = $colors[$order->program->slug] ?? 'bg-gray-100 text-gray-800';
-                                        @endphp
-                                        <span class="inline-flex items-center rounded-full {{ $color }} px-2.5 py-0.5 text-xs font-medium">
-                                            {{ $order->program->slug }}
-                                        </span>
-                                    </div>
-                                    
-                                    <p class="text-sm text-gray-600 mb-2">{{ $order->program->description }}</p>
-                                    
-                                    <div class="grid gap-2 sm:grid-cols-2 text-sm">
-                                        <div>
-                                            <span class="font-medium text-gray-700">Order ID:</span>
-                                            <span class="text-gray-600">#{{ $order->id }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Tanggal Order:</span>
-                                            <span class="text-gray-600">{{ $order->created_at->format('d M Y, H:i') }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Harga:</span>
-                                            <span class="font-bold text-gray-900">Rp {{ number_format($order->program->price, 0, ',', '.') }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Status Order:</span>
-                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                                                Completed
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-                        @endforeach
-                    </div>
-                    @endif
+                    <p class="text-xs text-gray-500 font-medium">Pembayaran Lunas</p>
                 </div>
+                <p class="text-lg font-bold text-gray-900">{{ $student->orders->filter(function($order) { return $order->payment && $order->payment->status === 'paid'; })->count() }} <span class="text-sm font-normal text-gray-500">dari {{ $student->orders->count() }}</span></p>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium">Total Pembayaran</p>
+                </div>
+                <p class="text-lg font-bold text-emerald-600">Rp {{ number_format($student->orders->filter(function($order) { return $order->payment && $order->payment->status === 'paid'; })->sum('amount'), 0, ',', '.') }}</p>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script>
-        // Reuse functions from students index
-        function deleteStudent(studentId, studentName) {
-            if (confirm(`Apakah Anda yakin ingin menghapus peserta "${studentName}"? Semua data terkait akan terhapus permanen.`)) {
-                fetch(`/admin/students/${studentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        window.location.href = '/admin/students';
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menghapus peserta.');
-                });
-            }
-        }
+    <!-- Orders History -->
+    <div class="rounded-2xl bg-white shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-200 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Riwayat Pembelian</h3>
+                    <p class="text-sm text-gray-600 mt-1">Daftar semua transaksi pembelian program</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-[#2D3C8C]">{{ $student->orders->count() }}</p>
+                    <p class="text-xs text-gray-500">Total Order</p>
+                </div>
+            </div>
+        </div>
 
-        function suspendStudent(studentId) {
-            const reason = prompt('Alasan suspend akun (opsional):');
-            if (reason === null) return; // User cancelled
-            
-            fetch(`/admin/students/${studentId}/suspend`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    reason: reason || null
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat suspend akun.');
-            });
-        }
+        @if($student->orders->count() > 0)
+            <div class="divide-y divide-gray-100">
+                @foreach($student->orders as $index => $order)
+                    <div class="p-6 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-start justify-between gap-6">
+                            <div class="flex-1">
+                                <!-- Order Header -->
+                                <div class="flex items-start gap-4 mb-4">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                                            {{ $index + 1 }}
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <h4 class="text-lg font-bold text-gray-900">{{ $order->program->name }}</h4>
+                                            @if($order->payment)
+                                                @if($order->payment->status === 'paid')
+                                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-600/20">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Lunas
+                                                    </span>
+                                                @elseif($order->payment->status === 'pending')
+                                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700 ring-1 ring-yellow-600/20">
+                                                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                        </svg>
+                                                        Menunggu Verifikasi
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-600/20">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Ditolak
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                        <p class="text-sm text-gray-600">{{ $order->program->description }}</p>
+                                    </div>
+                                </div>
 
-        function activateStudent(studentId) {
-            if (confirm('Apakah Anda yakin ingin mengaktifkan kembali akun peserta ini?')) {
-                fetch(`/admin/students/${studentId}/activate`, {
-                    method: 'PATCH',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mengaktifkan akun.');
-                });
-            }
-        }
-    </script>
+                                <!-- Order Details Grid -->
+                                <div class="grid grid-cols-2 gap-6 bg-gray-50 rounded-xl p-4">
+                                    <div>
+                                        <div class="mb-2">
+                                            <svg class="w-4 h-4 text-gray-400 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mb-1.5">Total Pembayaran</p>
+                                        <p class="font-bold text-emerald-600 text-sm">Rp {{ number_format($order->amount, 0, ',', '.') }}</p>
+                                    </div>
+                                    <div>
+                                        <div class="mb-2">
+                                            <svg class="w-4 h-4 text-gray-400 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mb-1.5">Tanggal Pembelian</p>
+                                        <p class="font-semibold text-gray-900 text-sm">{{ $order->created_at->format('d M Y, H:i') }}</p>
+                                    </div>
+                                </div>
+
+                                @if($order->payment)
+                                    <div class="mt-4 flex items-center gap-4 text-sm">
+                                        <div class="flex items-center gap-2 text-gray-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                            </svg>
+                                            <span class="font-medium">{{ ucfirst(str_replace('_', ' ', $order->payment->payment_method)) }}</span>
+                                        </div>
+                                        @if($order->payment->paid_at)
+                                            <div class="flex items-center gap-2 text-green-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                <span class="font-medium">Dibayar: {{ $order->payment->paid_at->format('d M Y, H:i') }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+
+                            @if($order->payment)
+                                <a href="{{ route('admin.payments.show', $order->payment->id) }}" 
+                                   class="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#2D3C8C] to-[#1e2761] hover:from-[#1e2761] hover:to-[#2D3C8C] text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Lihat Detail
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="p-16 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                    <svg class="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Belum Ada Pembelian</h3>
+                <p class="text-sm text-gray-500">Peserta ini belum melakukan pembelian program apapun</p>
+            </div>
+        @endif
+    </div>
 @endsection
