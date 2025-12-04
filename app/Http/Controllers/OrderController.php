@@ -268,7 +268,7 @@ class OrderController extends Controller
             // Get transaction status from Midtrans
             $status = \Midtrans\Transaction::status($orderNumber);
 
-            $transactionStatus = $status->transaction_status;
+            $transactionStatus = $status->transaction_status ?? null;
             $fraudStatus = $status->fraud_status ?? null;
 
             Log::info('Payment Status Check: ', [

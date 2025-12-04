@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Testimonial> $testimonials
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -25,6 +29,11 @@ class User extends Authenticatable
         'interest',
         'password',
         'is_admin',
+        'is_suspended',
+        'suspended_at',
+        'suspended_by',
+        'suspend_reason',
+        'last_login_at',
     ];
 
     /**
@@ -48,6 +57,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_suspended' => 'boolean',
+            'suspended_at' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 
@@ -56,7 +68,7 @@ class User extends Authenticatable
      */
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(\App\Models\Order::class);
     }
 
     /**
@@ -64,6 +76,6 @@ class User extends Authenticatable
      */
     public function testimonials()
     {
-        return $this->hasMany(Testimonial::class);
+        return $this->hasMany(\App\Models\Testimonial::class);
     }
 }

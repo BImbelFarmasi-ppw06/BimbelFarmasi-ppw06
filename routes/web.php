@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminQuestionController;
+use App\Http\Controllers\Admin\AdminProgramController;
 use App\Http\Controllers\TestimonialController;
 
 // =================== PUBLIC PAGES ===================
@@ -113,6 +114,14 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // Student Management
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
     Route::get('/students/{id}', [AdminStudentController::class, 'show'])->name('students.show');
+    Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy');
+    Route::post('/students/bulk-delete', [AdminStudentController::class, 'bulkDelete'])->name('students.bulk-delete');
+    Route::post('/students/{id}/suspend', [AdminStudentController::class, 'suspend'])->name('students.suspend');
+    Route::patch('/students/{id}/activate', [AdminStudentController::class, 'activate'])->name('students.activate');
+    Route::get('/students/export', [AdminStudentController::class, 'export'])->name('students.export');
+
+    // Program Management (CRUD)
+    Route::resource('programs', AdminProgramController::class);
 
     // Class/Program Management
     Route::get('/classes', [AdminClassController::class, 'index'])->name('classes.index');

@@ -23,9 +23,34 @@
             <p class="text-sm text-gray-500">Sudah bayar & aktif</p>
         </div>
         <div class="rounded-xl bg-white p-4 shadow-sm">
-            <p class="text-sm text-gray-500">Pending</p>
-            <p class="mt-2 text-2xl font-bold text-yellow-600">{{ $stats['pending_students'] }}</p>
-            <p class="text-sm text-gray-500">Menunggu pembayaran</p>
+            <p class="text-sm text-gray-500">Pendaftar Baru</p>
+            <p class="mt-2 text-2xl font-bold text-blue-600">{{ $stats['recent_signups'] }}</p>
+            <p class="text-sm text-gray-500">7 hari terakhir</p>
+        </div>
+    </div>
+
+    <!-- Action Toolbar -->
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <!-- Bulk Actions -->
+            <div class="flex items-center gap-2" id="bulkActions" style="display: none;">
+                <span class="text-sm text-gray-600">Aksi untuk <span id="selectedCount">0</span> peserta:</span>
+                <button onclick="bulkDelete()" class="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700">
+                    <i class="fas fa-trash mr-1"></i> Hapus Semua
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <!-- Export Button -->
+            <button onclick="exportData()" class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+                <i class="fas fa-download mr-2"></i>Export CSV
+            </button>
+            
+            <!-- Select All Toggle -->
+            <button onclick="toggleSelectAll()" id="selectAllBtn" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <i class="fas fa-check-square mr-2"></i>Pilih Semua
+            </button>
         </div>
     </div>
 
@@ -41,9 +66,8 @@
             </select>
             <select name="status" class="rounded-lg border-gray-300 text-sm">
                 <option value="">Semua Status</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Lunas (Approved)</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Menunggu Verifikasi</option>
-                <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Akun Aktif</option>
+                <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Akun Suspended</option>
             </select>
             <div class="flex gap-2">
                 <button type="submit" class="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
@@ -73,6 +97,9 @@
             <table class="w-full">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
+                        <th class="px-6 py-3 text-left">
+                            <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()" class="rounded border-gray-300">
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Peserta</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Program</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Total Order</th>
@@ -83,6 +110,9 @@
                 <tbody class="divide-y divide-gray-200">
                     @foreach($students as $student)
                     <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <input type="checkbox" class="student-checkbox rounded border-gray-300" value="{{ $student->id }}" onchange="updateBulkActions()">
+                        </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=random" class="h-10 w-10 rounded-full">
@@ -127,13 +157,26 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <a href="{{ route('admin.students.show', $student->id) }}" 
-                                   class="rounded p-1 text-gray-600 hover:bg-gray-100"
+                                   class="rounded p-1 text-blue-600 hover:bg-blue-50"
                                    title="Lihat Detail">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </a>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                                @endif
+
+                                <!-- Delete -->
+                                <button onclick="deleteStudent({{ $student->id }}, '{{ $student->name }}')"
+                                        class="rounded p-1 text-red-600 hover:bg-red-50"
+                                        title="Hapus Peserta">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -148,4 +191,176 @@
         </div>
         @endif
     </div>
+
+    <!-- JavaScript for student management -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+        let selectedStudents = [];
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateBulkActions();
+        }
+
+        // Update bulk actions visibility
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+            selectedStudents = Array.from(checkboxes).map(cb => cb.value);
+            
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (selectedStudents.length > 0) {
+                bulkActions.style.display = 'flex';
+                selectedCount.textContent = selectedStudents.length;
+            } else {
+                bulkActions.style.display = 'none';
+            }
+
+            // Update select all checkbox
+            const allCheckboxes = document.querySelectorAll('.student-checkbox');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            selectAllCheckbox.checked = allCheckboxes.length > 0 && selectedStudents.length === allCheckboxes.length;
+        }
+
+        // Delete single student
+        function deleteStudent(studentId, studentName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus peserta "${studentName}"? Semua data terkait (order, payment) akan terhapus permanen.`)) {
+                fetch(`/admin/students/${studentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus peserta.');
+                });
+            }
+        }
+
+        // Bulk delete students
+        function bulkDelete() {
+            if (selectedStudents.length === 0) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus ${selectedStudents.length} peserta? Semua data terkait akan terhapus permanen.`)) {
+                fetch('/admin/students/bulk-delete', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_ids: selectedStudents
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus peserta.');
+                });
+            }
+        }
+
+        // Suspend student with reason
+        function suspendStudent(studentId) {
+            const reason = prompt('Alasan suspend akun (opsional):');
+            if (reason === null) return; // User cancelled
+            
+            fetch(`/admin/students/${studentId}/suspend`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reason: reason || null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat suspend akun.');
+            });
+        }
+
+        // Activate student
+        function activateStudent(studentId) {
+            if (confirm('Apakah Anda yakin ingin mengaktifkan kembali akun peserta ini?')) {
+                fetch(`/admin/students/${studentId}/activate`, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat mengaktifkan akun.');
+                });
+            }
+        }
+
+        // Export data
+        function exportData() {
+            const currentUrl = new URL(window.location);
+            const exportUrl = new URL('/admin/students/export', window.location.origin);
+            
+            // Copy current filters to export
+            ['search', 'program', 'status'].forEach(param => {
+                if (currentUrl.searchParams.has(param)) {
+                    exportUrl.searchParams.set(param, currentUrl.searchParams.get(param));
+                }
+            });
+
+            window.location.href = exportUrl.toString();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBulkActions();
+        });
+    </script>
 @endsection
