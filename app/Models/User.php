@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Testimonial> $testimonials
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -65,7 +69,7 @@ class User extends Authenticatable
      */
     public function orders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(\App\Models\Order::class);
     }
 
     /**
@@ -73,6 +77,6 @@ class User extends Authenticatable
      */
     public function testimonials()
     {
-        return $this->hasMany(Testimonial::class);
+        return $this->hasMany(\App\Models\Testimonial::class);
     }
 }

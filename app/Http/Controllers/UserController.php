@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Models\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -52,6 +55,7 @@ class UserController extends Controller
      */
     public function myServices()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
         // Try to get courses if Course model exists
@@ -118,6 +122,7 @@ class UserController extends Controller
      */
     public function transactions()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
         // Get only orders that have payment record (user already uploaded proof)

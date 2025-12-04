@@ -164,7 +164,7 @@ class TestimonialController extends Controller
         $testimonials = Testimonial::with(['program', 'order'])
             ->where('user_id', Auth::id())
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('pages.testimonials.my-testimonials', compact('testimonials'));
     }
