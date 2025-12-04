@@ -66,8 +66,8 @@
                 <div class="mb-4 flex items-start justify-between">
                     <h3 class="font-semibold text-gray-900 flex-1 pr-2">{{ $program->name }}</h3>
                     <span class="rounded-full px-2 py-1 text-xs font-semibold whitespace-nowrap
-                        {{ $program->status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
-                        {{ $program->status === 'active' ? 'Active' : 'Inactive' }}
+                        {{ $program->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
+                        {{ $program->is_active ? 'Active' : 'Inactive' }}
                     </span>
                 </div>
                 <div class="space-y-3 text-sm mb-4">
@@ -77,20 +77,12 @@
                         </svg>
                         <span>{{ $program->orders_count ?? 0 }} Peserta</span>
                     </div>
-                    @if($program->tutor)
-                    <div class="flex items-center gap-2 text-gray-600">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <span>{{ $program->tutor }}</span>
-                    </div>
-                    @endif
-                    @if($program->schedule)
+                    @if($program->duration_months)
                     <div class="flex items-center gap-2 text-gray-600">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span>{{ $program->schedule }}</span>
+                        <span>{{ $program->duration_months }} bulan</span>
                     </div>
                     @endif
                     <div class="flex items-center gap-2 text-gray-600">
