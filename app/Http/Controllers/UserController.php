@@ -11,7 +11,8 @@ use Illuminate\Validation\Rules\Password;
 class UserController extends Controller
 {
     /**
-     * Show user profile page
+     * Tampilkan halaman profil user
+     * @return view dengan data user yang sedang login
      */
     public function profile()
     {
@@ -21,7 +22,10 @@ class UserController extends Controller
     }
 
     /**
-     * Update user profile
+     * Update data profil user
+     * Field: name, email, phone, university, interest
+     * @param Request - Data profil yang akan diupdate
+     * @return redirect back dengan pesan sukses
      */
     public function updateProfile(Request $request)
     {
@@ -48,7 +52,9 @@ class UserController extends Controller
     }
 
     /**
-     * Show my services page (purchased programs)
+     * Tampilkan halaman layanan yang sudah dibeli user
+     * Menampilkan: Program yang sudah dibayar, courses, quiz banks
+     * @return view dengan list enrollments (program aktif)
      */
     public function myServices()
     {

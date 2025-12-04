@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+/**
+ * Controller untuk menangani form kontak dari user
+ */
 class ContactController extends Controller
 {
+    /**
+     * Proses submit form kontak
+     * Validasi input: name, email, phone, subject, message
+     * TODO: Simpan ke database / kirim email notifikasi
+     * @param Request - Data form kontak
+     * @return redirect dengan pesan sukses
+     */
     public function store(Request $request)
     {
-        // Validate the form data
+        // Validasi data form
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -17,11 +27,11 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        // Here you can add logic to:
-        // 1. Save to database
-        // 2. Send email notification
-        // 3. Log the contact form submission
-        // For now, we'll just redirect back with success message
+        // TODO: Tambahkan logic untuk:
+        // 1. Simpan ke tabel contacts di database
+        // 2. Kirim email notifikasi ke admin
+        // 3. Log submission untuk tracking
+        // Saat ini hanya redirect dengan pesan sukses
 
         return redirect()->route('kontak')->with('success', 'Terima kasih! Pesan Anda telah berhasil dikirim. Kami akan segera menghubungi Anda.');
     }

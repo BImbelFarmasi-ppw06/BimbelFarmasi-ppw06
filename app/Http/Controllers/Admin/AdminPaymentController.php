@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Cache;
 class AdminPaymentController extends Controller
 {
     /**
-     * Display list of all payments
+     * Tampilkan daftar semua pembayaran dengan filter
+     * Filter: status (pending/paid/rejected), date
+     * Statistik: total pending, revenue bulan ini, total revenue
+     * @param Request - status, date (opsional untuk filter)
+     * @return view dengan list payments + statistik
      */
     public function index(Request $request)
     {
@@ -49,7 +53,10 @@ class AdminPaymentController extends Controller
     }
 
     /**
-     * Show payment detail with proof
+     * Tampilkan detail pembayaran lengkap dengan bukti transfer
+     * Info: User, Program, Metode, Status, Bukti gambar
+     * @param int $id - ID payment
+     * @return view detail payment dengan bukti pembayaran
      */
     public function show($id)
     {
@@ -59,7 +66,12 @@ class AdminPaymentController extends Controller
     }
 
     /**
-     * Approve payment
+     * Approve/Konfirmasi pembayaran oleh admin
+     * Proses: Update payment status ke 'paid' -> Update order ke 'processing' -> Clear cache
+     * Validasi: Hanya bisa approve payment dengan status 'pending'
+     * @param Request - notes (opsional)
+     * @param int $id - ID payment
+     * @return redirect ke index dengan pesan sukses/error
      */
     public function approve(Request $request, $id)
     {
@@ -86,7 +98,10 @@ class AdminPaymentController extends Controller
             ]);
 
             // Invalidate dashboard cache
-            Cache::tags(['dashboard'])->flush();
+            Cache::forget('dashboard_stats');
+            Cache::forget('program_distribution');
+            Cache::forget('monthly_enrollment');
+            Cache::forget('monthly_revenue');
 
             DB::commit();
 
@@ -131,7 +146,10 @@ class AdminPaymentController extends Controller
             ]);
 
             // Invalidate dashboard cache
-            Cache::tags(['dashboard'])->flush();
+            Cache::forget('dashboard_stats');
+            Cache::forget('program_distribution');
+            Cache::forget('monthly_enrollment');
+            Cache::forget('monthly_revenue');
 
             DB::commit();
 

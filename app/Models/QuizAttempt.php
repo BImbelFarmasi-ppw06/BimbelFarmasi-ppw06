@@ -4,19 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model QuizAttempt - Mengelola data hasil pengerjaan quiz/tryout
+ */
 class QuizAttempt extends Model
 {
     protected $fillable = [
-        'quiz_bank_id',
-        'user_id',
-        'score',
-        'correct_answers',
-        'total_questions',
-        'is_passed',
-        'started_at',
-        'completed_at',
-        'answers',
-        'time_spent_seconds',
+        'quiz_bank_id',        // ID quiz/tryout yang dikerjakan
+        'user_id',             // ID user yang mengerjakan
+        'score',               // Nilai persentase (0-100)
+        'correct_answers',     // Jumlah jawaban benar
+        'total_questions',     // Total jumlah soal
+        'is_passed',           // Status lulus/tidak (boolean)
+        'started_at',          // Waktu mulai mengerjakan
+        'completed_at',        // Waktu selesai mengerjakan
+        'answers',             // JSON jawaban user (question_id => answer)
+        'time_spent_seconds',  // Durasi pengerjaan dalam detik
     ];
 
     protected $casts = [
@@ -26,18 +29,25 @@ class QuizAttempt extends Model
         'completed_at' => 'datetime',
     ];
 
+    /**
+     * Relasi ke QuizBank - Quiz/tryout yang dikerjakan
+     */
     public function quizBank()
     {
         return $this->belongsTo(QuizBank::class);
     }
 
+    /**
+     * Relasi ke User - User yang mengerjakan
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Get formatted score percentage
+     * Accessor - Dapatkan nilai persentase yang sudah dibulatkan
+     * Return: nilai dengan 2 desimal (contoh: 85.50)
      */
     public function getScorePercentageAttribute()
     {
@@ -45,7 +55,8 @@ class QuizAttempt extends Model
     }
 
     /**
-     * Get grade based on score
+     * Accessor - Dapatkan grade huruf berdasarkan nilai
+     * A: 90-100%, B+: 80-89%, B: 70-79%, C: 60-69%, D: 50-59%, E: 0-49%
      */
     public function getGradeAttribute()
     {
@@ -58,7 +69,8 @@ class QuizAttempt extends Model
     }
 
     /**
-     * Get status text
+     * Accessor - Dapatkan text status kelulusan
+     * Return: "LULUS" atau "TIDAK LULUS"
      */
     public function getStatusTextAttribute()
     {
@@ -66,7 +78,8 @@ class QuizAttempt extends Model
     }
 
     /**
-     * Get performance feedback
+     * Accessor - Dapatkan feedback motivasi berdasarkan nilai
+     * Return: Pesan motivasi sesuai range nilai
      */
     public function getFeedbackAttribute()
     {
@@ -86,7 +99,8 @@ class QuizAttempt extends Model
     }
 
     /**
-     * Get time spent in human readable format
+     * Accessor - Format durasi pengerjaan ke format yang mudah dibaca
+     * Return: "X menit Y detik" (contoh: "15 menit 30 detik")
      */
     public function getTimeSpentFormattedAttribute()
     {

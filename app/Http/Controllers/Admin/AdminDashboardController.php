@@ -11,14 +11,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
+/**
+ * Controller untuk Dashboard Admin
+ * Menampilkan statistik, grafik, dan data penting untuk admin
+ */
 class AdminDashboardController extends Controller
 {
+    /**
+     * Tampilkan halaman dashboard admin dengan statistik lengkap
+     * Data di-cache untuk performa (5 menit untuk stats, 10 menit untuk chart)
+     * Stats: Total users, active users, revenue, pending payments
+     * Charts: Program distribution, monthly enrollment
+     * @return view dashboard admin dengan data statistik
+     */
     public function index()
     {
         // Cache dashboard statistics for 5 minutes (300 seconds)
         $cacheKey = 'dashboard_stats_' . Carbon::now()->format('YmdHi');
         
-        $stats = Cache::tags(['dashboard'])->remember($cacheKey, 300, function () {
+        $stats = Cache::remember($cacheKey, 300, function () {
             return [
                 // Total users (excluding admins)
                 'totalUsers' => User::where('is_admin', 0)->count(),
@@ -76,7 +87,7 @@ class AdminDashboardController extends Controller
             ->get();
         
         // Cache program distribution for 10 minutes
-        $programDistribution = Cache::tags(['dashboard', 'programs'])->remember('program_distribution', 600, function () {
+        $programDistribution = Cache::remember('program_distribution', 600, function () {
             return Program::withCount(['orders' => function($query) {
                 $query->whereHas('payment', function($q) {
                     $q->where('status', 'paid');
@@ -92,7 +103,7 @@ class AdminDashboardController extends Controller
         });
         
         // Cache monthly enrollment for 1 hour
-        $monthlyEnrollment = Cache::tags(['dashboard', 'charts'])->remember('monthly_enrollment', 3600, function () {
+        $monthlyEnrollment = Cache::remember('monthly_enrollment', 3600, function () {
             $data = [];
             for ($i = 9; $i >= 0; $i--) {
                 $date = Carbon::now()->subMonths($i);
@@ -112,7 +123,7 @@ class AdminDashboardController extends Controller
         });
         
         // Cache monthly revenue for 1 hour
-        $monthlyRevenue = Cache::tags(['dashboard', 'charts'])->remember('monthly_revenue', 3600, function () {
+        $monthlyRevenue = Cache::remember('monthly_revenue', 3600, function () {
             $data = [];
             for ($i = 9; $i >= 0; $i--) {
                 $date = Carbon::now()->subMonths($i);
@@ -130,7 +141,7 @@ class AdminDashboardController extends Controller
         });
         
         // Cache weekly activity for 15 minutes
-        $weeklyActivity = Cache::tags(['dashboard', 'charts'])->remember('weekly_activity', 900, function () {
+        $weeklyActivity = Cache::remember('weekly_activity', 900, function () {
             $data = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);

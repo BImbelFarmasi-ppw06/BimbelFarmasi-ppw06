@@ -44,35 +44,28 @@
                                 ],
                                 "properties": {
                                     "name": {
-                                        "type": "string",
-                                        "example": "John Doe"
+                                        "type": "string"
                                     },
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "john@example.com"
+                                        "format": "email"
                                     },
                                     "phone": {
-                                        "type": "string",
-                                        "example": "08123456789"
+                                        "type": "string"
                                     },
                                     "university": {
-                                        "type": "string",
-                                        "example": "Universitas Indonesia"
+                                        "type": "string"
                                     },
                                     "interest": {
-                                        "type": "string",
-                                        "example": "UKOM"
+                                        "type": "string"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
+                                        "format": "password"
                                     },
                                     "password_confirmation": {
                                         "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
+                                        "format": "password"
                                     }
                                 },
                                 "type": "object"
@@ -88,8 +81,7 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string",
-                                            "example": "User registered successfully"
+                                            "type": "string"
                                         },
                                         "user": {
                                             "type": "object"
@@ -128,13 +120,11 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "john@example.com"
+                                        "format": "email"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
+                                        "format": "password"
                                     }
                                 },
                                 "type": "object"
@@ -150,8 +140,7 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string",
-                                            "example": "Login successful"
+                                            "type": "string"
                                         },
                                         "user": {
                                             "type": "object"
@@ -186,8 +175,7 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string",
-                                            "example": "Logout successful"
+                                            "type": "string"
                                         }
                                     },
                                     "type": "object"
@@ -221,8 +209,7 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "john@example.com"
+                                        "format": "email"
                                     }
                                 },
                                 "type": "object"
@@ -238,8 +225,7 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string",
-                                            "example": "Password reset link has been sent to your email"
+                                            "type": "string"
                                         }
                                     },
                                     "type": "object"
@@ -269,25 +255,20 @@
                                 ],
                                 "properties": {
                                     "name": {
-                                        "type": "string",
-                                        "example": "John Doe"
+                                        "type": "string"
                                     },
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "john@example.com"
+                                        "format": "email"
                                     },
                                     "phone": {
-                                        "type": "string",
-                                        "example": "08123456789"
+                                        "type": "string"
                                     },
                                     "subject": {
-                                        "type": "string",
-                                        "example": "Inquiry about program"
+                                        "type": "string"
                                     },
                                     "message": {
-                                        "type": "string",
-                                        "example": "I would like to know more about..."
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -303,12 +284,10 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "message": {
-                                            "type": "string",
-                                            "example": "Thank you! Your message has been sent successfully."
+                                            "type": "string"
                                         }
                                     },
                                     "type": "object"
@@ -337,8 +316,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "array",
@@ -377,12 +355,10 @@
                                 ],
                                 "properties": {
                                     "program_id": {
-                                        "type": "integer",
-                                        "example": 1
+                                        "type": "integer"
                                     },
                                     "notes": {
-                                        "type": "string",
-                                        "example": "Special request"
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -398,8 +374,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "message": {
                                             "type": "string"
@@ -446,8 +421,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "object"
@@ -526,8 +500,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "message": {
                                             "type": "string"
@@ -570,8 +543,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "array",
@@ -613,8 +585,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "object"
@@ -656,8 +627,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "array",
@@ -735,12 +705,7 @@
                             "schema": {
                                 "properties": {
                                     "answers": {
-                                        "type": "object",
-                                        "example": {
-                                            "1": "A",
-                                            "2": "B",
-                                            "3": "C"
-                                        }
+                                        "type": "object"
                                     }
                                 },
                                 "type": "object"
@@ -775,8 +740,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "array",
@@ -971,8 +935,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "data": {
                                             "type": "object"
@@ -1030,8 +993,7 @@
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean",
-                                            "example": true
+                                            "type": "boolean"
                                         },
                                         "message": {
                                             "type": "string"

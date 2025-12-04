@@ -5,15 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Model Testimonial - Mengelola testimoni/review dari user
+ * User bisa memberikan rating & komentar untuk program yang sudah dibeli
+ */
 class Testimonial extends Model
 {
     protected $fillable = [
-        'user_id',
-        'program_id',
-        'order_id',
-        'rating',
-        'comment',
-        'is_approved'
+        'user_id',       // ID user yang menulis
+        'program_id',    // ID program yang direview
+        'order_id',      // ID pesanan terkait
+        'rating',        // Rating bintang (1-5)
+        'comment',       // Komentar/review
+        'is_approved'    // Status approval oleh admin
     ];
 
     protected $casts = [
@@ -22,7 +26,7 @@ class Testimonial extends Model
     ];
 
     /**
-     * Get the user that wrote the testimonial
+     * Relasi ke User - User yang menulis testimoni
      */
     public function user(): BelongsTo
     {
@@ -30,7 +34,7 @@ class Testimonial extends Model
     }
 
     /**
-     * Get the program being reviewed
+     * Relasi ke Program - Program yang direview
      */
     public function program(): BelongsTo
     {
@@ -38,7 +42,7 @@ class Testimonial extends Model
     }
 
     /**
-     * Get the order associated with the testimonial
+     * Relasi ke Order - Pesanan yang terkait dengan testimoni ini
      */
     public function order(): BelongsTo
     {
@@ -46,7 +50,8 @@ class Testimonial extends Model
     }
 
     /**
-     * Scope to get only approved testimonials
+     * Scope - Filter hanya testimoni yang sudah diapprove admin
+     * Usage: Testimonial::approved()->get()
      */
     public function scopeApproved($query)
     {
@@ -54,7 +59,8 @@ class Testimonial extends Model
     }
 
     /**
-     * Scope to get testimonials by rating
+     * Scope - Filter testimoni berdasarkan rating tertentu
+     * Usage: Testimonial::byRating(5)->get() untuk rating bintang 5
      */
     public function scopeByRating($query, $rating)
     {
