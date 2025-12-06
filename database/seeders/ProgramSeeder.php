@@ -87,7 +87,7 @@ class ProgramSeeder extends Seeder
                     'Simulasi wawancara',
                     'E-book dan modul eksklusif',
                 ],
-                'price' => 2050000,
+                'price' => 1750000,
                 'duration_months' => 4,
                 'total_sessions' => 32,
                 'is_active' => true,

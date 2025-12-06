@@ -22,16 +22,47 @@
 
             <!-- Profile Form -->
             <div class="rounded-2xl bg-white p-8 shadow-lg">
-                <form action="{{ route('user.profile.update') }}" method="POST">
+                <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
+                    <!-- Profile Photo Section -->
                     <div class="mb-8 flex items-center gap-6">
-                        <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white">
-                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        <div class="relative">
+                            @if($user->profile_photo)
+                                <img src="{{ asset('storage/' . $user->profile_photo) }}" 
+                                     alt="{{ $user->name }}" 
+                                     class="h-24 w-24 rounded-full object-cover border-4 border-blue-200"
+                                     id="preview-image">
+                            @else
+                                <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white border-4 border-blue-200" id="preview-initials">
+                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                </div>
+                                <img src="" 
+                                     alt="{{ $user->name }}" 
+                                     class="h-24 w-24 rounded-full object-cover border-4 border-blue-200 hidden"
+                                     id="preview-image">
+                            @endif
+                            
+                            <!-- Upload Button Overlay -->
+                            <label for="profile_photo" class="absolute bottom-0 right-0 cursor-pointer rounded-full bg-blue-600 p-2 text-white shadow-lg hover:bg-blue-700 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </label>
+                            <input type="file" 
+                                   id="profile_photo" 
+                                   name="profile_photo" 
+                                   accept="image/jpeg,image/jpg,image/png,image/gif"
+                                   class="hidden"
+                                   onchange="previewProfilePhoto(event)">
                         </div>
                         <div>
                             <h2 class="text-xl font-bold text-gray-900">{{ $user->name }}</h2>
                             <p class="text-sm text-gray-500">Member sejak {{ $user->created_at->format('d M Y') }}</p>
+                            <p class="text-xs text-gray-400 mt-1">Klik ikon kamera untuk ganti foto</p>
+                            @error('profile_photo')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -141,4 +172,26 @@
             </div>
         </div>
     </section>
+
+    <!-- JavaScript untuk Preview Foto -->
+    <script>
+        function previewProfilePhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewImage = document.getElementById('preview-image');
+                    const previewInitials = document.getElementById('preview-initials');
+                    
+                    previewImage.src = e.target.result;
+                    previewImage.classList.remove('hidden');
+                    
+                    if (previewInitials) {
+                        previewInitials.classList.add('hidden');
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 @endsection
