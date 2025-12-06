@@ -116,8 +116,22 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900">Alamat Kantor</h3>
-                                <p class="mt-1 text-sm text-gray-600">📍 Jl. Bunga Mayang I No. 19</p>
+                                <a href="https://www.google.com/maps/search/?api=1&query=Jl.+Bunga+Mayang+I+No.+19,+Lau+Cih,+Medan+Tuntungan" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="mt-1 block text-sm text-blue-600 hover:text-blue-800 hover:underline transition">
+                                    📍 Jl. Bunga Mayang I No. 19
+                                </a>
                                 <p class="text-sm text-gray-600">Lau Cih, Medan Tuntungan</p>
+                                <a href="https://www.google.com/maps/search/?api=1&query=Jl.+Bunga+Mayang+I+No.+19,+Lau+Cih,+Medan+Tuntungan" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    Buka di Google Maps
+                                </a>
                             </div>
                         </div>
                     </div>
