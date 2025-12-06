@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed programs and admin
+        // Seed programs and admin only (disable testimonial seeder)
         $this->call([
             AdminSeeder::class,
             ProgramSeeder::class,
-            TestimonialSeeder::class,
+            // TestimonialSeeder::class, // Commented out - creates sample users
         ]);
     }
 }

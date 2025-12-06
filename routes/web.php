@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
+use App\Http\Controllers\Admin\AdminProgramController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\HealthCheckController;
 
@@ -135,6 +136,14 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // === MANAJEMEN SISWA/USER ===
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index'); // Daftar semua siswa
     Route::get('/students/{id}', [AdminStudentController::class, 'show'])->name('students.show'); // Detail siswa & riwayat belajar
+    Route::delete('/students/{id}', [AdminStudentController::class, 'destroy'])->name('students.destroy'); // Hapus siswa
+    Route::post('/students/bulk-delete', [AdminStudentController::class, 'bulkDelete'])->name('students.bulk-delete'); // Hapus banyak siswa sekaligus
+    Route::post('/students/{id}/suspend', [AdminStudentController::class, 'suspend'])->name('students.suspend'); // Suspend/non-aktifkan akun siswa
+    Route::patch('/students/{id}/activate', [AdminStudentController::class, 'activate'])->name('students.activate'); // Aktifkan kembali akun siswa
+    Route::get('/students/export', [AdminStudentController::class, 'export'])->name('students.export'); // Export data siswa ke Excel/CSV
+
+    // === MANAJEMEN PROGRAM (CRUD) ===
+    Route::resource('programs', AdminProgramController::class); // CRUD lengkap untuk program (create, read, update, delete)
 
     // === MANAJEMEN KELAS/PROGRAM ===
     Route::get('/classes', [AdminClassController::class, 'index'])->name('classes.index'); // Daftar semua kelas/program

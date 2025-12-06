@@ -41,16 +41,10 @@ class TestimonialController extends Controller
      */
     public function create($orderNumber)
     {
-        $order = Order::with(['program', 'payment'])
+        $order = Order::with(['program'])
             ->where('order_number', $orderNumber)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-
-        // Check if payment is approved
-        if (!$order->payment || $order->payment->status !== 'approved') {
-            return redirect()->route('order.my-orders')
-                ->with('error', 'Anda hanya bisa memberikan testimoni setelah pembayaran disetujui.');
-        }
 
         // Check if testimonial already exists
         $existingTestimonial = Testimonial::where('order_id', $order->id)
@@ -170,7 +164,7 @@ class TestimonialController extends Controller
         $testimonials = Testimonial::with(['program', 'order'])
             ->where('user_id', Auth::id())
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('pages.testimonials.my-testimonials', compact('testimonials'));
     }
