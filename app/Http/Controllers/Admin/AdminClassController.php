@@ -56,7 +56,8 @@ class AdminClassController extends Controller
         try {
             DB::beginTransaction();
 
-            // Prepare features JSON
+            // Prepare features - filter out empty values but keep as array
+            // Model will handle JSON encoding via casts
             $features = $request->features ? array_filter($request->features) : [];
 
             $program = Program::create([
@@ -67,7 +68,7 @@ class AdminClassController extends Controller
                 'tutor' => $validated['tutor'] ?? null,
                 'schedule' => $validated['schedule'] ?? null,
                 'status' => $validated['status'],
-                'features' => json_encode($features),
+                'features' => $features, // Pass array directly, model will JSON encode it
             ]);
 
             DB::commit();
@@ -113,6 +114,8 @@ class AdminClassController extends Controller
         try {
             DB::beginTransaction();
 
+            // Prepare features - filter out empty values but keep as array
+            // Model will handle JSON encoding via casts
             $features = $request->features ? array_filter($request->features) : [];
 
             $program->update([
@@ -123,7 +126,7 @@ class AdminClassController extends Controller
                 'tutor' => $validated['tutor'] ?? null,
                 'schedule' => $validated['schedule'] ?? null,
                 'status' => $validated['status'],
-                'features' => json_encode($features),
+                'features' => $features, // Pass array directly, model will JSON encode it
             ]);
 
             DB::commit();

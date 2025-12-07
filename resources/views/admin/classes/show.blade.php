@@ -76,9 +76,10 @@
 
             <!-- Features -->
             @php
-                $features = json_decode($program->features ?? '[]', true);
+                // Model casting handles JSON automatically, features is already an array
+                $features = $program->features ?? [];
             @endphp
-            @if(!empty($features))
+            @if(!empty($features) && is_array($features))
             <div class="rounded-lg bg-white p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Fitur & Benefit</h3>
                 <ul class="space-y-2">

@@ -25,7 +25,7 @@ Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimo
 Route::view('/kontak', 'pages.kontak')->name('kontak');
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
 
-// ⚠️ HAPUS route view login/google yang lama
+
 // Route::view('/login/google', 'pages.login-google')->name('login.google');
 
 // =================== USER AUTH ===================

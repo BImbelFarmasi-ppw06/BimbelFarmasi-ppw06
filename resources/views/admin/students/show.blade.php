@@ -210,10 +210,53 @@
                                         </div>
                                         <div>
                                             <span class="font-medium text-gray-700">Status Order:</span>
-                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                                                Completed
+                                            @php
+                                                $orderStatusColors = [
+                                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                                    'waiting_verification' => 'bg-blue-100 text-blue-800',
+                                                    'processing' => 'bg-purple-100 text-purple-800',
+                                                    'completed' => 'bg-green-100 text-green-800',
+                                                    'cancelled' => 'bg-red-100 text-red-800',
+                                                ];
+                                                $statusColor = $orderStatusColors[$order->status] ?? 'bg-gray-100 text-gray-800';
+                                                $statusLabel = ucfirst(str_replace('_', ' ', $order->status));
+                                            @endphp
+                                            <span class="inline-flex items-center rounded-full {{ $statusColor }} px-2 py-0.5 text-xs font-medium">
+                                                {{ $statusLabel }}
                                             </span>
                                         </div>
+                                        @if($order->payment)
+                                        <div>
+                                            <span class="font-medium text-gray-700">Status Pembayaran:</span>
+                                            @php
+                                                $paymentStatusColors = [
+                                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                                    'paid' => 'bg-green-100 text-green-800',
+                                                    'rejected' => 'bg-red-100 text-red-800',
+                                                    'failed' => 'bg-red-100 text-red-800',
+                                                ];
+                                                $paymentColor = $paymentStatusColors[$order->payment->status] ?? 'bg-gray-100 text-gray-800';
+                                                $paymentLabel = ucfirst($order->payment->status);
+                                            @endphp
+                                            <span class="inline-flex items-center rounded-full {{ $paymentColor }} px-2 py-0.5 text-xs font-medium">
+                                                {{ $paymentLabel }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-700">Metode:</span>
+                                            <span class="text-gray-600">
+                                                @if($order->payment->payment_method === 'bank_transfer')
+                                                    🏦 Transfer Bank
+                                                @elseif($order->payment->payment_method === 'ewallet')
+                                                    💳 E-Wallet
+                                                @elseif($order->payment->payment_method === 'qris')
+                                                    📱 QRIS
+                                                @else
+                                                    {{ ucfirst($order->payment->payment_method) }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
