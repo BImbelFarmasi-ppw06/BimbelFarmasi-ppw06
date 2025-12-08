@@ -37,13 +37,29 @@ class UserController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'university' => ['nullable', 'string', 'max:255'],
             'interest' => ['nullable', 'string', 'max:255'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
             'phone.required' => 'Nomor handphone wajib diisi.',
+            'profile_photo.image' => 'File harus berupa gambar.',
+            'profile_photo.mimes' => 'Format foto harus jpeg, jpg, png, atau gif.',
+            'profile_photo.max' => 'Ukuran foto maksimal 2MB.',
         ]);
+
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($user->profile_photo && \Storage::exists('public/' . $user->profile_photo)) {
+                \Storage::delete('public/' . $user->profile_photo);
+            }
+
+            // Store new photo
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $validated['profile_photo'] = $path;
+        }
 
         $user->update($validated);
 
