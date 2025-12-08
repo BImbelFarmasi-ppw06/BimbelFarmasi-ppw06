@@ -1,2 +1,13 @@
+# Bimbel Farmasi - Robots.txt
+# Website: https://bimbelfarmasi.com
+
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /storage/payment-proofs/
+Disallow: /login
+Disallow: /register
+
+# Sitemap
+Sitemap: https://bimbelfarmasi.com/sitemap.xml

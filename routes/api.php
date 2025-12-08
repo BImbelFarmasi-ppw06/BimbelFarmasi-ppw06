@@ -76,3 +76,22 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum', 'admin'])->group(function
         ]);
     });
 });
+
+// Integration API Routes (For external projects)
+Route::prefix('v1/integration')->group(function () {
+    use App\Http\Controllers\Api\IntegrationController;
+    use App\Http\Controllers\Api\WebhookController;
+    
+    // Webhook endpoints
+    Route::post('/webhook/external', [WebhookController::class, 'receiveExternal']);
+    Route::post('/webhook/send', [WebhookController::class, 'sendToExternal'])->middleware('auth:sanctum');
+    
+    // Data sync endpoints
+    Route::get('/users', [IntegrationController::class, 'syncUsers']);
+    Route::get('/orders', [IntegrationController::class, 'syncOrders']);
+    Route::get('/statistics', [IntegrationController::class, 'getStatistics']);
+    
+    // Data receive endpoints
+    Route::post('/enrollment', [IntegrationController::class, 'receiveEnrollment']);
+    Route::post('/validate-user', [IntegrationController::class, 'validateUser']);
+});
