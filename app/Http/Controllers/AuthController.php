@@ -115,7 +115,8 @@ class AuthController extends Controller
      * LOGIN DENGAN GOOGLE
      * Step 2: terima callback dari Google
      * 
-     * Flow: Email baru → Auto-register dengan data minimal → Login
+     * ✅ SMART FLOW: Jika email belum register → auto-register, kemudian login
+     *               Jika email sudah register → langsung login
      */
     public function handleGoogleCallback()
     {
@@ -129,30 +130,43 @@ class AuthController extends Controller
             $user = User::where('email', $email)->first();
 
             if (!$user) {
-                // ✅ Email baru → Auto-register dengan data minimal
-                // User bisa lengkapi data di halaman profil nanti
+                // ✅ Email belum ada → Auto-register dengan data dari Google
                 $user = User::create([
                     'name'       => $name,
                     'email'      => $email,
-                    'phone'      => null,  // Akan diisi user di profil
-                    'university' => null,  // Akan diisi user di profil
-                    'interest'   => null,  // Akan diisi user di profil
+                    'phone'      => null,  // User isi nanti di profil
+                    'university' => null,  // User isi nanti di profil
+                    'interest'   => null,  // User isi nanti di profil
                     'password'   => Hash::make(Str::random(32)),  // Random password
                     'is_admin'   => false,
                 ]);
+                
+                // Pesan untuk user baru
+                $welcomeMessage = 'Selamat datang! Akun Anda berhasil dibuat dengan Google. Silakan lengkapi data profil Anda.';
+                $redirectToProfile = true;
+            } else {
+                // Email sudah ada → User sudah pernah register
+                $welcomeMessage = 'Selamat datang kembali! Anda berhasil login dengan Google.';
+                $redirectToProfile = false;
             }
 
             // Login user
             Auth::login($user, remember: true);
 
-            // Jika data belum lengkap (tidak ada phone), arahkan ke profil untuk lengkapi
-            if (is_null($user->phone)) {
+            // Cek role untuk redirect sesuai
+            if ($user->is_admin) {
+                return redirect()->route('admin.dashboard')
+                    ->with('success', 'Selamat datang di Admin Panel!');
+            }
+
+            // Jika user baru, arahkan ke profil untuk lengkapi data
+            if ($redirectToProfile && is_null($user->phone)) {
                 return redirect()->route('user.profile')
-                    ->with('info', 'Selamat datang! Silakan lengkapi data profil Anda.');
+                    ->with('info', $welcomeMessage);
             }
 
             return redirect()->intended(route('home'))
-                ->with('success', 'Selamat datang! Anda berhasil login dengan Google.');
+                ->with('success', $welcomeMessage);
 
         } catch (\Exception $e) {
             return redirect()->route('login')
