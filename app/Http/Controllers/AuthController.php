@@ -114,49 +114,50 @@ class AuthController extends Controller
     /**
      * LOGIN DENGAN GOOGLE
      * Step 2: terima callback dari Google
+     * 
+     * Flow: Email baru → Auto-register dengan data minimal → Login
      */
     public function handleGoogleCallback()
     {
-        // Ambil data user dari Google
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            // Ambil data user dari Google
+            $googleUser = Socialite::driver('google')->user();
+            $email = $googleUser->getEmail();
+            $name = $googleUser->getName() ?? $googleUser->getNickname() ?? 'User';
 
-        $email = $googleUser->getEmail();
+            // Cek apakah email sudah terdaftar
+            $user = User::where('email', $email)->first();
 
-        // Cek apakah email sudah pernah daftar (bisa dari register biasa atau Google)
-        $user = User::where('email', $email)->first();
+            if (!$user) {
+                // ✅ Email baru → Auto-register dengan data minimal
+                // User bisa lengkapi data di halaman profil nanti
+                $user = User::create([
+                    'name'       => $name,
+                    'email'      => $email,
+                    'phone'      => null,  // Akan diisi user di profil
+                    'university' => null,  // Akan diisi user di profil
+                    'interest'   => null,  // Akan diisi user di profil
+                    'password'   => Hash::make(Str::random(32)),  // Random password
+                    'is_admin'   => false,
+                ]);
+            }
 
-        if (! $user) {
-            // Kalau belum ada, buat user baru minimal dengan name + email
-            $user = User::create([
-                'name'       => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Pengguna Google',
-                'email'      => $email,
-                'phone'      => null,
-                'university' => null,
-                'interest'   => null,
-                // password random supaya field tidak kosong
-                'password'   => Hash::make(Str::random(32)),
-                'is_admin'   => false,
-                // kalau kamu punya kolom google_id di tabel users, boleh tambahkan:
-                // 'google_id'  => $googleUser->getId(),
-            ]);
-        } else {
-            // Kalau mau, di sini kamu bisa update google_id tanpa mengganggu kolom lain
-            // if (empty($user->google_id)) {
-            //     $user->google_id = $googleUser->getId();
-            //     $user->save();
-            // }
+            // Login user
+            Auth::login($user, remember: true);
+
+            // Jika data belum lengkap (tidak ada phone), arahkan ke profil untuk lengkapi
+            if (is_null($user->phone)) {
+                return redirect()->route('user.profile')
+                    ->with('info', 'Selamat datang! Silakan lengkapi data profil Anda.');
+            }
+
+            return redirect()->intended(route('home'))
+                ->with('success', 'Selamat datang! Anda berhasil login dengan Google.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('login')
+                ->with('error', 'Gagal login dengan Google: ' . $e->getMessage());
         }
-
-        // Login user
-        Auth::login($user, true); // remember = true
-
-        // Arahkan sama seperti login biasa
-        if (Auth::user()->is_admin) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->intended(route('home'))
-            ->with('success', 'Berhasil login dengan Google!');
     }
 
     /**

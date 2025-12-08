@@ -154,10 +154,16 @@ class OrderController extends Controller
      */
     public function myOrders()
     {
+<<<<<<< HEAD
         // Hanya tampilkan pesanan yang sudah upload bukti pembayaran
         $orders = Order::with(['program', 'payment'])
             ->where('user_id', Auth::id())
             ->whereHas('payment') // Wajib punya payment record
+=======
+        // Show all orders (including pending without payment)
+        $orders = Order::with(['program', 'payment'])
+            ->where('user_id', Auth::id())
+>>>>>>> a1eea46653b14b9b7c95983801c2a2f75c910c20
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -346,10 +352,14 @@ class OrderController extends Controller
             ]
         );
 
+        // Update order status based on payment status
         if ($status === 'paid') {
-            $order->update(['status' => 'processing']);
+            $order->update(['status' => 'processing']); // Changed from 'completed' to 'processing'
         } elseif ($status === 'failed') {
             $order->update(['status' => 'cancelled']);
+        } elseif ($status === 'pending') {
+            // Keep order status as 'pending' if payment is still pending
+            $order->update(['status' => 'pending']);
         }
 
         // Invalidate dashboard cache when payment status changes

@@ -43,12 +43,17 @@ Route::view('/bimbel-ukom-d3-farmasi', 'pages.bimbel-ukom')->name('bimbel.ukom')
 // Webhook Midtrans - Notifikasi status pembayaran dari payment gateway (tidak butuh autentikasi)
 Route::post('/midtrans/notification', [OrderController::class, 'handleNotification'])->name('midtrans.notification');
 
+<<<<<<< HEAD
 Route::view('/cpns-p3k-farmasi', 'pages.cpns-p3k')->name('cpns.p3k'); // Halaman program CPNS & P3K Farmasi
 Route::view('/joki-tugas-farmasi', 'pages.joki-tugas')->name('joki.tugas'); // Halaman layanan Joki Tugas
 Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimonials.index'); // Halaman daftar testimoni
 Route::view('/kontak', 'pages.kontak')->name('kontak'); // Halaman kontak
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store'); // Proses submit form kontak
 Route::get('/jadwal', [CalendarController::class, 'index'])->name('jadwal.index'); // Halaman jadwal bimbel (Google Calendar)
+=======
+
+// Route::view('/login/google', 'pages.login-google')->name('login.google');
+>>>>>>> a1eea46653b14b9b7c95983801c2a2f75c910c20
 
 // ⚠️ Route lama sudah dihapus - diganti dengan controller redirect ke Google OAuth
 // =================== USER AUTH ===================

@@ -84,7 +84,7 @@ class AdminStudentController extends Controller
     public function show($id)
     {
         $student = User::where('is_admin', 0)
-            ->with(['orders.program'])
+            ->with(['orders.program', 'orders.payment'])
             ->findOrFail($id);
 
         return view('admin.students.show', compact('student'));

@@ -11,17 +11,31 @@
 @section('og_description', 'Punya pertanyaan tentang program UKOM, CPNS & P3K Farmasi? Hubungi kami sekarang! Tim kami siap membantu Anda 24/7.')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-[#2D3C8C] via-blue-800 to-blue-900 py-20 text-white">
-        <div class="absolute inset-0 pointer-events-none">
-            <div class="absolute -left-24 top-10 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>
-            <div class="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-blue-600/20 blur-3xl"></div>
+    <!-- Hero Section with Full Background Image -->
+    <section class="relative min-h-[600px] overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0">
+            <img 
+                src="{{ asset('images/kontak.png') }}" 
+                alt="Hubungi Kami" 
+                class="w-full h-full object-cover"
+                onerror="this.style.background='linear-gradient(to bottom right, #2D3C8C, #1e2761)'">
+            <!-- Dark Overlay -->
+            <div class="absolute inset-0 bg-black/50"></div>
         </div>
-        <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <span class="inline-flex items-center rounded-full bg-blue-700/50 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-100 backdrop-blur-sm">💬 Layanan 24/7</span>
-                <h1 class="mt-4 text-4xl font-bold sm:text-5xl">Hubungi Kami</h1>
-                <p class="mx-auto mt-4 max-w-2xl text-lg text-blue-100">Kami siap membantu menjawab pertanyaan dan memberikan solusi terbaik untuk kebutuhan akademik farmasi Anda. Jangan ragu untuk menghubungi!</p>
+
+        <!-- Content -->
+        <div class="relative z-10 flex items-center justify-center min-h-[600px]">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+                <div class="text-center text-white">
+                    <span class="inline-flex items-center rounded-full bg-white/20 backdrop-blur-md px-6 py-2 text-xs font-semibold uppercase tracking-widest text-white mb-6">
+                        💬 Layanan 24/7
+                    </span>
+                    <h1 class="text-5xl sm:text-6xl font-bold mb-6 drop-shadow-lg">Hubungi Kami</h1>
+                    <p class="mx-auto max-w-2xl text-lg sm:text-xl text-white/90 drop-shadow-md leading-relaxed">
+                        Kami siap membantu menjawab pertanyaan dan memberikan solusi terbaik untuk kebutuhan akademik farmasi Anda. Jangan ragu untuk menghubungi!
+                    </p>
+                </div>
             </div>
         </div>
     </section>

@@ -44,7 +44,7 @@
                     value="{{ old('name') }}"
                     required
                     placeholder="Contoh: UKOM D3 Farmasi - Reguler"
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                 @error('name')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -61,7 +61,7 @@
                     rows="4"
                     required
                     placeholder="Jelaskan detail program, materi yang diajarkan, target peserta, dll."
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -82,7 +82,7 @@
                         min="0"
                         step="1000"
                         placeholder="1500000"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('price') border-red-500 @enderror">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('price') border-red-500 @enderror">
                     @error('price')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -99,7 +99,7 @@
                         value="{{ old('duration') }}"
                         required
                         placeholder="3 Bulan"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('duration') border-red-500 @enderror">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('duration') border-red-500 @enderror">
                     @error('duration')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -121,7 +121,7 @@
                     id="tutor" 
                     value="{{ old('tutor') }}"
                     placeholder="Contoh: Dr. Ani Susanti, Apt."
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
             </div>
 
             <!-- Schedule -->
@@ -135,7 +135,7 @@
                     id="schedule" 
                     value="{{ old('schedule') }}"
                     placeholder="Contoh: Sen & Rab, 19:00-21:00"
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
             </div>
 
             <!-- Status -->
@@ -147,7 +147,7 @@
                     name="status" 
                     id="status" 
                     required
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
                     <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active (Bisa didaftarkan)</option>
                     <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive (Tidak bisa didaftarkan)</option>
                 </select>
@@ -164,7 +164,7 @@
                         type="text" 
                         name="features[]" 
                         placeholder="Contoh: Video pembelajaran lengkap"
-                        class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
                     <button 
                         type="button" 
                         onclick="removeFeature(this)"
@@ -211,7 +211,7 @@
                     type="text" 
                     name="features[]" 
                     placeholder="Tambahkan fitur lainnya"
-                    class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
                 <button 
                     type="button" 
                     onclick="removeFeature(this)"
