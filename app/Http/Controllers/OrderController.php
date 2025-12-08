@@ -136,10 +136,9 @@ class OrderController extends Controller
      */
     public function myOrders()
     {
-        // Only show orders that have payment uploaded
+        // Show all orders (including pending without payment)
         $orders = Order::with(['program', 'payment'])
             ->where('user_id', Auth::id())
-            ->whereHas('payment') // Must have payment proof uploaded
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -263,7 +262,7 @@ class OrderController extends Controller
             // Get transaction status from Midtrans
             $status = \Midtrans\Transaction::status($orderNumber);
 
-            $transactionStatus = $status->transaction_status;
+            $transactionStatus = $status->transaction_status ?? null;
             $fraudStatus = $status->fraud_status ?? null;
 
             Log::info('Payment Status Check: ', [
@@ -315,10 +314,14 @@ class OrderController extends Controller
             ]
         );
 
+        // Update order status based on payment status
         if ($status === 'paid') {
-            $order->update(['status' => 'processing']);
+            $order->update(['status' => 'processing']); // Changed from 'completed' to 'processing'
         } elseif ($status === 'failed') {
             $order->update(['status' => 'cancelled']);
+        } elseif ($status === 'pending') {
+            // Keep order status as 'pending' if payment is still pending
+            $order->update(['status' => 'pending']);
         }
     }
 }

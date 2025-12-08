@@ -1,227 +1,277 @@
-<!-- Payment Detail Modal Content -->
-<div class="bg-white">
-    <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">Detail Pembayaran</h3>
-            <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </div>
+@extends('layouts.admin')
 
-    <!-- Content -->
-    <div class="px-6 py-4 max-h-[70vh] overflow-y-auto">
-        <!-- Order Info -->
-        <div class="mb-6">
-            <h4 class="text-sm font-semibold text-gray-700 mb-3">Informasi Order</h4>
-            <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Nomor Order</span>
-                    <span class="text-sm font-semibold text-gray-900">#{{ $payment->order->order_number }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Program</span>
-                    <span class="text-sm font-semibold text-gray-900">{{ $payment->order->program->name }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Harga</span>
-                    <span class="text-sm font-semibold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.') }}</span>
-                </div>
-            </div>
-        </div>
+@section('title', 'Detail Pembayaran')
 
-        <!-- User Info -->
-        <div class="mb-6">
-            <h4 class="text-sm font-semibold text-gray-700 mb-3">Informasi Peserta</h4>
-            <div class="bg-gray-50 rounded-lg p-4">
-                <div class="flex items-center gap-4 mb-3">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($payment->order->user->name) }}&background=random" 
-                         class="h-12 w-12 rounded-full">
-                    <div>
-                        <p class="font-semibold text-gray-900">{{ $payment->order->user->name }}</p>
-                        <p class="text-sm text-gray-600">{{ $payment->order->user->email }}</p>
-                    </div>
-                </div>
-                @if($payment->order->user->phone)
-                    <p class="text-sm text-gray-600">📱 {{ $payment->order->user->phone }}</p>
-                @endif
-            </div>
-        </div>
-
-        <!-- Payment Method -->
-        <div class="mb-6">
-            <h4 class="text-sm font-semibold text-gray-700 mb-3">Metode Pembayaran</h4>
-            <div class="bg-gray-50 rounded-lg p-4">
-                <p class="text-sm font-semibold text-gray-900">
-                    @if($payment->payment_method === 'bank_transfer')
-                        🏦 Transfer Bank
-                    @elseif($payment->payment_method === 'ewallet')
-                        💳 E-Wallet
-                    @else
-                        📱 QRIS
-                    @endif
-                </p>
-                <p class="text-xs text-gray-500 mt-1">Dibayar pada {{ $payment->created_at->format('d M Y, H:i') }} WIB</p>
-            </div>
-        </div>
-
-        <!-- Payment Proof -->
-        <div class="mb-6">
-            <h4 class="text-sm font-semibold text-gray-700 mb-3">Bukti Pembayaran</h4>
-            <div class="bg-gray-50 rounded-lg p-4">
-                @if($payment->proof_url)
-                    <img src="{{ asset('storage/' . $payment->proof_url) }}" 
-                         alt="Bukti Pembayaran" 
-                         class="w-full rounded-lg border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
-                         onclick="openImageModal('{{ asset('storage/' . $payment->proof_url) }}')"
-                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'18\' fill=\'%23666\'%3EGambar tidak ditemukan%3C/text%3E%3C/svg%3E';">
-                    <p class="text-xs text-gray-500 mt-2 text-center">Klik gambar untuk memperbesar</p>
-                @else
-                    <div class="text-center py-8 text-gray-400">
-                        <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <p class="text-sm">Bukti pembayaran belum diupload</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        @if($payment->order->notes)
-        <!-- Order Notes -->
-        <div class="mb-6">
-            <h4 class="text-sm font-semibold text-gray-700 mb-3">Catatan dari User</h4>
-            <div class="bg-gray-50 rounded-lg p-4">
-                <p class="text-sm text-gray-700">{{ $payment->order->notes }}</p>
-            </div>
-        </div>
-        @endif
-    </div>
-
-    <!-- Footer Actions -->
-    @if($payment->status === 'pending')
-    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 justify-end">
-        <button 
-            onclick="showRejectForm()" 
-            class="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 font-medium text-sm">
-            Tolak Pembayaran
-        </button>
-        <form method="POST" action="{{ route('admin.payments.approve', $payment->id) }}" class="inline">
-            @csrf
-            <button 
-                type="submit" 
-                onclick="return confirm('Yakin ingin menyetujui pembayaran ini?')"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-sm">
-                Setujui Pembayaran
-            </button>
-        </form>
-    </div>
-
-    <!-- Reject Form (hidden by default) -->
-    <div id="rejectForm" class="hidden px-6 py-4 bg-red-50 border-t border-red-200">
-        <form method="POST" action="{{ route('admin.payments.reject', $payment->id) }}">
-            @csrf
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Alasan Penolakan</label>
-            <textarea 
-                name="reason" 
-                rows="3" 
-                required
-                placeholder="Contoh: Bukti pembayaran tidak jelas, jumlah tidak sesuai, dll."
-                class="w-full rounded-lg border-gray-300 text-sm mb-3"></textarea>
-            <div class="flex gap-2 justify-end">
-                <button 
-                    type="button" 
-                    onclick="hideRejectForm()"
-                    class="px-4 py-2 text-gray-700 text-sm font-medium">
-                    Batal
-                </button>
-                <button 
-                    type="submit"
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium">
-                    Tolak Pembayaran
-                </button>
-            </div>
-        </form>
-    </div>
-    @else
-    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+@section('content')
+    <div class="space-y-6">
+        <!-- Header -->
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-semibold text-gray-700">Status Pembayaran</p>
-                <p class="text-xs text-gray-500 mt-1">
-                    @if($payment->status === 'paid')
-                        Disetujui pada {{ $payment->paid_at?->format('d M Y, H:i') ?? 'N/A' }}
-                    @else
-                        Ditolak • {{ $payment->notes }}
-                    @endif
-                </p>
+                <h1 class="text-2xl font-bold text-gray-900">Detail Pembayaran</h1>
+                <p class="text-gray-600">Informasi pembayaran dan status transaksi</p>
             </div>
-            <span class="px-4 py-2 rounded-full text-sm font-semibold
-                {{ $payment->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                {{ $payment->status === 'paid' ? 'Terkonfirmasi' : 'Ditolak' }}
-            </span>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.payments.index') }}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali
+                </a>
+                <span class="px-6 py-2 rounded-full text-sm font-bold
+                    @if($payment->status === 'pending') bg-yellow-100 text-yellow-800
+                    @elseif($payment->status === 'paid') bg-green-100 text-green-800
+                    @else bg-red-100 text-red-800
+                    @endif">
+                    @if($payment->status === 'pending') 
+                        <i class="fas fa-clock mr-1"></i>Menunggu Konfirmasi
+                    @elseif($payment->status === 'paid') 
+                        <i class="fas fa-check-circle mr-1"></i>Terkonfirmasi
+                    @else 
+                        <i class="fas fa-times-circle mr-1"></i>Ditolak
+                    @endif
+                </span>
+            </div>
         </div>
-    </div>
-    @endif
-</div>
 
-<script>
-    function showRejectForm() {
-        document.getElementById('rejectForm').classList.remove('hidden');
-    }
-    
-    function hideRejectForm() {
-        document.getElementById('rejectForm').classList.add('hidden');
-    }
+        <!-- Main Content Grid -->
+        <div class="grid gap-6 lg:grid-cols-3">
+            <!-- Payment Summary Card (Left) -->
+            <div class="lg:col-span-1">
+                <div class="rounded-xl bg-white p-6 shadow-sm">
+                    <!-- Payment Amount -->
+                    <div class="mb-6">
+                        <p class="text-sm font-medium text-gray-600 mb-2">Jumlah Pembayaran</p>
+                        <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.') }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Order #{{ $payment->order->order_number }}</p>
+                    </div>
 
-    // Image modal/lightbox function
-    function openImageModal(imageUrl) {
-        // Create modal overlay
-        const modal = document.createElement('div');
-        modal.id = 'imageLightbox';
-        modal.className = 'fixed inset-0 bg-black bg-opacity-90 z-[9999] flex items-center justify-center p-4';
-        modal.onclick = function(e) {
-            if (e.target === modal) closeImageModal();
-        };
+                    <!-- Order Info Section -->
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Order</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Nomor Order:</span>
+                                <span class="font-medium">#{{ $payment->order->order_number }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Program:</span>
+                                <span class="font-medium text-right">{{ $payment->order->program->name }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tanggal Order:</span>
+                                <span class="font-medium">{{ $payment->order->created_at->format('d M Y') }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Status Order:</span>
+                                <span class="inline-flex items-center rounded-full {{ $payment->order->status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }} px-2 py-1 text-xs font-semibold">
+                                    {{ ucfirst($payment->order->status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
 
-        // Create modal content
-        modal.innerHTML = `
-            <div class="relative max-w-6xl max-h-full">
-                <button onclick="closeImageModal()" 
-                        class="absolute -top-10 right-0 text-white hover:text-gray-300 text-3xl font-bold">
-                    ✕
-                </button>
-                <img src="${imageUrl}" 
-                     alt="Bukti Pembayaran" 
-                     class="max-w-full max-h-[90vh] rounded-lg shadow-2xl">
-                <div class="text-center mt-4">
-                    <a href="${imageUrl}" 
-                       target="_blank" 
-                       download
-                       class="inline-block px-4 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 text-sm font-medium">
-                        📥 Download Gambar
-                    </a>
+                    <!-- Payment Info Section -->
+                    <div class="border-t pt-6 mt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Pembayaran</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Metode:</span>
+                                <span class="font-medium">
+                                    @if($payment->payment_method === 'bank_transfer')
+                                        🏦 Transfer Bank
+                                    @elseif($payment->payment_method === 'ewallet')
+                                        💳 E-Wallet
+                                    @else
+                                        📱 QRIS
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tanggal:</span>
+                                <span class="font-medium">{{ $payment->created_at->format('d M Y, H:i') }}</span>
+                            </div>
+                            @if($payment->status === 'paid')
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Dikonfirmasi:</span>
+                                <span class="font-medium text-green-600">{{ $payment->paid_at?->format('d M Y, H:i') ?? 'N/A' }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Status Info -->
+                    <div class="mt-6 border-t pt-6">
+                        <div class="p-4 rounded-lg {{ $payment->status === 'paid' ? 'bg-green-50 border border-green-200' : ($payment->status === 'rejected' ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200') }}">
+                            <p class="text-xs font-semibold {{ $payment->status === 'paid' ? 'text-green-700' : ($payment->status === 'rejected' ? 'text-red-700' : 'text-yellow-700') }} mb-1 uppercase">Status Pembayaran</p>
+                            <p class="font-bold {{ $payment->status === 'paid' ? 'text-green-900' : ($payment->status === 'rejected' ? 'text-red-900' : 'text-yellow-900') }}">
+                                @if($payment->status === 'pending')
+                                    Menunggu Konfirmasi
+                                @elseif($payment->status === 'paid')
+                                    Terkonfirmasi
+                                @else
+                                    Ditolak
+                                @endif
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        `;
 
-        document.body.appendChild(modal);
-        document.body.style.overflow = 'hidden';
-    }
+            <!-- Details & Actions (Right) -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- User Information -->
+                <div class="rounded-xl bg-white p-6 shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-user text-blue-600"></i>
+                        Informasi Peserta
+                    </h3>
+                    <div class="flex items-start gap-4">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($payment->order->user->name) }}&background=random&size=100" 
+                             class="h-20 w-20 rounded-full border-4 border-gray-100">
+                        <div class="flex-1">
+                            <h4 class="text-lg font-bold text-gray-900">{{ $payment->order->user->name }}</h4>
+                            <p class="text-gray-600 text-sm">{{ $payment->order->user->email }}</p>
+                            @if($payment->order->user->phone)
+                            <div class="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ $payment->order->user->phone }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
 
-    function closeImageModal() {
-        const modal = document.getElementById('imageLightbox');
-        if (modal) {
-            modal.remove();
-            document.body.style.overflow = 'auto';
+                <!-- Quick Stats -->
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-lg bg-white p-4 shadow-sm">
+                        <div class="flex items-center">
+                            <div class="rounded-lg bg-blue-100 p-2">
+                                <i class="fas fa-receipt text-blue-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Order ID</p>
+                                <p class="text-lg font-bold text-gray-900">#{{ $payment->order->id }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg bg-white p-4 shadow-sm">
+                        <div class="flex items-center">
+                            <div class="rounded-lg bg-purple-100 p-2">
+                                <i class="fas fa-credit-card text-purple-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Payment ID</p>
+                                <p class="text-lg font-bold text-gray-900">#{{ $payment->id }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg bg-white p-4 shadow-sm">
+                        <div class="flex items-center">
+                            <div class="rounded-lg bg-orange-100 p-2">
+                                <i class="fas fa-clock text-orange-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Waktu Pembayaran</p>
+                                <p class="text-lg font-bold text-gray-900">{{ $payment->created_at->format('d M Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if($payment->order->notes)
+                <!-- Order Notes -->
+                <div class="rounded-xl bg-white p-6 shadow-sm">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-sticky-note text-gray-600"></i>
+                        Catatan Order
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed">{{ $payment->order->notes }}</p>
+                </div>
+                @endif
+
+                <!-- Actions Section -->
+                @if($payment->status === 'pending')
+                <div class="rounded-xl bg-white p-6 shadow-sm border-2 border-yellow-200">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-exclamation-circle text-yellow-600"></i>
+                        Aksi Pembayaran
+                    </h3>
+                    <div class="space-y-3">
+                        <form method="POST" action="{{ route('admin.payments.approve', $payment->id) }}">
+                            @csrf
+                            <button 
+                                type="submit" 
+                                onclick="return confirm('Yakin ingin menyetujui pembayaran ini?')"
+                                class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i>
+                                Setujui Pembayaran
+                            </button>
+                        </form>
+                        <button 
+                            onclick="showRejectForm()" 
+                            class="w-full px-4 py-3 border-2 border-red-300 text-red-600 rounded-lg hover:bg-red-50 font-semibold transition flex items-center justify-center gap-2">
+                            <i class="fas fa-times-circle"></i>
+                            Tolak Pembayaran
+                        </button>
+
+                        <!-- Reject Form -->
+                        <div id="rejectForm" class="hidden mt-4 p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                            <form method="POST" action="{{ route('admin.payments.reject', $payment->id) }}">
+                                @csrf
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Alasan Penolakan</label>
+                                <textarea 
+                                    name="reason" 
+                                    rows="3" 
+                                    required
+                                    placeholder="Jelaskan alasan penolakan..."
+                                    class="w-full rounded-lg border border-red-300 text-sm p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                                <div class="flex gap-2">
+                                    <button 
+                                        type="button" 
+                                        onclick="hideRejectForm()"
+                                        class="flex-1 px-3 py-2 text-gray-700 text-sm font-semibold border rounded-lg hover:bg-gray-100">
+                                        Batal
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        class="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold">
+                                        Tolak
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <div class="rounded-xl bg-white p-6 shadow-sm {{ $payment->status === 'paid' ? 'border-2 border-green-200' : 'border-2 border-red-200' }}">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                        {{ $payment->status === 'paid' ? '✅' : '❌' }}
+                        @if($payment->status === 'paid')
+                            Pembayaran Terkonfirmasi
+                        @else
+                            Pembayaran Ditolak
+                        @endif
+                    </h3>
+                    <div class="p-4 {{ $payment->status === 'paid' ? 'bg-green-50' : 'bg-red-50' }} rounded-lg">
+                        @if($payment->status === 'paid')
+                            <p class="text-sm text-green-700"><strong>Tanggal Konfirmasi:</strong> {{ $payment->paid_at?->format('d M Y, H:i') ?? 'N/A' }}</p>
+                        @else
+                            <p class="text-sm font-medium {{ $payment->status === 'paid' ? 'text-green-700' : 'text-red-700' }}"><strong>Alasan Penolakan:</strong></p>
+                            <p class="text-sm {{ $payment->status === 'paid' ? 'text-green-700' : 'text-red-700' }} mt-1">{{ $payment->notes }}</p>
+                        @endif
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showRejectForm() {
+            document.getElementById('rejectForm').classList.remove('hidden');
         }
-    }
-
-    // Close on ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeImageModal();
-    });
-</script>
+        
+        function hideRejectForm() {
+            document.getElementById('rejectForm').classList.add('hidden');
+        }
+    </script>
+@endsection

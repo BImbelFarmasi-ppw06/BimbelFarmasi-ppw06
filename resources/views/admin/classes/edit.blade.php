@@ -43,7 +43,7 @@
                     id="name" 
                     value="{{ old('name', $program->name) }}"
                     required
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                 @error('name')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -58,7 +58,7 @@
                     id="description" 
                     rows="4"
                     required
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $program->description) }}</textarea>
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $program->description) }}</textarea>
                 @error('description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -77,7 +77,7 @@
                         required
                         min="0"
                         step="1000"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('price') border-red-500 @enderror">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('price') border-red-500 @enderror">
                     @error('price')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -93,7 +93,7 @@
                         id="duration" 
                         value="{{ old('duration', $program->duration) }}"
                         required
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 @error('duration') border-red-500 @enderror">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('duration') border-red-500 @enderror">
                     @error('duration')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -113,7 +113,7 @@
                     name="tutor" 
                     id="tutor" 
                     value="{{ old('tutor', $program->tutor) }}"
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
             </div>
 
             <div class="mb-4">
@@ -125,7 +125,7 @@
                     name="schedule" 
                     id="schedule" 
                     value="{{ old('schedule', $program->schedule) }}"
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
             </div>
 
             <div class="mb-4">
@@ -136,7 +136,7 @@
                     name="status" 
                     id="status" 
                     required
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
                     <option value="active" {{ old('status', $program->status) === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ old('status', $program->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
@@ -147,8 +147,17 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Fitur Program</h3>
             
             @php
-                $existingFeatures = old('features', json_decode($program->features ?? '[]', true));
-                if (empty($existingFeatures)) {
+                // Get features from old input first (after validation error)
+                if (old('features')) {
+                    $existingFeatures = old('features');
+                } else {
+                    // Otherwise get from database - model casting handles JSON automatically
+                    $rawFeatures = $program->features ?? [];
+                    // After model casts, features should already be an array
+                    $existingFeatures = is_array($rawFeatures) ? $rawFeatures : [];
+                }
+                // Ensure it's never empty for form display
+                if (empty($existingFeatures) || !is_array($existingFeatures)) {
                     $existingFeatures = [''];
                 }
             @endphp
@@ -160,7 +169,7 @@
                         type="text" 
                         name="features[]" 
                         value="{{ $feature }}"
-                        class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
                     <button 
                         type="button" 
                         onclick="removeFeature(this)"
@@ -220,7 +229,7 @@
                 <input 
                     type="text" 
                     name="features[]" 
-                    class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
                 <button 
                     type="button" 
                     onclick="removeFeature(this)"
