@@ -38,6 +38,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Google Analytics -->
+    @if(env('GOOGLE_ANALYTICS_ID'))
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ env('GOOGLE_ANALYTICS_ID') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ env('GOOGLE_ANALYTICS_ID') }}', {
+            'send_page_view': true,
+            'anonymize_ip': true
+        });
+    </script>
+    @endif
+    
     <!-- Alpine.js for dropdown -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

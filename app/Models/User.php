@@ -30,6 +30,7 @@ class User extends Authenticatable
         'interest',
         'password',
         'profile_photo',
+        'google_id',
         'is_admin',
         'is_suspended',
         'suspended_at',

@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminProgramController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\HealthCheckController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\DriveController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +48,7 @@ Route::view('/joki-tugas-farmasi', 'pages.joki-tugas')->name('joki.tugas'); // H
 Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimonials.index'); // Halaman daftar testimoni
 Route::view('/kontak', 'pages.kontak')->name('kontak'); // Halaman kontak
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store'); // Proses submit form kontak
+Route::get('/jadwal', [CalendarController::class, 'index'])->name('jadwal.index'); // Halaman jadwal bimbel (Google Calendar)
 
 // ⚠️ Route lama sudah dihapus - diganti dengan controller redirect ke Google OAuth
 // =================== USER AUTH ===================
@@ -57,11 +61,12 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Proses logout
 
-// 🔹 GOOGLE OAUTH LOGIN - Login menggunakan akun Google
-Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])
+// =================== GOOGLE OAUTH LOGIN ===================
+// Login menggunakan akun Google
+Route::get('/login/google', [GoogleController::class, 'redirectToGoogle'])
     ->name('login.google'); // Redirect ke halaman login Google
 
-Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])
+Route::get('/login/google/callback', [GoogleController::class, 'handleGoogleCallback'])
     ->name('login.google.callback'); // Callback setelah user login di Google
 
 // =================== USER PROTECTED ROUTES ===================

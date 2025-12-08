@@ -135,6 +135,29 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Google Maps Embed -->
+                    <div class="mt-8">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">📍 Lokasi Kami di Peta</h3>
+                        <div class="overflow-hidden rounded-2xl shadow-lg border-4 border-white">
+                            <iframe 
+                                src="https://www.google.com/maps/embed/v1/place?key={{ env('GOOGLE_MAPS_API_KEY') }}&q=Jl.+Bunga+Mayang+I+No.+19,+Lau+Cih,+Medan+Tuntungan&zoom=15&maptype=roadmap"
+                                width="100%" 
+                                height="350" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade"
+                                class="w-full">
+                            </iframe>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 text-center">
+                            <svg class="inline h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Klik peta untuk navigasi langsung via Google Maps
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Contact Form -->
