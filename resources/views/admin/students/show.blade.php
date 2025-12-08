@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 @extends('layouts.admin')
 
 @section('title', 'Detail Peserta')
@@ -354,3 +356,4 @@
         }
     </script>
 @endsection
+>>>>>>> a1eea46653b14b9b7c95983801c2a2f75c910c20

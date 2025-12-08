@@ -38,6 +38,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Google Analytics -->
+    @if(env('GOOGLE_ANALYTICS_ID'))
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ env('GOOGLE_ANALYTICS_ID') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ env('GOOGLE_ANALYTICS_ID') }}', {
+            'send_page_view': true,
+            'anonymize_ip': true
+        });
+    </script>
+    @endif
+    
     <!-- Alpine.js for dropdown -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -140,9 +155,15 @@
                         <!-- User Dropdown Menu -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false" class="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white px-4 py-2 text-sm font-semibold text-[#2D3C8C] shadow-sm transition hover:bg-blue-50">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
+                                @if(Auth::user()->profile_photo)
+                                    <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" 
+                                         alt="{{ Auth::user()->name }}" 
+                                         class="h-6 w-6 rounded-full object-cover border-2 border-blue-200">
+                                @else
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                @endif
                                 <span>{{ Auth::user()->name }}</span>
                                 <svg class="h-4 w-4" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -356,7 +377,7 @@
                         <h3 class="text-lg font-semibold">Bimbel Farmasi</h3>
                     </div>
                     <p class="text-sm text-white/80 leading-relaxed">Pendampingan akademik dan karir kefarmasian dengan mentor berpengalaman dan kurikulum terstruktur.</p>
-                    <p class="mt-2 text-xs text-white/60 italic">"Raih Pangkal Kompeten"</p>
+                    <p class="mt-2 text-xs text-white/60 italic">"Rajin Pangkal Kompeten"</p>
                 </div>
                 <div class="space-y-3">
                     <h4 class="text-sm font-semibold uppercase tracking-wide text-white/70">Navigasi</h4>

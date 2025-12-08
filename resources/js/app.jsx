@@ -9,45 +9,56 @@ import TestimonialSlider from "./components/TestimonialSlider";
 import ContactForm from "./components/ContactForm";
 import OrderForm from "./components/OrderForm";
 
+// Component registry for auto-mounting
+const COMPONENTS = {
+    Hero,
+    ProgramCard,
+    TestimonialSlider,
+    ContactForm,
+    OrderForm,
+};
+
+/**
+ * Auto-mount React components based on data-component attribute
+ *
+ * Usage in Blade:
+ * <div data-component="OrderForm" data-props='{"programId": 1}'></div>
+ */
+function mountReactComponents() {
+    document.querySelectorAll("[data-component]").forEach((container) => {
+        const componentName = container.getAttribute("data-component");
+        const Component = COMPONENTS[componentName];
+
+        if (!Component) {
+            console.warn(
+                `React component "${componentName}" not found in registry`
+            );
+            return;
+        }
+
+        // Parse props from data-props attribute
+        let props = {};
+        try {
+            const propsAttr = container.getAttribute("data-props");
+            props = propsAttr ? JSON.parse(propsAttr) : {};
+        } catch (error) {
+            console.error(`Failed to parse props for ${componentName}:`, error);
+        }
+
+        // Mount component
+        const root = createRoot(container);
+        root.render(<Component {...props} />);
+    });
+}
+
 // Initialize React components when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-    // Hero Component
-    const heroContainer = document.getElementById("react-hero");
-    if (heroContainer) {
-        const root = createRoot(heroContainer);
-        root.render(<Hero />);
-    }
-
-    // Program Cards
-    const programContainer = document.getElementById("react-programs");
-    if (programContainer) {
-        const root = createRoot(programContainer);
-        root.render(<ProgramCard />);
-    }
-
-    // Testimonial Slider
-    const testimonialContainer = document.getElementById("react-testimonials");
-    if (testimonialContainer) {
-        const root = createRoot(testimonialContainer);
-        root.render(<TestimonialSlider />);
-    }
-
-    // Contact Form
-    const contactContainer = document.getElementById("react-contact-form");
-    if (contactContainer) {
-        const root = createRoot(contactContainer);
-        root.render(<ContactForm />);
-    }
-
-    // Order Form
-    const orderContainer = document.getElementById("react-order-form");
-    if (orderContainer) {
-        const root = createRoot(orderContainer);
-        root.render(<OrderForm />);
-    }
+    mountReactComponents();
 });
 
-// Keep existing vanilla JS for backward compatibility
+// Export for manual mounting if needed
+export { COMPONENTS, mountReactComponents };
+
 // Mobile menu toggle
 const mobileMenuButton = document.getElementById("mobile-menu-button");
 const mobileMenu = document.getElementById("mobile-menu");

@@ -29,6 +29,8 @@ class User extends Authenticatable
         'university',
         'interest',
         'password',
+        'profile_photo',
+        'google_id',
         'is_admin',
         'is_suspended',
         'suspended_at',
@@ -65,7 +67,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the orders for the user
+     * Relasi ke Order - Semua pesanan yang dibuat user
+     * Relasi: One to Many (1 user bisa punya banyak orders)
      */
     public function orders()
     {
@@ -73,10 +76,20 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the testimonials for the user
+     * Relasi ke Testimonial - Semua testimoni yang dibuat user
+     * Relasi: One to Many (1 user bisa punya banyak testimonials)
      */
     public function testimonials()
     {
         return $this->hasMany(\App\Models\Testimonial::class);
+    }
+
+    /**
+     * Relasi ke QuizAttempt - Semua hasil tryout/quiz user
+     * Relasi: One to Many (1 user bisa punya banyak quiz attempts)
+     */
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class);
     }
 }

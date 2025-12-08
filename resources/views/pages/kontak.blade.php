@@ -130,10 +130,47 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900">Alamat Kantor</h3>
-                                <p class="mt-1 text-sm text-gray-600">📍 Jl. Bunga Mayang I No. 19</p>
+                                <a href="https://www.google.com/maps/search/?api=1&query=Jl.+Bunga+Mayang+I+No.+19,+Lau+Cih,+Medan+Tuntungan" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="mt-1 block text-sm text-blue-600 hover:text-blue-800 hover:underline transition">
+                                    📍 Jl. Bunga Mayang I No. 19
+                                </a>
                                 <p class="text-sm text-gray-600">Lau Cih, Medan Tuntungan</p>
+                                <a href="https://www.google.com/maps/search/?api=1&query=Jl.+Bunga+Mayang+I+No.+19,+Lau+Cih,+Medan+Tuntungan" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="mt-2 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    Buka di Google Maps
+                                </a>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Google Maps Embed -->
+                    <div class="mt-8">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">📍 Lokasi Kami di Peta</h3>
+                        <div class="overflow-hidden rounded-2xl shadow-lg border-4 border-white">
+                            <iframe 
+                                src="https://www.google.com/maps/embed/v1/place?key={{ env('GOOGLE_MAPS_API_KEY') }}&q=Jl.+Bunga+Mayang+I+No.+19,+Lau+Cih,+Medan+Tuntungan&zoom=15&maptype=roadmap"
+                                width="100%" 
+                                height="350" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade"
+                                class="w-full">
+                            </iframe>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 text-center">
+                            <svg class="inline h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Klik peta untuk navigasi langsung via Google Maps
+                        </p>
                     </div>
                 </div>
 

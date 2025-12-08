@@ -14,7 +14,8 @@ use Illuminate\Validation\Rules\Password;
 class UserController extends Controller
 {
     /**
-     * Show user profile page
+     * Tampilkan halaman profil user
+     * @return view dengan data user yang sedang login
      */
     public function profile()
     {
@@ -24,7 +25,10 @@ class UserController extends Controller
     }
 
     /**
-     * Update user profile
+     * Update data profil user
+     * Field: name, email, phone, university, interest, profile_photo
+     * @param Request - Data profil yang akan diupdate
+     * @return redirect back dengan pesan sukses
      */
     public function updateProfile(Request $request)
     {
@@ -37,13 +41,29 @@ class UserController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'university' => ['nullable', 'string', 'max:255'],
             'interest' => ['nullable', 'string', 'max:255'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'], // Max 2MB
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
             'phone.required' => 'Nomor handphone wajib diisi.',
+            'profile_photo.image' => 'File harus berupa gambar.',
+            'profile_photo.mimes' => 'Format gambar harus: jpeg, jpg, png, atau gif.',
+            'profile_photo.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
+
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            // Hapus foto lama jika ada
+            if ($user->profile_photo && \Storage::disk('public')->exists($user->profile_photo)) {
+                \Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            // Simpan foto baru
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $validated['profile_photo'] = $path;
+        }
 
         $user->update($validated);
 
@@ -51,7 +71,9 @@ class UserController extends Controller
     }
 
     /**
-     * Show my services page (purchased programs)
+     * Tampilkan halaman layanan yang sudah dibeli user
+     * Menampilkan: Program yang sudah dibayar, courses, quiz banks
+     * @return view dengan list enrollments (program aktif)
      */
     public function myServices()
     {
@@ -90,7 +112,7 @@ class UserController extends Controller
             $enrollments = $user->orders()
                 ->with('program', 'payment')
                 ->whereHas('payment', function($query) {
-                    $query->where('status', 'paid');
+                    $query->where('status', 'paid'); // Status setelah admin approve
                 })
                 ->get()
                 ->map(function($order) {
@@ -100,12 +122,12 @@ class UserController extends Controller
                     return [
                         'id' => $order->program->id,
                         'program' => $order->program->name,
-                        'status' => 'active',
+                        'status' => 'active', // Semua program yang sudah dibeli dianggap aktif
                         'start_date' => $startDate->format('Y-m-d'),
                         'end_date' => $endDate->format('Y-m-d'),
-                        'progress' => 0,
+                        'progress' => 0, // Dimulai dari 0%
                         'total_sessions' => $order->program->total_sessions ?? 24,
-                        'completed_sessions' => 0,
+                        'completed_sessions' => 0, // Dimulai dari 0 sesi
                     ];
                 })
                 ->toArray();
@@ -134,12 +156,18 @@ class UserController extends Controller
         
         // Transform to match view format
         $transactions = $orders->map(function ($order) {
+            // Map payment status: paid = verified, pending = pending, rejected = rejected
+            $status = $order->payment->status;
+            if ($status === 'paid') {
+                $status = 'verified';
+            }
+            
             return [
                 'id' => $order->order_number,
                 'date' => $order->created_at->format('Y-m-d'),
                 'program' => $order->program->name,
                 'amount' => $order->amount,
-                'status' => $order->payment->status, // pending, verified, or rejected
+                'status' => $status,
                 'payment_method' => ucwords(str_replace('_', ' ', $order->payment->payment_method)),
                 'invoice_url' => '#',
             ];

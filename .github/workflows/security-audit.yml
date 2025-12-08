@@ -1,0 +1,79 @@
+name: Weekly Security Audit
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  security-audit:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-dev
+
+      - name: Run Composer Security Audit
+        id: composer-audit
+        run: |
+          composer audit --format=json > composer-audit.json || true
+          composer audit
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run npm Security Audit
+        id: npm-audit
+        run: |
+          npm audit --json > npm-audit.json || true
+          npm audit
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-audit-results
+          path: |
+            composer-audit.json
+            npm-audit.json
+          retention-days: 30
+
+      - name: Create Issue on Vulnerabilities
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '🔒 Security Vulnerabilities Detected - ' + new Date().toISOString().split('T')[0];
+            const body = `Security vulnerabilities have been detected in dependencies.
+
+            **Action Required:** Review the audit results and update vulnerable packages.
+
+            - Check the [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details
+            - Download audit artifacts for full report
+            - Run \`composer audit\` and \`npm audit\` locally
+            - Update vulnerable packages with \`composer update\` or \`npm update\`
+
+            **Priority:** High`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['security', 'dependencies']
+            });
