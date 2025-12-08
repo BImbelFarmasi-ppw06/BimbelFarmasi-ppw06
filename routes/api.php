@@ -2,15 +2,28 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ProgramController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\ContactController;
-use App\Http\Controllers\Api\TestimonialController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\PaymentController;
+// API Controllers - Temporarily commented until implementation
+// use App\Http\Controllers\Api\AuthController;
+// use App\Http\Controllers\Api\ProgramController;
+// use App\Http\Controllers\Api\OrderController;
+// use App\Http\Controllers\Api\ContactController;
+// use App\Http\Controllers\Api\TestimonialController;
+// use App\Http\Controllers\Api\UserController;
+// use App\Http\Controllers\Api\PaymentController;
 
-// Public API Routes
+// API Routes - Placeholder until controllers are implemented
+Route::prefix('v1')->group(function () {
+    Route::get('/', function () {
+        return response()->json([
+            'message' => 'Bimbel Farmasi API v1',
+            'status' => 'Active',
+            'note' => 'API endpoints available. Use web interface for full functionality.'
+        ]);
+    });
+});
+
+/*
+// Public API Routes - Uncomment when controllers are ready
 Route::prefix('v1')->group(function () {
     
     // Authentication
@@ -29,7 +42,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact', [ContactController::class, 'store']);
 });
 
-// Protected API Routes (Requires Authentication)
+
+// Protected API Routes (Requires Authentication) - Uncomment when ready
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     
     // Auth User
@@ -76,3 +90,4 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum', 'admin'])->group(function
         ]);
     });
 });
+*/

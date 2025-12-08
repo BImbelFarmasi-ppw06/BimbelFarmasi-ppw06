@@ -30,14 +30,16 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-3">Foto Profil</label>
                         <div class="flex items-center gap-6">
                             <!-- Current Photo Preview -->
-                            <div class="relative">
-                                @if($user->profile_photo)
-                                    <img id="photoPreview" src="{{ asset('storage/' . $user->profile_photo) }}" alt="Foto Profil" class="h-24 w-24 rounded-full object-cover ring-4 ring-blue-100">
-                                @else
-                                    <div id="photoPreview" class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white ring-4 ring-blue-100">
-                                        {{ strtoupper(substr($user->name, 0, 2)) }}
-                                    </div>
-                                @endif
+                            <div class="relative" id="photoPreviewWrapper">
+                                <div id="photoPreview">
+                                    @if($user->profile_photo)
+                                        <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Foto Profil" class="h-24 w-24 rounded-full object-cover ring-4 ring-blue-100">
+                                    @else
+                                        <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white ring-4 ring-blue-100">
+                                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                                        </div>
+                                    @endif
+                                </div>
                                 <!-- Camera Icon Overlay -->
                                 <label for="profile_photo" class="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg ring-2 ring-blue-500 transition hover:bg-blue-50">
                                     <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +57,7 @@
                                     </svg>
                                     Upload Foto Baru
                                 </label>
-                                <p class="mt-2 text-xs text-gray-500">JPG, JPEG, PNG atau GIF (Max. 2MB)</p>
+                                <p id="fileNameDisplay" class="mt-2 text-xs text-gray-500">JPG, JPEG, PNG atau GIF (Max. 2MB)</p>
                                 @error('profile_photo')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -181,15 +183,48 @@
     <script>
         function previewProfilePhoto(event) {
             const file = event.target.files[0];
+            const fileDisplay = document.getElementById('fileNameDisplay');
+            
             if (file) {
+                // Validate file size (2MB max)
+                if (file.size > 2048000) {
+                    alert('Ukuran file terlalu besar! Maksimal 2MB.');
+                    event.target.value = '';
+                    fileDisplay.textContent = 'JPG, JPEG, PNG atau GIF (Max. 2MB)';
+                    fileDisplay.className = 'mt-2 text-xs text-gray-500';
+                    return;
+                }
+
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Format file tidak valid! Gunakan JPG, JPEG, PNG, atau GIF.');
+                    event.target.value = '';
+                    fileDisplay.textContent = 'JPG, JPEG, PNG atau GIF (Max. 2MB)';
+                    fileDisplay.className = 'mt-2 text-xs text-gray-500';
+                    return;
+                }
+
+                // Preview image
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const preview = document.getElementById('photoPreview');
                     preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="h-24 w-24 rounded-full object-cover ring-4 ring-blue-100">`;
                 }
                 reader.readAsDataURL(file);
+
+                // Show simple success message
+                fileDisplay.textContent = `✓ Foto dipilih - Klik "Simpan Perubahan" untuk mengupload`;
+                fileDisplay.className = 'mt-2 text-xs text-green-600 font-semibold';
             }
         }
+
+        // Add form submit handler to show loading
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline-block" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...';
+        });
     </script>
     @endpush
 @endsection

@@ -324,4 +324,41 @@ class OrderController extends Controller
             $order->update(['status' => 'pending']);
         }
     }
+
+    /**
+     * Cancel order (only for orders without payment record)
+     */
+    public function cancelOrder($orderNumber)
+    {
+        try {
+            $order = Order::where('order_number', $orderNumber)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+
+            // Hanya bisa batalkan jika belum ada pembayaran
+            if ($order->payment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak bisa membatalkan pesanan yang sudah memiliki riwayat pembayaran. Hubungi admin jika ingin membatalkan.'
+                ], 400);
+            }
+
+            // Hapus order
+            $order->delete();
+
+            Log::info('Order cancelled: ' . $orderNumber . ' by user ' . Auth::id());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan berhasil dibatalkan'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Cancel Order Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membatalkan pesanan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

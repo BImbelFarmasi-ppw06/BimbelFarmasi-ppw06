@@ -1,356 +1,278 @@
 @extends('layouts.admin')
 
-@section('title', 'Detail Peserta')
+@section('title', 'Detail Peserta - ' . $student->name)
 
 @section('content')
-    <div class="space-y-6">
-        <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Detail Peserta</h1>
-                <p class="text-gray-600">Informasi lengkap peserta dan riwayat transaksi</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-arrow-left mr-2"></i>Kembali
-                </a>
-                <button onclick="deleteStudent({{ $student->id }}, '{{ $student->name }}')" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
-                    <i class="fas fa-trash mr-2"></i>Hapus Peserta
-                </button>
-            </div>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Detail Peserta</h1>
+            <p class="mt-2 text-sm text-gray-600">Informasi lengkap peserta dan pesanan mereka</p>
         </div>
+        <a href="{{ route('admin.students.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-        <div class="grid gap-6 lg:grid-cols-3">
-            <!-- Student Profile -->
-            <div class="lg:col-span-1">
-                <div class="rounded-xl bg-white p-6 shadow-sm">
-                    <div class="flex flex-col items-center text-center">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=random&size=120" 
-                             class="h-24 w-24 rounded-full border-4 border-gray-100">
-                        <h2 class="mt-4 text-xl font-bold text-gray-900">{{ $student->name }}</h2>
-                        <p class="text-gray-600">{{ $student->email }}</p>
-                        
-                        @if($student->phone)
-                        <div class="mt-2 flex items-center gap-2 text-sm text-gray-500">
-                            <i class="fas fa-phone"></i>
-                            <span>{{ $student->phone }}</span>
+    <div class="grid gap-6 lg:grid-cols-3">
+        <!-- Informasi Peserta -->
+        <div class="lg:col-span-2">
+            <!-- Profile Card -->
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div class="flex items-start justify-between border-b border-gray-200 pb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#2D3C8C] to-blue-600">
+                            <span class="text-xl font-bold text-white">{{ strtoupper(substr($student->name, 0, 1)) }}</span>
                         </div>
-                        @endif
-
-                        @if($student->whatsapp)
-                        <div class="mt-1 flex items-center gap-2 text-sm text-gray-500">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>{{ $student->whatsapp }}</span>
-                        </div>
-                        @endif
-
-                        <!-- Account Status -->
-                        <div class="mt-4">
-                            @if(!$student->is_suspended)
-                            <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
-                                <i class="fas fa-check-circle mr-2"></i>Akun Aktif
-                            </span>
-                            @else
-                            <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">
-                                <i class="fas fa-ban mr-2"></i>Akun Suspended
-                            </span>
-                            @if($student->suspend_reason)
-                            <p class="mt-2 text-xs text-red-600">Alasan: {{ $student->suspend_reason }}</p>
-                            @endif
-                            @endif
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">{{ $student->name }}</h2>
+                            <p class="text-sm text-gray-500">ID: {{ $student->id }}</p>
                         </div>
                     </div>
+                    <span class="inline-flex items-center rounded-full {{ $student->is_suspended ? 'bg-red-100 px-3 py-1 text-xs font-semibold text-red-800' : 'bg-green-100 px-3 py-1 text-xs font-semibold text-green-800' }}">
+                        {{ $student->is_suspended ? '🔒 Suspended' : '✓ Aktif' }}
+                    </span>
+                </div>
 
-                    <!-- Account Info -->
-                    <div class="mt-6 border-t pt-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Akun</h3>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">ID Peserta:</span>
-                                <span class="font-medium">#{{ $student->id }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Tgl Daftar:</span>
-                                <span class="font-medium">{{ $student->created_at->format('d M Y, H:i') }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Terakhir Update:</span>
-                                <span class="font-medium">{{ $student->updated_at->format('d M Y, H:i') }}</span>
-                            </div>
-                            @if($student->last_login_at)
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Login Terakhir:</span>
-                                <span class="font-medium">{{ $student->last_login_at->format('d M Y, H:i') }}</span>
-                            </div>
-                            @endif
+                <!-- Informasi Personal -->
+                <div class="space-y-4 py-6">
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wide text-gray-500">Email</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ $student->email }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wide text-gray-500">Nomor Handphone</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ $student->phone ?? '-' }}</p>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-gray-500">Universitas</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ $student->university ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wide text-gray-500">Tertarik Dengan</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ $student->interest ?? '-' }}</p>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Quick Actions -->
-                    <div class="mt-6 border-t pt-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Aksi Cepat</h3>
-                        <div class="space-y-2">
-                            @if(!$student->is_suspended)
-                            <button onclick="suspendStudent({{ $student->id }})" class="w-full rounded-lg bg-orange-100 px-4 py-2 text-sm font-medium text-orange-800 hover:bg-orange-200">
-                                <i class="fas fa-ban mr-2"></i>Suspend Akun
-                            </button>
-                            @else
-                            <button onclick="activateStudent({{ $student->id }})" class="w-full rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-200">
-                                <i class="fas fa-check mr-2"></i>Aktifkan Akun
-                            </button>
-                            @endif
-                            
-                            @if($student->whatsapp)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $student->whatsapp) }}" target="_blank" 
-                               class="w-full block rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-200 text-center">
-                                <i class="fab fa-whatsapp mr-2"></i>Chat WhatsApp
-                            </a>
-                            @endif
-                            
-                            <a href="mailto:{{ $student->email }}" 
-                               class="w-full block rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800 hover:bg-blue-200 text-center">
-                                <i class="fas fa-envelope mr-2"></i>Kirim Email
-                            </a>
-                        </div>
-                    </div>
+                <div class="border-t border-gray-200 pt-6">
+                    <label class="text-xs font-semibold uppercase tracking-wide text-gray-500">Terdaftar Sejak</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ $student->created_at->format('d M Y H:i') }}</p>
                 </div>
             </div>
 
-            <!-- Orders & Payments -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Statistics Cards -->
-                <div class="grid gap-4 sm:grid-cols-3">
-                    <div class="rounded-lg bg-white p-4 shadow-sm">
-                        <div class="flex items-center">
-                            <div class="rounded-lg bg-blue-100 p-2">
-                                <i class="fas fa-shopping-cart text-blue-600"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-600">Total Order</p>
-                                <p class="text-xl font-bold text-gray-900">{{ $student->orders->count() }}</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Pesanan Section -->
+            <div class="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-900 mb-6">Riwayat Pesanan</h3>
 
-                    <div class="rounded-lg bg-white p-4 shadow-sm">
-                        <div class="flex items-center">
-                            <div class="rounded-lg bg-green-100 p-2">
-                                <i class="fas fa-check-circle text-green-600"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-600">Order Berhasil</p>
-                                <p class="text-xl font-bold text-gray-900">{{ $student->orders->count() }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="rounded-lg bg-white p-4 shadow-sm">
-                        <div class="flex items-center">
-                            <div class="rounded-lg bg-purple-100 p-2">
-                                <i class="fas fa-graduation-cap text-purple-600"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-600">Program Diikuti</p>
-                                <p class="text-xl font-bold text-gray-900">
-                                    {{ $student->orders->pluck('program.name')->unique()->count() }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Orders List -->
-                <div class="rounded-xl bg-white shadow-sm">
-                    <div class="border-b px-6 py-4">
-                        <h3 class="text-lg font-medium text-gray-900">Riwayat Order</h3>
-                        <p class="text-sm text-gray-600">Daftar semua program yang pernah diorder peserta (pembayaran diproses via Midtrans)</p>
-                    </div>
-
-                    @if($student->orders->isEmpty())
-                    <div class="p-12 text-center">
-                        <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
-                        <h4 class="text-lg font-medium text-gray-900">Belum ada order</h4>
-                        <p class="text-gray-600">Peserta belum pernah melakukan order apapun.</p>
-                    </div>
-                    @else
-                    <div class="divide-y">
+                @if($student->orders->count() > 0)
+                    <div class="space-y-4">
                         @foreach($student->orders as $order)
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <h4 class="text-lg font-medium text-gray-900">{{ $order->program->name }}</h4>
-                                        @php
-                                            $colors = [
-                                                'bimbel-ukom-d3-farmasi' => 'bg-blue-100 text-blue-800',
-                                                'cpns-p3k-farmasi' => 'bg-purple-100 text-purple-800',
-                                                'joki-tugas-farmasi' => 'bg-yellow-100 text-yellow-800'
-                                            ];
-                                            $color = $colors[$order->program->slug] ?? 'bg-gray-100 text-gray-800';
-                                        @endphp
-                                        <span class="inline-flex items-center rounded-full {{ $color }} px-2.5 py-0.5 text-xs font-medium">
-                                            {{ $order->program->slug }}
-                                        </span>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">{{ $order->program->name ?? 'Program tidak ditemukan' }}</p>
+                                        <p class="text-xs text-gray-500">Order: {{ $order->order_number }}</p>
                                     </div>
-                                    
-                                    <p class="text-sm text-gray-600 mb-2">{{ $order->program->description }}</p>
-                                    
-                                    <div class="grid gap-2 sm:grid-cols-2 text-sm">
-                                        <div>
-                                            <span class="font-medium text-gray-700">Order ID:</span>
-                                            <span class="text-gray-600">#{{ $order->id }}</span>
+                                    <!-- Status Badge -->
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold
+                                        @if($order->status === 'pending') bg-yellow-100 text-yellow-800
+                                        @elseif($order->status === 'waiting_verification') bg-blue-100 text-blue-800
+                                        @elseif($order->status === 'processing') bg-purple-100 text-purple-800
+                                        @elseif($order->status === 'completed') bg-green-100 text-green-800
+                                        @else bg-red-100 text-red-800
+                                        @endif
+                                    ">
+                                        @if($order->status === 'pending') ⏳ Pending
+                                        @elseif($order->status === 'waiting_verification') 👁️ Verifikasi
+                                        @elseif($order->status === 'processing') ⚙️ Diproses
+                                        @elseif($order->status === 'completed') ✓ Selesai
+                                        @else ❌ Batal
+                                        @endif
+                                    </span>
+                                </div>
+
+                                <!-- Informasi Pembayaran -->
+                                @if($order->payment)
+                                    <div class="space-y-2 border-t border-gray-200 pt-3">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="text-gray-600">Metode Pembayaran:</span>
+                                            <span class="font-medium text-gray-900">{{ ucfirst(str_replace('_', ' ', $order->payment->payment_method)) }}</span>
                                         </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Tanggal Order:</span>
-                                            <span class="text-gray-600">{{ $order->created_at->format('d M Y, H:i') }}</span>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="text-gray-600">Jumlah:</span>
+                                            <span class="font-medium text-gray-900">Rp {{ number_format($order->payment->amount, 0, ',', '.') }}</span>
                                         </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Harga:</span>
-                                            <span class="font-bold text-gray-900">Rp {{ number_format($order->program->price, 0, ',', '.') }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Status Order:</span>
-                                            @php
-                                                $orderStatusColors = [
-                                                    'pending' => 'bg-yellow-100 text-yellow-800',
-                                                    'waiting_verification' => 'bg-blue-100 text-blue-800',
-                                                    'processing' => 'bg-purple-100 text-purple-800',
-                                                    'completed' => 'bg-green-100 text-green-800',
-                                                    'cancelled' => 'bg-red-100 text-red-800',
-                                                ];
-                                                $statusColor = $orderStatusColors[$order->status] ?? 'bg-gray-100 text-gray-800';
-                                                $statusLabel = ucfirst(str_replace('_', ' ', $order->status));
-                                            @endphp
-                                            <span class="inline-flex items-center rounded-full {{ $statusColor }} px-2 py-0.5 text-xs font-medium">
-                                                {{ $statusLabel }}
-                                            </span>
-                                        </div>
-                                        @if($order->payment)
-                                        <div>
-                                            <span class="font-medium text-gray-700">Status Pembayaran:</span>
-                                            @php
-                                                $paymentStatusColors = [
-                                                    'pending' => 'bg-yellow-100 text-yellow-800',
-                                                    'paid' => 'bg-green-100 text-green-800',
-                                                    'rejected' => 'bg-red-100 text-red-800',
-                                                    'failed' => 'bg-red-100 text-red-800',
-                                                ];
-                                                $paymentColor = $paymentStatusColors[$order->payment->status] ?? 'bg-gray-100 text-gray-800';
-                                                $paymentLabel = ucfirst($order->payment->status);
-                                            @endphp
-                                            <span class="inline-flex items-center rounded-full {{ $paymentColor }} px-2 py-0.5 text-xs font-medium">
-                                                {{ $paymentLabel }}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium text-gray-700">Metode:</span>
-                                            <span class="text-gray-600">
-                                                @if($order->payment->payment_method === 'bank_transfer')
-                                                    🏦 Transfer Bank
-                                                @elseif($order->payment->payment_method === 'ewallet')
-                                                    💳 E-Wallet
-                                                @elseif($order->payment->payment_method === 'qris')
-                                                    📱 QRIS
-                                                @else
-                                                    {{ ucfirst($order->payment->payment_method) }}
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="text-gray-600">Status Pembayaran:</span>
+                                            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold
+                                                @if($order->payment->status === 'paid') bg-green-100 text-green-800
+                                                @elseif($order->payment->status === 'pending') bg-yellow-100 text-yellow-800
+                                                @else bg-red-100 text-red-800
+                                                @endif
+                                            ">
+                                                @if($order->payment->status === 'paid') ✓ Terbayar
+                                                @elseif($order->payment->status === 'pending') ⏳ Pending
+                                                @else ❌ Gagal
                                                 @endif
                                             </span>
                                         </div>
+                                        @if($order->payment->paid_at)
+                                            <div class="flex items-center justify-between text-sm">
+                                                <span class="text-gray-600">Tanggal Pembayaran:</span>
+                                                <span class="font-medium text-gray-900">{{ $order->payment->paid_at->format('d M Y H:i') }}</span>
+                                            </div>
                                         @endif
                                     </div>
+                                @else
+                                    <p class="text-xs text-gray-500 border-t border-gray-200 pt-3">Belum ada data pembayaran</p>
+                                @endif
+
+                                <div class="mt-3 flex items-center justify-between border-t border-gray-200 pt-3 text-xs text-gray-500">
+                                    <span>Dipesan: {{ $order->created_at->format('d M Y H:i') }}</span>
                                 </div>
                             </div>
-
-
-                        </div>
                         @endforeach
                     </div>
+                @else
+                    <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 py-12 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <p class="mt-4 text-sm text-gray-600">Peserta ini belum memiliki pesanan</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Sidebar Stats -->
+        <div class="space-y-6">
+            <!-- Quick Stats -->
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Statistik</h3>
+
+                <div class="mt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Total Pesanan</span>
+                        <span class="text-2xl font-bold text-[#2D3C8C]">{{ $student->orders->count() }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Pesanan Terbayar</span>
+                        <span class="text-2xl font-bold text-green-600">{{ $student->orders->filter(function($o) { return $o->payment && $o->payment->status === 'paid'; })->count() }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Total Pembayaran</span>
+                        <span class="text-2xl font-bold text-blue-600">Rp {{ number_format($student->orders->filter(function($o) { return $o->payment; })->sum('amount'), 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Aksi</h3>
+
+                <div class="mt-6 space-y-3">
+                    @if(!$student->is_suspended)
+                        <button onclick="suspendStudent({{ $student->id }})" class="w-full rounded-lg bg-orange-100 px-4 py-2 text-sm font-medium text-orange-700 transition hover:bg-orange-200">
+                            🔒 Suspend Peserta
+                        </button>
+                    @else
+                        <button onclick="activateStudent({{ $student->id }})" class="w-full rounded-lg bg-green-100 px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-200">
+                            ✓ Aktifkan Peserta
+                        </button>
                     @endif
+
+                    <button onclick="deleteStudent({{ $student->id }})" class="w-full rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-200">
+                        🗑️ Hapus Peserta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Timestamp -->
+            <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 shadow-sm">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Informasi Sistem</h3>
+                <div class="space-y-2 text-xs">
+                    <p><span class="font-medium text-gray-600">Dibuat:</span> <br>{{ $student->created_at->format('d M Y H:i:s') }}</p>
+                    <p><span class="font-medium text-gray-600">Diperbarui:</span> <br>{{ $student->updated_at->format('d M Y H:i:s') }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script>
-        // Reuse functions from students index
-        function deleteStudent(studentId, studentName) {
-            if (confirm(`Apakah Anda yakin ingin menghapus peserta "${studentName}"? Semua data terkait akan terhapus permanen.`)) {
-                fetch(`/admin/students/${studentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        window.location.href = '/admin/students';
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menghapus peserta.');
-                });
-            }
-        }
-
         function suspendStudent(studentId) {
-            const reason = prompt('Alasan suspend akun (opsional):');
-            if (reason === null) return; // User cancelled
-            
+            if (!confirm('Yakin ingin suspend peserta ini? Mereka tidak bisa login sementara.')) return;
+
             fetch(`/admin/students/${studentId}/suspend`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    reason: reason || null
-                })
+                body: JSON.stringify({})
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    alert('Peserta berhasil disuspend');
                     location.reload();
                 } else {
                     alert('Error: ' + data.message);
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat suspend akun.');
-            });
+            .catch(err => alert('Error: ' + err.message));
         }
 
         function activateStudent(studentId) {
-            if (confirm('Apakah Anda yakin ingin mengaktifkan kembali akun peserta ini?')) {
-                fetch(`/admin/students/${studentId}/activate`, {
-                    method: 'PATCH',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mengaktifkan akun.');
-                });
-            }
+            if (!confirm('Yakin ingin mengaktifkan peserta ini kembali?')) return;
+
+            fetch(`/admin/students/${studentId}/activate`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Peserta berhasil diaktifkan');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => alert('Error: ' + err.message));
+        }
+
+        function deleteStudent(studentId) {
+            if (!confirm('⚠️ PERHATIAN: Ini akan menghapus peserta dan SEMUA data pesanan mereka secara permanen. Yakin?')) return;
+
+            fetch(`/admin/students/${studentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = '/admin/students';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => alert('Error: ' + err.message));
         }
     </script>
 @endsection
