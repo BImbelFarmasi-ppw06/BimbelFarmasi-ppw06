@@ -300,7 +300,33 @@ class OrderController extends Controller
     }
 
     /**
-     * Cancel order (hanya untuk order yang belum dibayar)
+     * Update payment status
+     */
+    private function updatePaymentStatus($order, $status)
+    {
+        Payment::updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'payment_method' => 'midtrans',
+                'amount' => $order->amount,
+                'status' => $status,
+                'paid_at' => $status === 'paid' ? now() : null,
+            ]
+        );
+
+        // Update order status based on payment status
+        if ($status === 'paid') {
+            $order->update(['status' => 'processing']); // Changed from 'completed' to 'processing'
+        } elseif ($status === 'failed') {
+            $order->update(['status' => 'cancelled']);
+        } elseif ($status === 'pending') {
+            // Keep order status as 'pending' if payment is still pending
+            $order->update(['status' => 'pending']);
+        }
+    }
+
+    /**
+     * Cancel order (only for orders without payment record)
      */
     public function cancelOrder($orderNumber)
     {
@@ -333,32 +359,6 @@ class OrderController extends Controller
                 'success' => false,
                 'message' => 'Gagal membatalkan pesanan: ' . $e->getMessage()
             ], 500);
-        }
-    }
-
-    /**
-     * Update payment status
-     */
-    private function updatePaymentStatus($order, $status)
-    {
-        Payment::updateOrCreate(
-            ['order_id' => $order->id],
-            [
-                'payment_method' => 'midtrans',
-                'amount' => $order->amount,
-                'status' => $status,
-                'paid_at' => $status === 'paid' ? now() : null,
-            ]
-        );
-
-        // Update order status based on payment status
-        if ($status === 'paid') {
-            $order->update(['status' => 'processing']); // Changed from 'completed' to 'processing'
-        } elseif ($status === 'failed') {
-            $order->update(['status' => 'cancelled']);
-        } elseif ($status === 'pending') {
-            // Keep order status as 'pending' if payment is still pending
-            $order->update(['status' => 'pending']);
         }
     }
 }

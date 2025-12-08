@@ -13,7 +13,7 @@
 @section('og_image', asset('images/unnamed.jpg'))
 
 @section('content')
-    <section class="relative bg-cover bg-center bg-no-repeat bg-gradient-to-br from-blue-100 via-white to-blue-50" style="background-image: url('/images/unnamed.jpg'); min-height: 70vh;">
+    <section class="relative bg-cover bg-center bg-no-repeat bg-gradient-to-br from-blue-100 via-white to-blue-50" style="background-image: url('/images/joki.png'); min-height: 70vh;">
         <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30"></div> <!-- Overlay gradien untuk kontras yang lebih halus -->
         <div class="relative z-10 mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8">
             <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
