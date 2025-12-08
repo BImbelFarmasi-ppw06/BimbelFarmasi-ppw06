@@ -115,7 +115,7 @@
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Konsultasi interview & psikotes</li>
                         <li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#2D3C8C] rounded-full"></span> Evaluasi progres personal</li>
                     </ul>
-                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp2.050.000</p>
+                    <p class="text-2xl font-bold text-[#2D3C8C] mb-6">Rp1.750.000</p>
                     <a href="{{ route('order.create', ['slug' => 'cpns-p3k-farmasi']) }}" class="inline-flex items-center justify-center rounded-full bg-[#2D3C8C] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-blue-900 hover:shadow-lg">Beli Sekarang</a>
                 </div>
                 <div class="flex flex-col rounded-3xl border border-blue-100 bg-white p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">

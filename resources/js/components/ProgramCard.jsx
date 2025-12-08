@@ -35,7 +35,7 @@ const ProgramCard = () => {
                     type: "cpns",
                     description:
                         "Persiapan lengkap CPNS dan P3K bidang farmasi",
-                    price: 2050000,
+                    price: 1750000,
                     duration_months: 4,
                     features: [
                         "Materi TWK, TIU, TKP",
