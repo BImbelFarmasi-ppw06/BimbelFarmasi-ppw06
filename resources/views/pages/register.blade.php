@@ -12,7 +12,7 @@
                     <img src="{{ asset('images/logo bimbel farmasi.jpg') }}" alt="Bimbel Farmasi Logo" class="h-24 w-24 rounded-full object-cover shadow-lg">
                 </div>
                 <h2 class="text-center text-2xl font-bold text-[#2D3C8C] mb-2">Bimbel Farmasi</h2>
-                <p class="text-center text-sm text-slate-600 mb-8 italic">"Raih Pangkal Kompeten"</p>
+                <p class="text-center text-sm text-slate-600 mb-8 italic">"Rajin Pangkal Kompeten"</p>
                 
                 <div class="flex w-full flex-col gap-8">
                     <!-- Tab Masuk/Daftar -->

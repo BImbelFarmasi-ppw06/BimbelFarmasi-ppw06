@@ -360,7 +360,7 @@
                         <h3 class="text-lg font-semibold">Bimbel Farmasi</h3>
                     </div>
                     <p class="text-sm text-white/80 leading-relaxed">Pendampingan akademik dan karir kefarmasian dengan mentor berpengalaman dan kurikulum terstruktur.</p>
-                    <p class="mt-2 text-xs text-white/60 italic">"Raih Pangkal Kompeten"</p>
+                    <p class="mt-2 text-xs text-white/60 italic">"Rajin Pangkal Kompeten"</p>
                 </div>
                 <div class="space-y-3">
                     <h4 class="text-sm font-semibold uppercase tracking-wide text-white/70">Navigasi</h4>
