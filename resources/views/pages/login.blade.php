@@ -57,7 +57,7 @@
 
                     <!-- Google Login -->
                     <a href="{{ route('login.google') }}" class="inline-flex w-full items-center justify-center gap-3 rounded-full border border-blue-200 bg-white px-6 py-3 text-sm font-semibold text-slate-600 shadow-md transition-all duration-200 hover:bg-blue-50 hover:shadow-lg hover:scale-105" aria-label="Masuk dengan Google">
-                        <img src="https://www.gstatic.com/images/branding/product/2x/google_g_48dp.png" alt="Google" class="h-5 w-5">
+                        <img src="{{ asset('images/google.png') }}" alt="Google" class="h-5 w-5">
                         Masuk dengan Google
                     </a>
                 </div>

@@ -10,6 +10,7 @@
     <meta name="author" content="Bimbel Farmasi">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@yield('og_title', 'Bimbel Farmasi - Solusi Akademik & Karir Farmasi Terpercaya')">
