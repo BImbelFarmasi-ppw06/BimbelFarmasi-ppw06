@@ -31,7 +31,7 @@
                     <span class="inline-flex items-center rounded-full bg-white/20 backdrop-blur-md px-6 py-2 text-xs font-semibold uppercase tracking-widest text-white mb-6">
                         💬 Layanan 24/7
                     </span>
-                    <h1 class="text-5xl sm:text-6xl font-bold mb-6 drop-shadow-lg">Hubungi Kami</h1>
+                    <h1 class="text-5xl sm:text-6xl font-bold mb-6 drop-shadow-lg" style="color: #9BBCD9;">Hubungi Kami</h1>
                     <p class="mx-auto max-w-2xl text-lg sm:text-xl text-white/90 drop-shadow-md leading-relaxed">
                         Kami siap membantu menjawab pertanyaan dan memberikan solusi terbaik untuk kebutuhan akademik farmasi Anda. Jangan ragu untuk menghubungi!
                     </p>

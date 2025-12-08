@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/order/{orderNumber}/payment', [OrderController::class, 'processPayment'])->name('order.payment.process');
     Route::get('/order/{orderNumber}/snap-token', [OrderController::class, 'createSnapToken'])->name('order.snap-token');
     Route::get('/order/{orderNumber}/check-status', [OrderController::class, 'checkPaymentStatus'])->name('order.check-status');
+    Route::post('/order/{orderNumber}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
     Route::get('/order/{orderNumber}/success', [OrderController::class, 'success'])->name('order.success');
     Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('order.my-orders');
 
