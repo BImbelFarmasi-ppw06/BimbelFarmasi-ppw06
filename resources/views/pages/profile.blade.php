@@ -22,13 +22,48 @@
 
             <!-- Profile Form -->
             <div class="rounded-2xl bg-white p-8 shadow-lg">
-                <form action="{{ route('user.profile.update') }}" method="POST">
+                <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
-                    <div class="mb-8 flex items-center gap-6">
-                        <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white">
-                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                    <!-- Profile Photo Upload -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Foto Profil</label>
+                        <div class="flex items-center gap-6">
+                            <!-- Current Photo Preview -->
+                            <div class="relative">
+                                @if($user->profile_photo)
+                                    <img id="photoPreview" src="{{ asset('storage/' . $user->profile_photo) }}" alt="Foto Profil" class="h-24 w-24 rounded-full object-cover ring-4 ring-blue-100">
+                                @else
+                                    <div id="photoPreview" class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white ring-4 ring-blue-100">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    </div>
+                                @endif
+                                <!-- Camera Icon Overlay -->
+                                <label for="profile_photo" class="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg ring-2 ring-blue-500 transition hover:bg-blue-50">
+                                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </label>
+                            </div>
+                            
+                            <div class="flex-1">
+                                <input type="file" id="profile_photo" name="profile_photo" accept="image/jpeg,image/jpg,image/png,image/gif" class="hidden" onchange="previewProfilePhoto(event)">
+                                <label for="profile_photo" class="inline-flex cursor-pointer items-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:bg-blue-50">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Upload Foto Baru
+                                </label>
+                                <p class="mt-2 text-xs text-gray-500">JPG, JPEG, PNG atau GIF (Max. 2MB)</p>
+                                @error('profile_photo')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="mb-8 flex items-center gap-6">
                         <div>
                             <h2 class="text-xl font-bold text-gray-900">{{ $user->name }}</h2>
                             <p class="text-sm text-gray-500">Member sejak {{ $user->created_at->format('d M Y') }}</p>
@@ -141,4 +176,20 @@
             </div>
         </div>
     </section>
+
+    @push('scripts')
+    <script>
+        function previewProfilePhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('photoPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="h-24 w-24 rounded-full object-cover ring-4 ring-blue-100">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    @endpush
 @endsection

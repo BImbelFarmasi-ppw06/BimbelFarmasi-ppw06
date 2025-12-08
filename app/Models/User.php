@@ -29,6 +29,7 @@ class User extends Authenticatable
         'university',
         'interest',
         'password',
+        'profile_photo',
         'is_admin',
         'is_suspended',
         'suspended_at',
