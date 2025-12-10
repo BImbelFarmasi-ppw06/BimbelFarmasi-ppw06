@@ -198,6 +198,17 @@ payButton.addEventListener('click', function() {
 </script>
 
 <!-- Midtrans Snap Script -->
-<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+</script>
+<script>
+    // Ensure Snap is available
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.snap === 'undefined') {
+            console.error('Midtrans Snap library not loaded. Check CDN connection.');
+        } else {
+            console.log('Midtrans Snap library loaded successfully');
+        }
+    });
+</script>
 @endpush
 @endsection

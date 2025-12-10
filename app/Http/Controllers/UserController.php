@@ -56,7 +56,7 @@ class UserController extends Controller
                 \Storage::delete('public/' . $user->profile_photo);
             }
 
-            // Store new photo
+            // Store new photoca
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
             $validated['profile_photo'] = $path;
         }

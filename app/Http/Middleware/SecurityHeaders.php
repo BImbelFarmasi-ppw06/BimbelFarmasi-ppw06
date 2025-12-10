@@ -32,12 +32,12 @@ class SecurityHeaders
         // Content Security Policy
         $response->headers->set('Content-Security-Policy', 
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com; " .
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://app.midtrans.com https://app.sandbox.midtrans.com; " .
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
             "font-src 'self' https://fonts.gstatic.com; " .
             "img-src 'self' data: https: http:; " .
-            "connect-src 'self' https://api.midtrans.com https://app.midtrans.com https://www.google-analytics.com; " .
-            "frame-src 'self' https://app.midtrans.com https://calendar.google.com https://www.google.com https://drive.google.com;"
+            "connect-src 'self' https://api.midtrans.com https://api.sandbox.midtrans.com https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google-analytics.com; " .
+            "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://calendar.google.com https://www.google.com https://drive.google.com;"
         );
         
         // Force HTTPS (only in production)

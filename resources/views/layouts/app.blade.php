@@ -12,6 +12,76 @@
     <link rel="canonical" href="{{ url()->current() }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <!-- Fix for Facebook OAuth zoom issue + Midtrans styling -->
+    <style>
+        /* Hide Midtrans TEST badge in sandbox mode */
+        #snap-midtrans .test-mode-indicator,
+        .snap-test-mode,
+        [class*="test-mode"],
+        div[style*="TEST"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Fix Midtrans popup overlay to prevent page cropping */
+        #snap-midtrans {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 999999 !important;
+        }
+        
+        /* Reset zoom only for non-Midtrans elements to prevent cropping */
+        body:not(:has(#snap-midtrans)) {
+            zoom: 80%;
+        }
+    </style>
+    
+    <script>
+        (function() {
+            // Detect if coming from Facebook OAuth (URL has facebook/callback)
+            const isFacebookLogin = window.location.href.includes('facebook/callback');
+            
+            function fixZoom() {
+                // Only apply zoom fix if not in payment page with Midtrans popup
+                if (!document.getElementById('snap-midtrans')) {
+                    document.documentElement.style.zoom = '80%';
+                    document.body.style.zoom = '80%';
+                }
+            }
+            
+            // Apply zoom fix for Facebook login
+            if (isFacebookLogin) {
+                fixZoom();
+                
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', fixZoom);
+                }
+                
+                window.addEventListener('load', fixZoom);
+            }
+            
+            // Reset zoom when Midtrans popup appears
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length) {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.id === 'snap-midtrans' || (node.classList && node.classList.contains('snap-container'))) {
+                                // Reset zoom when popup appears
+                                document.documentElement.style.zoom = '100%';
+                                document.body.style.zoom = '100%';
+                            }
+                        });
+                    }
+                });
+            });
+            
+            observer.observe(document.body, { childList: true, subtree: false });
+        })();
+    </script>
+    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@yield('og_title', 'Bimbel Farmasi - Solusi Akademik & Karir Farmasi Terpercaya')">
     <meta property="og:description" content="@yield('og_description', 'Dapatkan dukungan lengkap untuk menaklukkan UKOM D3 Farmasi, CPNS & P3K Farmasi, serta tugas akademik kefarmasian dengan tingkat kelulusan 95%.')">
