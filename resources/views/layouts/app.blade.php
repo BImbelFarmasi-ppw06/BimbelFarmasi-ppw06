@@ -12,6 +12,13 @@
     <link rel="canonical" href="{{ url()->current() }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <!-- Force zoom to normal size -->
+    <style>
+        html {
+            zoom: 85%;
+        }
+    </style>
+    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@yield('og_title', 'Bimbel Farmasi - Solusi Akademik & Karir Farmasi Terpercaya')">
     <meta property="og:description" content="@yield('og_description', 'Dapatkan dukungan lengkap untuk menaklukkan UKOM D3 Farmasi, CPNS & P3K Farmasi, serta tugas akademik kefarmasian dengan tingkat kelulusan 95%.')">

@@ -175,6 +175,84 @@ class AuthController extends Controller
     }
 
     /**
+     * LOGIN DENGAN FACEBOOK
+     * Step 1: redirect ke halaman OAuth Facebook
+     */
+    public function redirectToFacebook()
+    {
+        return Socialite::driver('facebook')->redirect();
+    }
+
+    /**
+     * LOGIN DENGAN FACEBOOK
+     * Step 2: terima callback dari Facebook
+     * 
+     * ✅ SMART FLOW: Jika email belum register → auto-register, kemudian login
+     *               Jika email sudah register → langsung login
+     */
+    public function handleFacebookCallback()
+    {
+        try {
+            // Ambil data user dari Facebook
+            $facebookUser = Socialite::driver('facebook')->user();
+            $email = $facebookUser->getEmail();
+            $name = $facebookUser->getName() ?? $facebookUser->getNickname() ?? 'User';
+
+            // Validasi: Facebook kadang tidak return email jika permission tidak di-approve
+            if (!$email) {
+                return redirect()->route('login')
+                    ->with('error', 'Facebook login membutuhkan akses email. Silakan coba lagi dan approve permission email.');
+            }
+
+            // Cek apakah email sudah terdaftar
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                // ✅ Email belum ada → Auto-register dengan data dari Facebook
+                $user = User::create([
+                    'name'       => $name,
+                    'email'      => $email,
+                    'phone'      => null,  // User isi nanti di profil
+                    'university' => null,  // User isi nanti di profil
+                    'interest'   => null,  // User isi nanti di profil
+                    'password'   => Hash::make(Str::random(32)),  // Random password
+                    'is_admin'   => false,
+                ]);
+                
+                // Pesan untuk user baru
+                $welcomeMessage = 'Selamat datang! Akun Anda berhasil dibuat dengan Facebook. Silakan lengkapi data profil Anda.';
+                $redirectToProfile = true;
+            } else {
+                // Email sudah ada → User sudah pernah register
+                $welcomeMessage = 'Selamat datang kembali! Anda berhasil login dengan Facebook.';
+                $redirectToProfile = false;
+            }
+
+            // Login user
+            Auth::login($user, remember: true);
+
+            // Cek role untuk redirect sesuai
+            if ($user->is_admin) {
+                return redirect()->route('admin.dashboard')
+                    ->with('success', 'Selamat datang di Admin Panel!');
+            }
+
+            // Jika user baru, arahkan ke profil untuk lengkapi data
+            if ($redirectToProfile && is_null($user->phone)) {
+                return redirect()->route('user.profile')
+                    ->with('info', $welcomeMessage);
+            }
+
+            return redirect()->intended(route('home'))
+                ->with('success', $welcomeMessage);
+
+        } catch (\Exception $e) {
+            return redirect()->route('login')
+                ->with('error', 'Gagal login dengan Facebook: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Logout
      */
     public function logout(Request $request)

@@ -44,6 +44,13 @@ Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])
 Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])
     ->name('login.google.callback');
 
+// 🔹 FACEBOOK LOGIN (GET semua)
+Route::get('/login/facebook', [AuthController::class, 'redirectToFacebook'])
+    ->name('login.facebook');
+
+Route::get('/login/facebook/callback', [AuthController::class, 'handleFacebookCallback'])
+    ->name('login.facebook.callback');
+
 // =================== USER PROTECTED ROUTES ===================
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [UserController::class, 'profile'])->name('user.profile');
