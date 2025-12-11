@@ -40,7 +40,7 @@
                 <div>
                     <p class="text-sm font-medium text-gray-500">Pembayaran Pending</p>
                     <p class="mt-2 text-3xl font-bold text-gray-900">{{ $pendingPaymentsCount }}</p>
-                    <p class="mt-1 text-xs text-orange-600">Menunggu konfirmasi</p>
+                    <p class="mt-1 text-xs text-orange-600">Menunggu pembayaran</p>
                 </div>
                 <div class="rounded-full bg-orange-100 p-3">
                     <svg class="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

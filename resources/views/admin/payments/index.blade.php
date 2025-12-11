@@ -57,7 +57,7 @@
                 <select name="status" class="rounded-lg border-gray-300 text-sm">
                     <option value="">Semua Status</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Terkonfirmasi</option>
+                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Lunas</option>
                     <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
                 </select>
                 <input type="date" name="date" value="{{ request('date') }}" class="rounded-lg border-gray-300 text-sm">
@@ -87,6 +87,7 @@
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Program</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Order</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Jumlah</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Metode</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Tanggal</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Aksi</th>
@@ -109,6 +110,22 @@
                                 <span class="font-mono text-xs text-gray-600">#{{ $payment->order->order_number }}</span>
                             </td>
                             <td class="px-6 py-4 font-semibold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4">
+                                @if($payment->payment_method === 'midtrans')
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                        </svg>
+                                        Midtrans
+                                    </span>
+                                @elseif($payment->payment_method === 'bank_transfer')
+                                    <span class="text-xs text-gray-600">🏦 Transfer Bank</span>
+                                @elseif($payment->payment_method === 'ewallet')
+                                    <span class="text-xs text-gray-600">💳 E-Wallet</span>
+                                @else
+                                    <span class="text-xs text-gray-600">{{ ucfirst($payment->payment_method) }}</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $payment->created_at->format('d M Y, H:i') }}</td>
                             <td class="px-6 py-4">
                                 @if($payment->status === 'pending')
@@ -117,7 +134,7 @@
                                     </span>
                                 @elseif($payment->status === 'paid')
                                     <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                                        Terkonfirmasi
+                                        Lunas
                                     </span>
                                 @else
                                     <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
@@ -127,21 +144,34 @@
                             </td>
                             <td class="px-6 py-4">
                                 @if($payment->status === 'pending')
-                                <div class="flex items-center gap-2">
-                                    <button 
-                                        onclick="viewPaymentDetail({{ $payment->id }})"
-                                        class="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700">
-                                        Lihat Bukti
-                                    </button>
-                                </div>
+                                    @if($payment->payment_method === 'midtrans')
+                                        {{-- Midtrans: Menunggu user menyelesaikan pembayaran --}}
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                Menunggu Pembayaran
+                                            </span>
+                                        </div>
+                                    @else
+                                        {{-- Manual Upload: Butuh konfirmasi admin --}}
+                                        <div class="flex items-center gap-2">
+                                            <button 
+                                                onclick="viewPaymentDetail({{ $payment->id }})"
+                                                class="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700">
+                                                Lihat Bukti
+                                            </button>
+                                        </div>
+                                    @endif
                                 @else
-                                <a href="{{ route('admin.payments.show', $payment->id) }}" 
-                                   class="rounded p-1 text-gray-600 hover:bg-gray-100 inline-block">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </a>
+                                    <a href="{{ route('admin.payments.show', $payment->id) }}" 
+                                       class="rounded p-1 text-gray-600 hover:bg-gray-100 inline-block">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </a>
                                 @endif
                             </td>
                         </tr>

@@ -27,7 +27,7 @@
                         <p class="mt-2 text-sm text-blue-100">
                             {{ $verifiedCount }} transaksi lunas
                             @if($pendingCount > 0)
-                                • {{ $pendingCount }} menunggu konfirmasi
+                                • {{ $pendingCount }} menunggu pembayaran
                             @endif
                         </p>
                     </div>
@@ -118,7 +118,7 @@
                                         </span>
                                     @elseif($transaction['status'] === 'pending')
                                         <span class="mt-2 inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-                                            ⏳ Menunggu Konfirmasi
+                                            ⏳ Menunggu Pembayaran
                                         </span>
                                     @elseif($transaction['status'] === 'rejected')
                                         <span class="mt-2 inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800">

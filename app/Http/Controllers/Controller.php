@@ -75,3 +75,6 @@ abstract class Controller
     //
 }
 
+// buat fungsi untuk menghitung rata-rata nilai
+
+
