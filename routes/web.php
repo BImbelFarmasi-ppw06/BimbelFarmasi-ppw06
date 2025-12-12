@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
+use App\Http\Controllers\Admin\AdminCourseController;
 use App\Http\Controllers\Admin\AdminProgramController;
 use App\Http\Controllers\TestimonialController;
 
@@ -127,6 +128,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/classes/{id}/edit', [AdminClassController::class, 'edit'])->name('classes.edit');
     Route::put('/classes/{id}', [AdminClassController::class, 'update'])->name('classes.update');
     Route::delete('/classes/{id}', [AdminClassController::class, 'destroy'])->name('classes.destroy');
+    
+    // Material Management for Classes
+    Route::post('/classes/{id}/materials', [AdminClassController::class, 'storeMaterial'])->name('classes.materials.store');
+    Route::delete('/classes/{programId}/materials/{materialId}', [AdminClassController::class, 'deleteMaterial'])->name('classes.materials.destroy');
 
     Route::view('/questions', 'admin.questions.index')->name('questions.index');
 
@@ -136,6 +141,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/payments/{id}/approve', [AdminPaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{id}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
     Route::get('/payments/{id}/proof', [AdminPaymentController::class, 'viewProof'])->name('payments.proof');
+
+    // Course/Material Management
+    Route::get('/courses', [AdminCourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/create', [AdminCourseController::class, 'create'])->name('courses.create');
+    Route::post('/courses', [AdminCourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses/{course}', [AdminCourseController::class, 'show'])->name('courses.show');
+    Route::get('/courses/{course}/edit', [AdminCourseController::class, 'edit'])->name('courses.edit');
+    Route::put('/courses/{course}', [AdminCourseController::class, 'update'])->name('courses.update');
+    Route::delete('/courses/{course}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
+    Route::delete('/courses/{course}/file', [AdminCourseController::class, 'deleteFile'])->name('courses.file.delete');
 
     Route::view('/statistics', 'admin.statistics')->name('statistics');
 });

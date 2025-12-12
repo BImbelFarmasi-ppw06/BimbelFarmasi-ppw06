@@ -151,10 +151,18 @@ class OrderController extends Controller
     public function createSnapToken($orderNumber)
     {
         try {
-            $order = Order::with('program', 'user')
+            $order = Order::with('program', 'user', 'payment')
                 ->where('order_number', $orderNumber)
                 ->where('user_id', Auth::id())
                 ->firstOrFail();
+
+            // Check if snap token already exists and payment is not completed
+            if ($order->payment && $order->payment->snap_token && $order->payment->status !== 'paid') {
+                return response()->json([
+                    'snap_token' => $order->payment->snap_token,
+                    'order_number' => $order->order_number,
+                ]);
+            }
 
             // Configure Midtrans
             Config::$serverKey = config('midtrans.server_key');
@@ -162,10 +170,16 @@ class OrderController extends Controller
             Config::$isSanitized = config('midtrans.is_sanitized');
             Config::$is3ds = config('midtrans.is_3ds');
 
+            // Add timestamp to make order_id unique if recreating
+            $uniqueOrderId = $order->order_number;
+            if ($order->payment && $order->payment->snap_token) {
+                $uniqueOrderId = $order->order_number . '-' . time();
+            }
+
             // Create transaction details
             $params = [
                 'transaction_details' => [
-                    'order_id' => $order->order_number,
+                    'order_id' => $uniqueOrderId,
                     'gross_amount' => (int) $order->amount,
                 ],
                 'customer_details' => [
@@ -185,6 +199,17 @@ class OrderController extends Controller
 
             // Get Snap Token
             $snapToken = Snap::getSnapToken($params);
+
+            // Save snap token to payment record
+            Payment::updateOrCreate(
+                ['order_id' => $order->id],
+                [
+                    'payment_method' => 'midtrans',
+                    'snap_token' => $snapToken,
+                    'amount' => $order->amount,
+                    'status' => 'pending',
+                ]
+            );
 
             return response()->json([
                 'snap_token' => $snapToken,

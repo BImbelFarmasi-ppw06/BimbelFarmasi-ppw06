@@ -36,11 +36,12 @@ class SecurityHeaders
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
             "font-src 'self' https://fonts.gstatic.com; " .
             "img-src 'self' data: https: http:; " .
+            "media-src 'self' data: blob: https://app.midtrans.com https://app.sandbox.midtrans.com; " .
             "connect-src 'self' https://api.midtrans.com https://api.sandbox.midtrans.com https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google-analytics.com; " .
             "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://calendar.google.com https://www.google.com https://drive.google.com;"
         );
         
-        // Force HTTPS (only in production)
+        // Force HTTPS (only  ein production)
         if (app()->environment('production')) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }

@@ -31,4 +31,14 @@ class Program extends Model
     {
         return $this->hasMany(Order::class);
     }
+    
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+    
+    public function quizBanks()
+    {
+        return $this->hasMany(QuizBank::class);
+    }
 }
