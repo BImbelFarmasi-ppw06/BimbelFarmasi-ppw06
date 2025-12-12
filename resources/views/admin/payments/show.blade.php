@@ -20,9 +20,9 @@
                     @else bg-red-100 text-red-800
                     @endif">
                     @if($payment->status === 'pending') 
-                        <i class="fas fa-clock mr-1"></i>Menunggu Konfirmasi
+                        <i class="fas fa-clock mr-1"></i>Menunggu Pembayaran
                     @elseif($payment->status === 'paid') 
-                        <i class="fas fa-check-circle mr-1"></i>Terkonfirmasi
+                        <i class="fas fa-check-circle mr-1"></i>Lunas
                     @else 
                         <i class="fas fa-times-circle mr-1"></i>Ditolak
                     @endif
@@ -102,9 +102,9 @@
                             <p class="text-xs font-semibold {{ $payment->status === 'paid' ? 'text-green-700' : ($payment->status === 'rejected' ? 'text-red-700' : 'text-yellow-700') }} mb-1 uppercase">Status Pembayaran</p>
                             <p class="font-bold {{ $payment->status === 'paid' ? 'text-green-900' : ($payment->status === 'rejected' ? 'text-red-900' : 'text-yellow-900') }}">
                                 @if($payment->status === 'pending')
-                                    Menunggu Konfirmasi
+                                    Menunggu Pembayaran
                                 @elseif($payment->status === 'paid')
-                                    Terkonfirmasi
+                                    Lunas
                                 @else
                                     Ditolak
                                 @endif

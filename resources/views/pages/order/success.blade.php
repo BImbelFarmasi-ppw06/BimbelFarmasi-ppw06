@@ -8,13 +8,23 @@
         <div class="max-w-2xl mx-auto">
             <!-- Success Icon -->
             <div class="text-center mb-8">
+                @if($order->payment->status === 'paid')
                 <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
                     <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Pembayaran Berhasil Dikirim!</h1>
-                <p class="text-gray-600">Terima kasih telah melakukan pembayaran. Kami akan segera memverifikasi dalam 1x24 jam.</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Pembayaran Berhasil!</h1>
+                <p class="text-gray-600">Terima kasih! Pembayaran Anda telah berhasil diproses.</p>
+                @else
+                <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Order Berhasil Dibuat!</h1>
+                <p class="text-gray-600">Silakan selesaikan pembayaran untuk mengakses layanan.</p>
+                @endif
             </div>
 
             <!-- Order Details -->
@@ -24,8 +34,8 @@
                         <p class="text-sm text-gray-600 mb-1">Nomor Order</p>
                         <p class="text-xl font-bold text-[#2D3C8C]">#{{ $order->order_number }}</p>
                     </div>
-                    <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
-                        {{ $order->payment->status === 'paid' ? 'Lunas' : 'Menunggu Verifikasi' }}
+                    <span class="px-4 py-2 {{ $order->payment->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }} rounded-full text-sm font-semibold">
+                        {{ $order->payment->status === 'paid' ? 'Lunas' : 'Menunggu Pembayaran' }}
                     </span>
                 </div>
 
@@ -87,20 +97,37 @@
                     </svg>
                     Langkah Selanjutnya
                 </h3>
+                @if($order->payment->status === 'paid')
                 <ol class="space-y-2 text-sm text-gray-700">
                     <li class="flex gap-2">
                         <span class="font-semibold">1.</span>
-                        <span>Tim kami akan memverifikasi pembayaran Anda dalam 1x24 jam</span>
+                        <span>Pembayaran Anda sudah diterima dan diproses</span>
                     </li>
                     <li class="flex gap-2">
                         <span class="font-semibold">2.</span>
-                        <span>Anda akan menerima email konfirmasi setelah pembayaran diverifikasi</span>
+                        <span>Tim kami akan menghubungi Anda untuk pengaturan jadwal</span>
                     </li>
                     <li class="flex gap-2">
                         <span class="font-semibold">3.</span>
-                        <span>Akses layanan akan tersedia di menu "Layanan Saya"</span>
+                        <span>Akses layanan tersedia di menu "Layanan Saya"</span>
                     </li>
                 </ol>
+                @else
+                <ol class="space-y-2 text-sm text-gray-700">
+                    <li class="flex gap-2">
+                        <span class="font-semibold">1.</span>
+                        <span>Selesaikan pembayaran melalui metode yang Anda pilih</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="font-semibold">2.</span>
+                        <span>Status pembayaran akan otomatis diupdate setelah pembayaran berhasil</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="font-semibold">3.</span>
+                        <span>Akses layanan akan tersedia setelah pembayaran dikonfirmasi</span>
+                    </li>
+                </ol>
+                @endif
             </div>
 
             <!-- Action Buttons -->

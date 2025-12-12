@@ -46,6 +46,14 @@ class OrderController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        // Create payment record with pending status
+        Payment::create([
+            'order_id' => $order->id,
+            'payment_method' => 'midtrans', // Default to midtrans
+            'amount' => $order->amount,
+            'status' => 'pending',
+        ]);
+
         return redirect()->route('order.payment', $order->order_number)
             ->with('success', 'Order berhasil dibuat! Silakan pilih metode pembayaran.');
     }
@@ -383,6 +391,56 @@ class OrderController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal membatalkan pesanan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cancel payment (for pending payments)
+     */
+    public function cancelPayment($orderNumber)
+    {
+        try {
+            $order = Order::where('order_number', $orderNumber)
+                ->where('user_id', Auth::id())
+                ->with('payment')
+                ->firstOrFail();
+
+            // Cek apakah pembayaran ada dan masih pending
+            if (!$order->payment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pembayaran tidak ditemukan'
+                ], 404);
+            }
+
+            if ($order->payment->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Hanya pembayaran yang pending yang bisa dibatalkan'
+                ], 400);
+            }
+
+            // Update status payment menjadi cancelled
+            $order->payment->update([
+                'status' => 'cancelled'
+            ]);
+
+            // Update order status
+            $order->update(['status' => 'cancelled']);
+
+            Log::info('Payment cancelled: ' . $orderNumber . ' by user ' . Auth::id());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil dibatalkan'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Cancel Payment Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membatalkan pembayaran: ' . $e->getMessage()
             ], 500);
         }
     }
