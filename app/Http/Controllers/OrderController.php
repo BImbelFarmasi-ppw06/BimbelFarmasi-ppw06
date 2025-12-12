@@ -386,4 +386,52 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Cancel payment (delete order and payment for pending payments)
+     */
+    public function cancelPayment($orderNumber)
+    {
+        try {
+            $order = Order::where('order_number', $orderNumber)
+                ->where('user_id', Auth::id())
+                ->with('payment')
+                ->firstOrFail();
+
+            // Cek apakah pembayaran ada dan masih pending
+            if (!$order->payment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pembayaran tidak ditemukan'
+                ], 404);
+            }
+
+            if ($order->payment->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Hanya pembayaran yang pending yang bisa dibatalkan'
+                ], 400);
+            }
+
+            Log::info('Payment cancelled: ' . $orderNumber . ' by user ' . Auth::id());
+
+            // Hapus payment record terlebih dahulu (foreign key constraint)
+            $order->payment->delete();
+
+            // Kemudian hapus order
+            $order->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil dibatalkan dan pesanan dihapus'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Cancel Payment Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membatalkan pembayaran: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

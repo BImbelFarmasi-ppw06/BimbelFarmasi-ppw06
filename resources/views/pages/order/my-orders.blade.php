@@ -48,7 +48,7 @@
                                         </span>
                                     @elseif($order->payment->status === 'pending')
                                         <span class="px-4 py-2 bg-yellow-400 text-gray-900 rounded-full text-sm font-semibold">
-                                            ⏳ Menunggu Konfirmasi
+                                            ⏳ Menunggu Pembayaran
                                         </span>
                                     @elseif($order->payment->status === 'rejected')
                                         <span class="px-4 py-2 bg-red-500 text-white rounded-full text-sm font-semibold">
@@ -132,6 +132,23 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                             </svg>
                                             Batalkan Pesanan
+                                        </button>
+                                    
+                                    @elseif($order->payment && $order->payment->status === 'pending')
+                                        <!-- Payment pending - belum bayar tapi ada record payment -->
+                                        <a href="{{ route('order.payment', $order->order_number) }}" class="inline-flex items-center gap-2 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition shadow-lg">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                            </svg>
+                                            Lanjutkan Pembayaran
+                                        </a>
+                                        
+                                        <!-- Tombol Batalkan Pembayaran untuk pending -->
+                                        <button onclick="cancelPayment('{{ $order->order_number }}')" class="inline-flex items-center gap-2 bg-red-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-700 transition shadow-lg">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Batalkan Pembayaran
                                         </button>
                                     
                                     @elseif($order->payment && $order->payment->status === 'failed')
@@ -220,6 +237,34 @@ function cancelOrder(orderNumber) {
     .catch(error => {
         console.error('Error:', error);
         alert('Terjadi kesalahan saat membatalkan pesanan');
+    });
+}
+
+function cancelPayment(orderNumber) {
+    if (!confirm('Apakah Anda yakin ingin membatalkan pembayaran ini? Pesanan akan dihapus dari daftar Anda.')) {
+        return;
+    }
+
+    fetch(`/order/${orderNumber}/cancel-payment`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Pembayaran berhasil dibatalkan.');
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat membatalkan pembayaran');
     });
 }
 </script>
