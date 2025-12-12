@@ -32,6 +32,26 @@
         <div class="rounded-lg bg-white p-6 shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Dasar</h3>
             
+            <!-- Class Category -->
+            <div class="mb-4">
+                <label for="class_category" class="block text-sm font-medium text-gray-700 mb-2">
+                    Kategori Kelas <span class="text-red-500">*</span>
+                </label>
+                <select 
+                    name="class_category" 
+                    id="class_category" 
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('class_category') border-red-500 @enderror">
+                    <option value="">Pilih Kategori Kelas</option>
+                    <option value="bimbel-ukom" {{ old('class_category') === 'bimbel-ukom' ? 'selected' : '' }}>Bimbel UKOM D3 Farmasi</option>
+                    <option value="cpns-p3k" {{ old('class_category') === 'cpns-p3k' ? 'selected' : '' }}>CPNS & P3K Farmasi</option>
+                    <option value="joki-tugas" {{ old('class_category') === 'joki-tugas' ? 'selected' : '' }}>Joki Tugas Farmasi</option>
+                </select>
+                @error('class_category')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Program Name -->
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -43,7 +63,7 @@
                     id="name" 
                     value="{{ old('name') }}"
                     required
-                    placeholder="Contoh: UKOM D3 Farmasi - Reguler"
+                    placeholder="Contoh: Bimbel UKOM D3 Farmasi - Reguler"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                 @error('name')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

@@ -29,6 +29,7 @@ class Course extends Model
 
     protected $casts = [
         'completed_at' => 'datetime',
+        'file_urls' => 'array',
     ];
 
     public function program()

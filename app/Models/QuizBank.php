@@ -10,15 +10,22 @@ class QuizBank extends Model
     use HasFactory;
 
     protected $fillable = [
+        'program_id',
         'order_id',
         'user_id',
         'title',
         'description',
         'category',
+        'type',
         'total_questions',
         'duration_minutes',
         'passing_score',
     ];
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
+    }
 
     public function order()
     {
