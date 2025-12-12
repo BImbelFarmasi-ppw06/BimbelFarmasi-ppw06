@@ -32,6 +32,25 @@ class Course extends Model
         'file_urls' => 'array',
     ];
 
+    /**
+     * Get formatted duration
+     */
+    public function getDurationAttribute()
+    {
+        if (!$this->duration_minutes) {
+            return null;
+        }
+        
+        $hours = floor($this->duration_minutes / 60);
+        $minutes = $this->duration_minutes % 60;
+        
+        if ($hours > 0) {
+            return $hours . ' jam ' . ($minutes > 0 ? $minutes . ' menit' : '');
+        }
+        
+        return $minutes . ' menit';
+    }
+
     public function program()
     {
         return $this->belongsTo(Program::class);
