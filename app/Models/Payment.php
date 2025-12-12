@@ -17,6 +17,9 @@ class Payment extends Model
         'proof_url',
         'paid_at',
         'notes',
+        'midtrans_transaction_id',
+        'payment_type',
+        'snap_token',
     ];
 
     protected $casts = [

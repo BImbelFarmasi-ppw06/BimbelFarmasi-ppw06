@@ -42,6 +42,11 @@ class Order extends Model
         return $this->hasOne(Testimonial::class);
     }
 
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+
     public static function generateOrderNumber()
     {
         return 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));

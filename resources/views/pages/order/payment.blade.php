@@ -139,14 +139,35 @@
 <script>
 // Midtrans Snap Integration
 const payButton = document.getElementById('pay-button');
+const originalButtonHtml = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span class="text-lg">Bayar Sekarang</span>';
+
+function resetButton() {
+    payButton.disabled = false;
+    payButton.innerHTML = originalButtonHtml;
+}
+
 payButton.addEventListener('click', function() {
+    console.log('Payment button clicked');
     payButton.disabled = true;
-    payButton.innerHTML = '<svg class="animate-spin h-6 w-6 text-white mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Loading...';
+    payButton.innerHTML = '<svg class="animate-spin h-6 w-6 text-white mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-lg ml-2">Loading...</span>';
     
     // Get Snap Token from backend
-    fetch('{{ route("order.snap-token", $order->order_number) }}')
-        .then(response => response.json())
+    fetch('{{ route("order.snap-token", $order->order_number) }}', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Snap token received:', data);
             if (data.snap_token) {
                 // Trigger Snap popup
                 window.snap.pay(data.snap_token, {
@@ -169,35 +190,37 @@ payButton.addEventListener('click', function() {
                     onPending: function(result) {
                         console.log('Payment pending:', result);
                         alert('Pembayaran Anda sedang diproses. Mohon selesaikan pembayaran.');
+                        resetButton();
                     },
                     onError: function(result) {
                         console.log('Payment error:', result);
                         alert('Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.');
-                        payButton.disabled = false;
-                        payButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span class="text-lg">Bayar Sekarang</span>';
+                        resetButton();
                     },
                     onClose: function() {
                         console.log('Payment popup closed');
-                        payButton.disabled = false;
-                        payButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span class="text-lg">Bayar Sekarang</span>';
+                        resetButton();
                     }
                 });
             } else {
+                console.error('No snap token in response:', data);
                 alert('Gagal mendapatkan token pembayaran: ' + (data.error || 'Unknown error'));
-                payButton.disabled = false;
-                payButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span class="text-lg">Bayar Sekarang</span>';
+                resetButton();
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Fetch error:', error);
             alert('Gagal menghubungi server. Silakan coba lagi.');
-            payButton.disabled = false;
-            payButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg><span class="text-lg">Bayar Sekarang</span>';
+            resetButton();
         });
 });
 </script>
 
 <!-- Midtrans Snap Script -->
-<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@if(config('midtrans.is_production'))
+<script src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@else
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+@endif
 @endpush
 @endsection
