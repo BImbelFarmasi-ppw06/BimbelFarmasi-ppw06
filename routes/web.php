@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\JokiController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminStudentController;
@@ -21,7 +22,7 @@ Route::view('/bimbel-ukom-d3-farmasi', 'pages.bimbel-ukom')->name('bimbel.ukom')
 // Midtrans Notification Callback (No Auth Required)
 Route::post('/midtrans/notification', [OrderController::class, 'handleNotification'])->name('midtrans.notification');
 Route::view('/cpns-p3k-farmasi', 'pages.cpns-p3k')->name('cpns.p3k');
-Route::view('/joki-tugas-farmasi', 'pages.joki-tugas')->name('joki.tugas');
+Route::get('/joki-tugas-farmasi', [JokiController::class, 'index'])->name('joki.tugas');
 Route::get('/testimoni', [TestimonialController::class, 'index'])->name('testimonials.index');
 Route::view('/kontak', 'pages.kontak')->name('kontak');
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
