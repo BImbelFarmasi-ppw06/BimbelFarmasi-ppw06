@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Hasil ' . $result['title'])
+@section('title', 'Hasil ' . $attempt->quizBank->title)
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-gray-900">Hasil {{ ucfirst($result['type']) }}</h1>
-            <p class="mt-2 text-gray-600">{{ $result['title'] }}</p>
+            <h1 class="text-3xl font-bold text-gray-900">Hasil {{ $attempt->quizBank->type === 'tryout' ? 'Try Out' : 'Latihan Soal' }}</h1>
+            <p class="mt-2 text-gray-600">{{ $attempt->quizBank->title }}</p>
         </div>
 
         <!-- Score Card -->
         <div class="mb-8 rounded-2xl bg-gradient-to-br from-[#2D3C8C] to-[#1e2761] p-8 text-center shadow-xl">
             <div class="mb-4">
-                @if($result['score'] >= $result['passing_grade'])
+                @if($attempt->score >= $passingGrade)
                     <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-500">
                         <svg class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -32,21 +32,21 @@
             </div>
             
             <div class="mb-6">
-                <p class="text-6xl font-bold text-white">{{ $result['score'] }}</p>
+                <p class="text-6xl font-bold text-white">{{ $attempt->score }}</p>
                 <p class="text-lg text-blue-100">Nilai Anda</p>
             </div>
             
             <div class="grid grid-cols-3 gap-4 text-white">
                 <div>
-                    <p class="text-2xl font-bold">{{ $result['correct_answers'] }}</p>
+                    <p class="text-2xl font-bold">{{ $attempt->correct_answers }}</p>
                     <p class="text-sm text-blue-100">Jawaban Benar</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold">{{ $result['total_questions'] - $result['correct_answers'] }}</p>
+                    <p class="text-2xl font-bold">{{ $wrongAnswers }}</p>
                     <p class="text-sm text-blue-100">Jawaban Salah</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold">{{ $result['duration_spent'] }}</p>
+                    <p class="text-2xl font-bold">{{ $durationSpent ?? '-' }}</p>
                     <p class="text-sm text-blue-100">Menit</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500">Waktu Pengerjaan</p>
-                        <p class="text-lg font-bold text-gray-900">{{ $result['duration_spent'] }} menit</p>
+                        <p class="text-lg font-bold text-gray-900">{{ $durationSpent ? $durationSpent . ' menit' : 'Tidak Tercatat' }}</p>
                     </div>
                 </div>
             </div>
@@ -77,30 +77,37 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500">Passing Grade</p>
-                        <p class="text-lg font-bold text-gray-900">{{ $result['passing_grade'] }}</p>
+                        <p class="text-lg font-bold text-gray-900">{{ $passingGrade }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Breakdown by Category -->
+        <!-- Summary Info -->
         <div class="mb-8 rounded-xl bg-white p-6 shadow-md">
-            <h3 class="text-lg font-bold text-gray-900 mb-6">Breakdown Per Kategori</h3>
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Ringkasan</h3>
             
-            <div class="space-y-4">
-                @foreach($breakdown as $category)
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-gray-700">{{ $category['category'] }}</span>
-                            <span class="text-sm font-semibold text-gray-900">
-                                {{ $category['correct'] }}/{{ $category['total'] }} ({{ $category['percentage'] }}%)
-                            </span>
-                        </div>
-                        <div class="h-3 w-full overflow-hidden rounded-full bg-gray-200">
-                            <div class="h-full rounded-full transition-all {{ $category['percentage'] >= 70 ? 'bg-green-500' : ($category['percentage'] >= 50 ? 'bg-yellow-500' : 'bg-red-500') }}" style="width: {{ $category['percentage'] }}%"></div>
-                        </div>
-                    </div>
-                @endforeach
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total Soal:</span>
+                    <span class="font-semibold text-gray-900">{{ $attempt->total_questions }} soal</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Benar:</span>
+                    <span class="font-semibold text-green-600">{{ $attempt->correct_answers }} soal</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Salah:</span>
+                    <span class="font-semibold text-red-600">{{ $wrongAnswers }} soal</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Persentase Benar:</span>
+                    <span class="font-semibold text-gray-900">{{ $attempt->score }}%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Dikerjakan:</span>
+                    <span class="font-semibold text-gray-900">{{ $attempt->completed_at ? $attempt->completed_at->format('d M Y H:i') : '-' }}</span>
+                </div>
             </div>
         </div>
 
@@ -113,11 +120,11 @@
                 <div>
                     <p class="font-semibold text-gray-900 mb-2">Rekomendasi:</p>
                     <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
-                        @if($result['score'] >= 90)
+                        @if($attempt->score >= 90)
                             <li>Pertahankan performa Anda yang sangat baik!</li>
                             <li>Coba tingkatkan kecepatan mengerjakan soal</li>
                             <li>Bantu teman yang kesulitan di forum diskusi</li>
-                        @elseif($result['score'] >= 70)
+                        @elseif($attempt->score >= 70)
                             <li>Performa bagus! Pelajari kembali materi dengan nilai rendah</li>
                             <li>Perbanyak latihan soal untuk kategori yang lemah</li>
                             <li>Diskusikan pembahasan dengan mentor</li>
@@ -134,11 +141,11 @@
 
         <!-- Action Buttons -->
         <div class="flex gap-4">
-            <a href="{{ route('program.access', $programId) }}" class="flex-1 rounded-lg border-2 border-[#2D3C8C] px-6 py-3 text-center font-semibold text-[#2D3C8C] transition hover:bg-blue-50">
+            <a href="{{ route('program.access', $program->id) }}" class="flex-1 rounded-lg border-2 border-[#2D3C8C] px-6 py-3 text-center font-semibold text-[#2D3C8C] transition hover:bg-blue-50">
                 Kembali ke Dashboard
             </a>
-            <a href="{{ $result['type'] === 'tryout' ? route('program.tryouts', $programId) : route('program.exercises', $programId) }}" class="flex-1 rounded-lg bg-[#2D3C8C] px-6 py-3 text-center font-semibold text-white transition hover:bg-blue-900">
-                @if($result['type'] === 'tryout')
+            <a href="{{ $attempt->quizBank->type === 'tryout' ? route('program.tryouts', $program->id) : route('program.exercises', $program->id) }}" class="flex-1 rounded-lg bg-[#2D3C8C] px-6 py-3 text-center font-semibold text-white transition hover:bg-blue-900">
+                @if($attempt->quizBank->type === 'tryout')
                     Lihat Try Out Lainnya
                 @else
                     Lihat Latihan Lainnya

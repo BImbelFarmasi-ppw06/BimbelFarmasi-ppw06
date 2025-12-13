@@ -235,11 +235,98 @@ class UserController extends Controller
      */
     public function accessProgram($id)
     {
-        // TODO: Get program data from database and check user access
-        return view('pages.program.dashboard', [
-            'programId' => $id,
-            'programName' => 'Bimbel UKOM D3 Farmasi'
-        ]);
+        $user = Auth::user();
+        
+        // Get program with related data
+        $program = Program::with(['courses', 'classSchedules', 'quizBanks.questions'])
+            ->findOrFail($id);
+        
+        // Check if user has paid access to this program
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
+        }
+        
+        // Calculate statistics
+        $totalMaterials = $program->courses->count();
+        $totalSchedules = $program->classSchedules->count();
+        $totalExercises = $program->quizBanks->where('type', 'practice')->count();
+        $totalTryouts = $program->quizBanks->where('type', 'tryout')->count();
+        
+        // Get user's quiz attempts for this program
+        $practiceAttempts = \App\Models\QuizAttempt::where('user_id', $user->id)
+            ->whereIn('quiz_bank_id', $program->quizBanks->where('type', 'practice')->pluck('id'))
+            ->get();
+        
+        $tryoutAttempts = \App\Models\QuizAttempt::where('user_id', $user->id)
+            ->whereIn('quiz_bank_id', $program->quizBanks->where('type', 'tryout')->pluck('id'))
+            ->get();
+        
+        // Count completed exercises and tryouts
+        $completedExercises = $practiceAttempts->unique('quiz_bank_id')->count();
+        $completedTryouts = $tryoutAttempts->unique('quiz_bank_id')->count();
+        
+        // Count completed schedules (jadwal yang sudah berlangsung)
+        $completedSchedules = $program->classSchedules
+            ->where('status', 'completed')
+            ->count();
+        
+        // TODO: Track completed materials from user_course_progress table (future feature)
+        $completedMaterials = 0;
+        
+        // Calculate weighted average score
+        // Bobot: Tryout = 60%, Latihan Soal = 40%
+        $averageScore = 0;
+        if ($practiceAttempts->count() > 0 || $tryoutAttempts->count() > 0) {
+            $practiceAvg = $practiceAttempts->avg('score') ?? 0;
+            $tryoutAvg = $tryoutAttempts->avg('score') ?? 0;
+            
+            // If user only has one type of attempt, use that
+            if ($practiceAttempts->count() > 0 && $tryoutAttempts->count() === 0) {
+                $averageScore = round($practiceAvg);
+            } elseif ($tryoutAttempts->count() > 0 && $practiceAttempts->count() === 0) {
+                $averageScore = round($tryoutAvg);
+            } else {
+                // Weighted average: 40% practice, 60% tryout
+                $averageScore = round(($practiceAvg * 0.4) + ($tryoutAvg * 0.6));
+            }
+        }
+        
+        // Calculate active study days from quiz attempts
+        $allAttempts = $practiceAttempts->merge($tryoutAttempts);
+        $studyDays = $allAttempts->pluck('created_at')
+            ->map(function($date) {
+                return \Carbon\Carbon::parse($date)->format('Y-m-d');
+            })
+            ->unique()
+            ->count();
+        
+        // Calculate overall progress from ALL components
+        // Progress = (materi + jadwal + latihan + tryout selesai) / total semua
+        $totalItems = $totalMaterials + $totalSchedules + $totalExercises + $totalTryouts;
+        $completedItems = $completedMaterials + $completedSchedules + $completedExercises + $completedTryouts;
+        $progressPercentage = $totalItems > 0 ? round(($completedItems / $totalItems) * 100) : 0;
+        
+        return view('pages.program.dashboard', compact(
+            'program',
+            'totalMaterials',
+            'totalSchedules', 
+            'totalExercises',
+            'totalTryouts',
+            'completedMaterials',
+            'completedSchedules',
+            'completedExercises',
+            'completedTryouts',
+            'averageScore',
+            'studyDays',
+            'progressPercentage'
+        ));
     }
 
     /**
@@ -247,35 +334,24 @@ class UserController extends Controller
      */
     public function materials($id)
     {
-        // TODO: Get materials from database
-        $materials = [
-            [
-                'id' => 1,
-                'title' => 'Farmakologi Dasar',
-                'type' => 'video',
-                'duration' => '45 menit',
-                'completed' => true,
-            ],
-            [
-                'id' => 2,
-                'title' => 'Farmasetika',
-                'type' => 'pdf',
-                'size' => '2.5 MB',
-                'completed' => true,
-            ],
-            [
-                'id' => 3,
-                'title' => 'Kimia Farmasi',
-                'type' => 'video',
-                'duration' => '60 menit',
-                'completed' => false,
-            ],
-        ];
+        $user = Auth::user();
+        
+        // Check access
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
+        }
+        
+        $program = Program::with('courses')->findOrFail($id);
+        $materials = $program->courses;
 
-        return view('pages.program.materials', [
-            'programId' => $id,
-            'materials' => $materials
-        ]);
+        return view('pages.program.materials', compact('program', 'materials'));
     }
 
     /**
@@ -283,28 +359,27 @@ class UserController extends Controller
      */
     public function schedule($id)
     {
-        // TODO: Get schedule from database
-        $schedules = [
-            [
-                'date' => '2025-11-20',
-                'time' => '19:00 - 21:00',
-                'topic' => 'Farmakologi Klinik',
-                'mentor' => 'Apt. Dr. Ahmad Fauzi',
-                'status' => 'upcoming',
-            ],
-            [
-                'date' => '2025-11-18',
-                'time' => '19:00 - 21:00',
-                'topic' => 'Farmasetika Lanjutan',
-                'mentor' => 'Apt. Dr. Siti Nurhaliza',
-                'status' => 'completed',
-            ],
-        ];
+        $user = Auth::user();
+        
+        // Check access
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
+        }
+        
+        $program = Program::with(['classSchedules' => function($query) {
+            $query->orderBy('date', 'asc')->orderBy('start_time', 'asc');
+        }])->findOrFail($id);
+        
+        $schedules = $program->classSchedules;
 
-        return view('pages.program.schedule', [
-            'programId' => $id,
-            'schedules' => $schedules
-        ]);
+        return view('pages.program.schedule', compact('program', 'schedules'));
     }
 
     /**
@@ -341,44 +416,34 @@ class UserController extends Controller
      */
     public function exercises($id)
     {
-        // TODO: Get exercises from database
-        $exercises = [
-            [
-                'id' => 1,
-                'title' => 'Farmakologi Dasar - Bagian 1',
-                'description' => 'Latihan soal tentang konsep dasar farmakologi',
-                'total_questions' => 20,
-                'duration' => 30,
-                'difficulty' => 'easy',
-                'completed' => true,
-                'score' => 85,
-            ],
-            [
-                'id' => 2,
-                'title' => 'Farmasetika - Formulasi',
-                'description' => 'Soal-soal tentang formulasi sediaan farmasi',
-                'total_questions' => 25,
-                'duration' => 40,
-                'difficulty' => 'medium',
-                'completed' => true,
-                'score' => 78,
-            ],
-            [
-                'id' => 3,
-                'title' => 'Kimia Farmasi Lanjutan',
-                'description' => 'Latihan soal kimia farmasi tingkat lanjut',
-                'total_questions' => 30,
-                'duration' => 45,
-                'difficulty' => 'hard',
-                'completed' => false,
-                'score' => null,
-            ],
-        ];
+        $user = Auth::user();
+        
+        // Check access
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
+        }
+        
+        $program = Program::with(['quizBanks' => function($query) {
+            $query->where('type', 'practice')
+                  ->withCount('questions')
+                  ->with(['attempts' => function($q) {
+                      $q->where('user_id', Auth::id())
+                        ->latest()
+                        ->limit(1);
+                  }])
+                  ->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
+        
+        $exercises = $program->quizBanks;
 
-        return view('pages.program.exercises', [
-            'programId' => $id,
-            'exercises' => $exercises
-        ]);
+        return view('pages.program.exercises', compact('program', 'exercises'));
     }
 
     /**
@@ -386,43 +451,31 @@ class UserController extends Controller
      */
     public function startExercise($id, $exerciseId)
     {
-        // TODO: Get exercise questions from database
-        $exercise = [
-            'id' => $exerciseId,
-            'title' => 'Farmakologi Dasar - Bagian 1',
-            'duration' => 30,
-            'total_questions' => 20,
-        ];
+        $user = Auth::user();
+        
+        // Check access
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
+        }
+        
+        // Get quiz bank with questions
+        $exercise = \App\Models\QuizBank::with('questions')
+            ->where('id', $exerciseId)
+            ->where('program_id', $id)
+            ->where('type', 'practice')
+            ->firstOrFail();
+        
+        $program = Program::findOrFail($id);
+        $questions = $exercise->questions;
 
-        $questions = [
-            [
-                'id' => 1,
-                'question' => 'Apa yang dimaksud dengan farmakokinetik?',
-                'options' => [
-                    'A' => 'Studi tentang efek obat pada tubuh',
-                    'B' => 'Studi tentang pergerakan obat dalam tubuh',
-                    'C' => 'Studi tentang interaksi obat',
-                    'D' => 'Studi tentang pembuatan obat',
-                ],
-            ],
-            [
-                'id' => 2,
-                'question' => 'Fase farmakokinetik yang melibatkan penyerapan obat adalah?',
-                'options' => [
-                    'A' => 'Distribusi',
-                    'B' => 'Metabolisme',
-                    'C' => 'Absorpsi',
-                    'D' => 'Ekskresi',
-                ],
-            ],
-            // Add more sample questions as needed
-        ];
-
-        return view('pages.program.exercise-start', [
-            'programId' => $id,
-            'exercise' => $exercise,
-            'questions' => $questions
-        ]);
+        return view('pages.program.exercise-start', compact('program', 'exercise', 'questions'));
     }
 
     /**
@@ -430,15 +483,37 @@ class UserController extends Controller
      */
     public function submitExercise(Request $request, $id, $exerciseId)
     {
-        // TODO: Process and save answers
+        $user = Auth::user();
         $answers = $request->input('answers', []);
         
-        // Calculate score (dummy calculation)
-        $totalQuestions = 20;
-        $correctAnswers = rand(15, 19);
-        $score = round(($correctAnswers / $totalQuestions) * 100);
+        // Get quiz bank with questions
+        $quiz = \App\Models\QuizBank::with('questions')->findOrFail($exerciseId);
+        
+        // Calculate score
+        $totalQuestions = $quiz->questions->count();
+        $correctAnswers = 0;
+        
+        foreach ($quiz->questions as $question) {
+            $userAnswer = $answers[$question->id] ?? null;
+            if ($userAnswer && $userAnswer === $question->correct_answer) {
+                $correctAnswers++;
+            }
+        }
+        
+        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
+        
+        // Save attempt to database
+        $attempt = \App\Models\QuizAttempt::create([
+            'user_id' => $user->id,
+            'quiz_bank_id' => $exerciseId,
+            'score' => $score,
+            'total_questions' => $totalQuestions,
+            'correct_answers' => $correctAnswers,
+            'answers' => json_encode($answers),
+            'completed_at' => now(),
+        ]);
 
-        return redirect()->route('program.result', ['id' => $id, 'resultId' => rand(1, 100)])
+        return redirect()->route('program.result', ['id' => $id, 'resultId' => $attempt->id])
             ->with('success', 'Latihan soal berhasil diselesaikan!');
     }
 
@@ -447,50 +522,34 @@ class UserController extends Controller
      */
     public function tryouts($id)
     {
-        // TODO: Get try outs from database
-        $tryouts = [
-            [
-                'id' => 1,
-                'title' => 'Try Out UKOM D3 - Week 1',
-                'description' => 'Simulasi ujian UKOM minggu pertama dengan 100 soal',
-                'total_questions' => 100,
-                'duration' => 120,
-                'start_date' => '2025-11-15',
-                'end_date' => '2025-11-22',
-                'status' => 'available',
-                'completed' => true,
-                'score' => 82,
-            ],
-            [
-                'id' => 2,
-                'title' => 'Try Out UKOM D3 - Week 2',
-                'description' => 'Simulasi ujian UKOM minggu kedua dengan tingkat kesulitan meningkat',
-                'total_questions' => 100,
-                'duration' => 120,
-                'start_date' => '2025-11-18',
-                'end_date' => '2025-11-25',
-                'status' => 'available',
-                'completed' => false,
-                'score' => null,
-            ],
-            [
-                'id' => 3,
-                'title' => 'Try Out UKOM D3 - Week 3',
-                'description' => 'Try out komprehensif dengan soal dari semua materi',
-                'total_questions' => 100,
-                'duration' => 120,
-                'start_date' => '2025-11-25',
-                'end_date' => '2025-12-02',
-                'status' => 'upcoming',
-                'completed' => false,
-                'score' => null,
-            ],
-        ];
+        $user = Auth::user();
+        
+        // Check access
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
+        }
+        
+        $program = Program::with(['quizBanks' => function($query) {
+            $query->where('type', 'tryout')
+                  ->withCount('questions')
+                  ->with(['attempts' => function($q) {
+                      $q->where('user_id', Auth::id())
+                        ->latest()
+                        ->limit(1);
+                  }])
+                  ->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
+        
+        $tryouts = $program->quizBanks;
 
-        return view('pages.program.tryouts', [
-            'programId' => $id,
-            'tryouts' => $tryouts
-        ]);
+        return view('pages.program.tryouts', compact('program', 'tryouts'));
     }
 
     /**
@@ -498,33 +557,31 @@ class UserController extends Controller
      */
     public function startTryout($id, $tryoutId)
     {
-        // TODO: Get try out questions from database
-        $tryout = [
-            'id' => $tryoutId,
-            'title' => 'Try Out UKOM D3 - Week 2',
-            'duration' => 120,
-            'total_questions' => 100,
-        ];
-
-        $questions = [];
-        for ($i = 1; $i <= 100; $i++) {
-            $questions[] = [
-                'id' => $i,
-                'question' => "Soal nomor {$i}: Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
-                'options' => [
-                    'A' => 'Pilihan A - Lorem ipsum',
-                    'B' => 'Pilihan B - Dolor sit amet',
-                    'C' => 'Pilihan C - Consectetur adipiscing',
-                    'D' => 'Pilihan D - Elit sed do',
-                ],
-            ];
+        $user = Auth::user();
+        
+        // Check access
+        $hasAccess = Order::where('user_id', $user->id)
+            ->where('program_id', $id)
+            ->whereHas('payment', function($q) {
+                $q->where('status', 'paid');
+            })
+            ->exists();
+        
+        if (!$hasAccess) {
+            return redirect()->route('layanan')->with('error', 'Anda belum memiliki akses ke program ini.');
         }
+        
+        // Get quiz bank with questions
+        $tryout = \App\Models\QuizBank::with('questions')
+            ->where('id', $tryoutId)
+            ->where('program_id', $id)
+            ->where('type', 'tryout')
+            ->firstOrFail();
+        
+        $program = Program::findOrFail($id);
+        $questions = $tryout->questions;
 
-        return view('pages.program.tryout-start', [
-            'programId' => $id,
-            'tryout' => $tryout,
-            'questions' => $questions
-        ]);
+        return view('pages.program.tryout-start', compact('program', 'tryout', 'questions'));
     }
 
     /**
@@ -532,15 +589,37 @@ class UserController extends Controller
      */
     public function submitTryout(Request $request, $id, $tryoutId)
     {
-        // TODO: Process and save answers
+        $user = Auth::user();
         $answers = $request->input('answers', []);
         
-        // Calculate score (dummy calculation)
-        $totalQuestions = 100;
-        $correctAnswers = rand(70, 95);
-        $score = round(($correctAnswers / $totalQuestions) * 100);
+        // Get quiz bank with questions
+        $quiz = \App\Models\QuizBank::with('questions')->findOrFail($tryoutId);
+        
+        // Calculate score
+        $totalQuestions = $quiz->questions->count();
+        $correctAnswers = 0;
+        
+        foreach ($quiz->questions as $question) {
+            $userAnswer = $answers[$question->id] ?? null;
+            if ($userAnswer && $userAnswer === $question->correct_answer) {
+                $correctAnswers++;
+            }
+        }
+        
+        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
+        
+        // Save attempt to database
+        $attempt = \App\Models\QuizAttempt::create([
+            'user_id' => $user->id,
+            'quiz_bank_id' => $tryoutId,
+            'score' => $score,
+            'total_questions' => $totalQuestions,
+            'correct_answers' => $correctAnswers,
+            'answers' => json_encode($answers),
+            'completed_at' => now(),
+        ]);
 
-        return redirect()->route('program.result', ['id' => $id, 'resultId' => rand(100, 200)])
+        return redirect()->route('program.result', ['id' => $id, 'resultId' => $attempt->id])
             ->with('success', 'Try Out berhasil diselesaikan!');
     }
 
@@ -549,31 +628,32 @@ class UserController extends Controller
      */
     public function viewResult($id, $resultId)
     {
-        // TODO: Get result from database
-        $result = [
-            'id' => $resultId,
-            'title' => 'Try Out UKOM D3 - Week 1',
-            'type' => 'tryout',
-            'score' => 82,
-            'correct_answers' => 82,
-            'total_questions' => 100,
-            'duration_spent' => 105,
-            'completed_at' => '2025-11-16 14:30:00',
-            'passing_grade' => 70,
-        ];
+        $user = Auth::user();
+        
+        // Get attempt with quiz bank data
+        $attempt = \App\Models\QuizAttempt::with(['quizBank', 'user'])
+            ->where('id', $resultId)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+        
+        $program = Program::findOrFail($id);
+        $wrongAnswers = $attempt->total_questions - $attempt->correct_answers;
+        
+        // Calculate duration spent (if started_at exists)
+        $durationSpent = null;
+        if ($attempt->started_at && $attempt->completed_at) {
+            $durationSpent = $attempt->started_at->diffInMinutes($attempt->completed_at);
+        }
+        
+        // Passing grade default
+        $passingGrade = 70;
 
-        $breakdown = [
-            ['category' => 'Farmakologi', 'correct' => 18, 'total' => 20, 'percentage' => 90],
-            ['category' => 'Farmasetika', 'correct' => 16, 'total' => 20, 'percentage' => 80],
-            ['category' => 'Kimia Farmasi', 'correct' => 15, 'total' => 20, 'percentage' => 75],
-            ['category' => 'Farmasi Klinik', 'correct' => 17, 'total' => 20, 'percentage' => 85],
-            ['category' => 'Manajemen Farmasi', 'correct' => 16, 'total' => 20, 'percentage' => 80],
-        ];
-
-        return view('pages.program.result', [
-            'programId' => $id,
-            'result' => $result,
-            'breakdown' => $breakdown
-        ]);
+        return view('pages.program.result', compact(
+            'program',
+            'attempt',
+            'wrongAnswers',
+            'durationSpent',
+            'passingGrade'
+        ));
     }
 }
