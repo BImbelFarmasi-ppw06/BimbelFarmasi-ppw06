@@ -26,13 +26,32 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.classes.update', $program->id) }}" method="POST" class="space-y-6">
+    <form id="editProgramForm" action="{{ route('admin.classes.update', $program->id) }}" method="POST" class="space-y-6" onsubmit="return handleFormSubmit(event)">
         @csrf
         @method('PUT')
 
         <div class="rounded-lg bg-white p-6 shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Dasar</h3>
             
+            <div class="mb-4">
+                <label for="class_category" class="block text-sm font-medium text-gray-700 mb-2">
+                    Kategori Kelas <span class="text-red-500">*</span>
+                </label>
+                <select 
+                    name="class_category" 
+                    id="class_category" 
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500 @error('class_category') border-red-500 @enderror">
+                    <option value="">Pilih Kategori Kelas</option>
+                    <option value="bimbel-ukom" {{ old('class_category', $program->class_category) === 'bimbel-ukom' ? 'selected' : '' }}>Bimbel UKOM D3 Farmasi</option>
+                    <option value="cpns-p3k" {{ old('class_category', $program->class_category) === 'cpns-p3k' ? 'selected' : '' }}>CPNS & P3K Farmasi</option>
+                    <option value="joki-tugas" {{ old('class_category', $program->class_category) === 'joki-tugas' ? 'selected' : '' }}>Joki Tugas Farmasi</option>
+                </select>
+                @error('class_category')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                     Nama Program <span class="text-red-500">*</span>
@@ -193,34 +212,58 @@
             </button>
         </div>
 
-        <div class="flex gap-3 justify-between">
+        <div class="flex gap-3 justify-end">
+            <a 
+                href="{{ route('admin.classes.index') }}" 
+                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                Batal
+            </a>
+            <button 
+                type="submit" 
+                onclick="return confirm('Apakah Anda yakin ingin memperbarui program ini?')"
+                class="px-4 py-2 bg-[#2D3C8C] text-white rounded-lg hover:bg-blue-900 font-medium">
+                Update Program
+            </button>
+        </div>
+    </form>
+
+    <!-- Delete Form (Separate from Update Form) -->
+    <div class="mt-8 pt-6 border-t border-gray-200">
+        <div class="rounded-lg bg-red-50 p-6">
+            <h3 class="text-lg font-semibold text-red-900 mb-2">Zona Berbahaya</h3>
+            <p class="text-sm text-red-700 mb-4">Menghapus program akan menghapus semua data terkait termasuk materi, jadwal, dan soal latihan.</p>
             <form action="{{ route('admin.classes.destroy', $program->id) }}" method="POST" 
-                  onsubmit="return confirm('Yakin ingin menghapus program ini?')">
+                  onsubmit="return confirm('⚠️ PERINGATAN: Apakah Anda YAKIN ingin menghapus program ini? Semua data akan hilang PERMANEN dan tidak dapat dikembalikan!')">
                 @csrf
                 @method('DELETE')
                 <button 
                     type="submit" 
-                    class="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 font-medium">
-                    Hapus Program
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+                    🗑️ Hapus Program Permanen
                 </button>
             </form>
-
-            <div class="flex gap-3">
-                <a 
-                    href="{{ route('admin.classes.index') }}" 
-                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
-                    Batal
-                </a>
-                <button 
-                    type="submit" 
-                    class="px-4 py-2 bg-[#2D3C8C] text-white rounded-lg hover:bg-blue-900 font-medium">
-                    Update Program
-                </button>
-            </div>
         </div>
-    </form>
+    </div>
 
     <script>
+        let isSubmitting = false;
+
+        function handleFormSubmit(event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return false;
+            }
+            
+            isSubmitting = true;
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Memproses...';
+            }
+            
+            return true;
+        }
+
         function addFeature() {
             const container = document.getElementById('featuresContainer');
             const newItem = document.createElement('div');

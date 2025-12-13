@@ -89,7 +89,7 @@
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Jumlah</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Tanggal</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Aksi</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600">Detail</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
@@ -125,27 +125,21 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4">
-                                @if($payment->status === 'pending')
-                                <div class="flex items-center gap-2">
-                                    <button 
-                                        onclick="viewPaymentDetail({{ $payment->id }})"
-                                        class="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700">
-                                        Lihat Bukti
-                                    </button>
-                                </div>
+                            <td class="px-6 py-4 text-center">
+                                @if($payment->status !== 'pending')
+                                    <a href="{{ route('admin.payments.show', $payment->id) }}" 
+                                       class="rounded p-1 text-gray-600 hover:bg-gray-100 inline-block" title="Lihat Detail">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </a>
                                 @else
-                                <a href="{{ route('admin.payments.show', $payment->id) }}" 
-                                   class="rounded p-1 text-gray-600 hover:bg-gray-100 inline-block">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </a>
+                                    <span class="text-xs text-gray-400 italic">-</span>
                                 @endif
                             </td>
                         </tr>
-                        @endforeach
+                        @endforeach 
                     </tbody>
                 </table>
             </div>
@@ -156,48 +150,4 @@
             </div>
         @endif
     </div>
-
-    <!-- Payment Detail Modal -->
-    <div id="paymentModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Background overlay -->
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closePaymentModal()"></div>
-
-            <!-- Modal panel -->
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div id="modalContent">
-                    <!-- Content will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function viewPaymentDetail(paymentId) {
-            // Show modal
-            document.getElementById('paymentModal').classList.remove('hidden');
-            
-            // Load content
-            fetch(`/admin/payments/${paymentId}`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('modalContent').innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('modalContent').innerHTML = '<p class="p-8 text-center text-red-600">Gagal memuat data</p>';
-                });
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.add('hidden');
-        }
-
-        // Close modal on ESC key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closePaymentModal();
-            }
-        });
-    </script>
 @endsection

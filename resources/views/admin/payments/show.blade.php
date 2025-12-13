@@ -20,11 +20,11 @@
                     @else bg-red-100 text-red-800
                     @endif">
                     @if($payment->status === 'pending') 
-                        <i class="fas fa-clock mr-1"></i>Menunggu Konfirmasi
+                        <i class="fas fa-clock mr-1"></i>Menunggu Pembayaran
                     @elseif($payment->status === 'paid') 
-                        <i class="fas fa-check-circle mr-1"></i>Terkonfirmasi
+                        <i class="fas fa-check-circle mr-1"></i>Lunas
                     @else 
-                        <i class="fas fa-times-circle mr-1"></i>Ditolak
+                        <i class="fas fa-times-circle mr-1"></i>Gagal
                     @endif
                 </span>
             </div>
@@ -102,11 +102,11 @@
                             <p class="text-xs font-semibold {{ $payment->status === 'paid' ? 'text-green-700' : ($payment->status === 'rejected' ? 'text-red-700' : 'text-yellow-700') }} mb-1 uppercase">Status Pembayaran</p>
                             <p class="font-bold {{ $payment->status === 'paid' ? 'text-green-900' : ($payment->status === 'rejected' ? 'text-red-900' : 'text-yellow-900') }}">
                                 @if($payment->status === 'pending')
-                                    Menunggu Konfirmasi
+                                    Menunggu Pembayaran (Midtrans)
                                 @elseif($payment->status === 'paid')
-                                    Terkonfirmasi
+                                    Lunas
                                 @else
-                                    Ditolak
+                                    Gagal
                                 @endif
                             </p>
                         </div>
@@ -188,60 +188,7 @@
                 </div>
                 @endif
 
-                <!-- Actions Section -->
-                @if($payment->status === 'pending')
-                <div class="rounded-xl bg-white p-6 shadow-sm border-2 border-yellow-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                        <i class="fas fa-exclamation-circle text-yellow-600"></i>
-                        Aksi Pembayaran
-                    </h3>
-                    <div class="space-y-3">
-                        <form method="POST" action="{{ route('admin.payments.approve', $payment->id) }}">
-                            @csrf
-                            <button 
-                                type="submit" 
-                                onclick="return confirm('Yakin ingin menyetujui pembayaran ini?')"
-                                class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition flex items-center justify-center gap-2">
-                                <i class="fas fa-check-circle"></i>
-                                Setujui Pembayaran
-                            </button>
-                        </form>
-                        <button 
-                            onclick="showRejectForm()" 
-                            class="w-full px-4 py-3 border-2 border-red-300 text-red-600 rounded-lg hover:bg-red-50 font-semibold transition flex items-center justify-center gap-2">
-                            <i class="fas fa-times-circle"></i>
-                            Tolak Pembayaran
-                        </button>
-
-                        <!-- Reject Form -->
-                        <div id="rejectForm" class="hidden mt-4 p-4 bg-red-50 rounded-lg border-2 border-red-200">
-                            <form method="POST" action="{{ route('admin.payments.reject', $payment->id) }}">
-                                @csrf
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Alasan Penolakan</label>
-                                <textarea 
-                                    name="reason" 
-                                    rows="3" 
-                                    required
-                                    placeholder="Jelaskan alasan penolakan..."
-                                    class="w-full rounded-lg border border-red-300 text-sm p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-                                <div class="flex gap-2">
-                                    <button 
-                                        type="button" 
-                                        onclick="hideRejectForm()"
-                                        class="flex-1 px-3 py-2 text-gray-700 text-sm font-semibold border rounded-lg hover:bg-gray-100">
-                                        Batal
-                                    </button>
-                                    <button 
-                                        type="submit"
-                                        class="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold">
-                                        Tolak
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                @else
+                <!-- Payment Info Notice -->
                 <div class="rounded-xl bg-white p-6 shadow-sm {{ $payment->status === 'paid' ? 'border-2 border-green-200' : 'border-2 border-red-200' }}">
                     <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                         {{ $payment->status === 'paid' ? '✅' : '❌' }}
@@ -254,24 +201,14 @@
                     <div class="p-4 {{ $payment->status === 'paid' ? 'bg-green-50' : 'bg-red-50' }} rounded-lg">
                         @if($payment->status === 'paid')
                             <p class="text-sm text-green-700"><strong>Tanggal Konfirmasi:</strong> {{ $payment->paid_at?->format('d M Y, H:i') ?? 'N/A' }}</p>
+                            <p class="text-xs text-green-600 mt-2">Pembayaran dikonfirmasi otomatis melalui Midtrans</p>
                         @else
-                            <p class="text-sm font-medium {{ $payment->status === 'paid' ? 'text-green-700' : 'text-red-700' }}"><strong>Alasan Penolakan:</strong></p>
-                            <p class="text-sm {{ $payment->status === 'paid' ? 'text-green-700' : 'text-red-700' }} mt-1">{{ $payment->notes }}</p>
+                            <p class="text-sm font-medium text-red-700"><strong>Alasan Penolakan:</strong></p>
+                            <p class="text-sm text-red-700 mt-1">{{ $payment->notes ?? 'Pembayaran gagal diproses melalui Midtrans' }}</p>
                         @endif
                     </div>
                 </div>
-                @endif
             </div>
         </div>
     </div>
-
-    <script>
-        function showRejectForm() {
-            document.getElementById('rejectForm').classList.remove('hidden');
-        }
-        
-        function hideRejectForm() {
-            document.getElementById('rejectForm').classList.add('hidden');
-        }
-    </script>
 @endsection

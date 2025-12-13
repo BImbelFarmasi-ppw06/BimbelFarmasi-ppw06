@@ -134,6 +134,22 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/classes/{id}/materials', [AdminClassController::class, 'storeMaterial'])->name('classes.materials.store');
     Route::delete('/classes/{programId}/materials/{materialId}', [AdminClassController::class, 'deleteMaterial'])->name('classes.materials.destroy');
 
+    // Schedule Management for Classes
+    Route::post('/classes/{id}/schedules', [AdminClassController::class, 'storeSchedule'])->name('classes.schedules.store');
+    Route::put('/classes/{programId}/schedules/{scheduleId}', [AdminClassController::class, 'updateSchedule'])->name('classes.schedules.update');
+    Route::delete('/classes/{programId}/schedules/{scheduleId}', [AdminClassController::class, 'deleteSchedule'])->name('classes.schedules.destroy');
+
+    // Quiz/Exercise Management for Classes
+    Route::post('/classes/{id}/quizzes', [AdminClassController::class, 'storeQuiz'])->name('classes.quizzes.store');
+    Route::put('/classes/{programId}/quizzes/{quizId}', [AdminClassController::class, 'updateQuiz'])->name('classes.quizzes.update');
+    Route::delete('/classes/{programId}/quizzes/{quizId}', [AdminClassController::class, 'deleteQuiz'])->name('classes.quizzes.destroy');
+    
+    // Quiz Questions Management
+    Route::get('/classes/{programId}/quizzes/{quizId}/questions', [AdminClassController::class, 'showQuizQuestions'])->name('classes.quizzes.questions');
+    Route::post('/classes/{programId}/quizzes/{quizId}/questions', [AdminClassController::class, 'storeQuizQuestion'])->name('classes.quizzes.questions.store');
+    Route::put('/classes/{programId}/quizzes/{quizId}/questions/{questionId}', [AdminClassController::class, 'updateQuizQuestion'])->name('classes.quizzes.questions.update');
+    Route::delete('/classes/{programId}/quizzes/{quizId}/questions/{questionId}', [AdminClassController::class, 'deleteQuizQuestion'])->name('classes.quizzes.questions.destroy');
+
     Route::view('/questions', 'admin.questions.index')->name('questions.index');
 
     // Payment Management

@@ -13,12 +13,17 @@ class Program extends Model
         'name',
         'slug',
         'type',
+        'class_category',
         'description',
         'features',
         'price',
         'duration_months',
         'total_sessions',
         'is_active',
+        'tutor',
+        'schedule',
+        'duration',
+        'status',
     ];
 
     protected $casts = [
@@ -35,6 +40,11 @@ class Program extends Model
     public function courses()
     {
         return $this->hasMany(Course::class);
+    }
+    
+    public function classSchedules()
+    {
+        return $this->hasMany(ClassSchedule::class);
     }
     
     public function quizBanks()
