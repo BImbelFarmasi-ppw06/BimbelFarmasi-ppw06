@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Program;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -342,6 +343,20 @@ class OrderController extends Controller
         // Update order status based on payment status
         if ($status === 'paid') {
             $order->update(['status' => 'processing']); // Changed from 'completed' to 'processing'
+            
+            // Create notification for admin
+            Notification::createNotification(
+                'payment',
+                'Pembayaran Baru Diterima',
+                "Pembayaran sebesar Rp " . number_format($order->amount, 0, ',', '.') . " untuk program {$order->program->name} dari {$order->user->name}",
+                route('admin.payments.show', $order->id),
+                [
+                    'order_id' => $order->id,
+                    'amount' => $order->amount,
+                    'program' => $order->program->name,
+                    'user' => $order->user->name,
+                ]
+            );
         } elseif ($status === 'failed') {
             $order->update(['status' => 'cancelled']);
         } elseif ($status === 'pending') {

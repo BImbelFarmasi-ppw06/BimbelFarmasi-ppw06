@@ -16,6 +16,7 @@ class TestimonialController extends Controller
     {
         $testimonials = Testimonial::with(['user', 'program'])
             ->approved()
+            ->orderBy('rating', 'desc')
             ->latest()
             ->paginate(6);
 
@@ -88,11 +89,11 @@ class TestimonialController extends Controller
             'order_id' => $order->id,
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
-            'is_approved' => false, // Needs admin approval
+            'is_approved' => true, // Auto approve
         ]);
 
         return redirect()->route('order.my-orders')
-            ->with('success', 'Terima kasih! Testimoni Anda telah dikirim dan menunggu persetujuan admin.');
+            ->with('success', 'Terima kasih! Testimoni Anda telah berhasil dipublikasikan.');
     }
 
     /**
@@ -134,11 +135,11 @@ class TestimonialController extends Controller
         $testimonial->update([
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
-            'is_approved' => false, // Reset approval status
+            'is_approved' => true, // Keep approved
         ]);
 
         return redirect()->route('order.my-orders')
-            ->with('success', 'Testimoni Anda telah diupdate dan menunggu persetujuan admin.');
+            ->with('success', 'Testimoni Anda telah berhasil diupdate.');
     }
 
     /**
