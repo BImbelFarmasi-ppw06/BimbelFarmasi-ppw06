@@ -22,9 +22,10 @@
             <div class="rounded-xl bg-white p-6 shadow-md">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500">Progress</p>
-                        <p class="mt-2 text-2xl font-bold text-[#2D3C8C]">
-                            {{ $totalMaterials > 0 ? round(($completedMaterials / $totalMaterials) * 100) : 0 }}%
+                        <p class="text-sm text-gray-500">Progress Keseluruhan</p>
+                        <p class="mt-2 text-2xl font-bold text-[#2D3C8C]">{{ $progressPercentage }}%</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {{ $completedMaterials + $completedSchedules + $completedExercises + $completedTryouts }}/{{ $totalMaterials + $totalSchedules + $totalExercises + $totalTryouts }} selesai
                         </p>
                     </div>
                     <div class="rounded-full bg-blue-100 p-3">
@@ -39,7 +40,12 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500">Sesi Selesai</p>
-                        <p class="mt-2 text-2xl font-bold text-green-600">{{ $completedMaterials }}/{{ $totalMaterials }}</p>
+                        <p class="mt-2 text-2xl font-bold text-green-600">
+                            {{ $completedExercises + $completedTryouts }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            📝 {{ $completedExercises }} latihan · 🎯 {{ $completedTryouts }} tryout
+                        </p>
                     </div>
                     <div class="rounded-full bg-green-100 p-3">
                         <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,6 +60,15 @@
                     <div>
                         <p class="text-sm text-gray-500">Nilai Rata-rata</p>
                         <p class="mt-2 text-2xl font-bold text-purple-600">{{ $averageScore > 0 ? $averageScore : '-' }}</p>
+                        @if($averageScore > 0)
+                        <p class="text-xs text-gray-500 mt-1">
+                            Bobot: 60% tryout · 40% latihan
+                        </p>
+                        @else
+                        <p class="text-xs text-gray-500 mt-1">
+                            Belum ada nilai
+                        </p>
+                        @endif
                     </div>
                     <div class="rounded-full bg-purple-100 p-3">
                         <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,6 +83,9 @@
                     <div>
                         <p class="text-sm text-gray-500">Hari Belajar</p>
                         <p class="mt-2 text-2xl font-bold text-orange-600">{{ $studyDays }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Hari aktif mengerjakan soal
+                        </p>
                     </div>
                     <div class="rounded-full bg-orange-100 p-3">
                         <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

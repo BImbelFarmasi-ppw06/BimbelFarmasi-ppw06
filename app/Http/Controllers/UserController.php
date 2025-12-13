@@ -259,10 +259,59 @@ class UserController extends Controller
         $totalExercises = $program->quizBanks->where('type', 'practice')->count();
         $totalTryouts = $program->quizBanks->where('type', 'tryout')->count();
         
-        // Get user's progress (for future implementation)
-        $completedMaterials = 0; // TODO: Track completed materials
-        $averageScore = 0; // TODO: Calculate from quiz attempts
-        $studyDays = 0; // TODO: Calculate active study days
+        // Get user's quiz attempts for this program
+        $practiceAttempts = \App\Models\QuizAttempt::where('user_id', $user->id)
+            ->whereIn('quiz_bank_id', $program->quizBanks->where('type', 'practice')->pluck('id'))
+            ->get();
+        
+        $tryoutAttempts = \App\Models\QuizAttempt::where('user_id', $user->id)
+            ->whereIn('quiz_bank_id', $program->quizBanks->where('type', 'tryout')->pluck('id'))
+            ->get();
+        
+        // Count completed exercises and tryouts
+        $completedExercises = $practiceAttempts->unique('quiz_bank_id')->count();
+        $completedTryouts = $tryoutAttempts->unique('quiz_bank_id')->count();
+        
+        // Count completed schedules (jadwal yang sudah berlangsung)
+        $completedSchedules = $program->classSchedules
+            ->where('status', 'completed')
+            ->count();
+        
+        // TODO: Track completed materials from user_course_progress table (future feature)
+        $completedMaterials = 0;
+        
+        // Calculate weighted average score
+        // Bobot: Tryout = 60%, Latihan Soal = 40%
+        $averageScore = 0;
+        if ($practiceAttempts->count() > 0 || $tryoutAttempts->count() > 0) {
+            $practiceAvg = $practiceAttempts->avg('score') ?? 0;
+            $tryoutAvg = $tryoutAttempts->avg('score') ?? 0;
+            
+            // If user only has one type of attempt, use that
+            if ($practiceAttempts->count() > 0 && $tryoutAttempts->count() === 0) {
+                $averageScore = round($practiceAvg);
+            } elseif ($tryoutAttempts->count() > 0 && $practiceAttempts->count() === 0) {
+                $averageScore = round($tryoutAvg);
+            } else {
+                // Weighted average: 40% practice, 60% tryout
+                $averageScore = round(($practiceAvg * 0.4) + ($tryoutAvg * 0.6));
+            }
+        }
+        
+        // Calculate active study days from quiz attempts
+        $allAttempts = $practiceAttempts->merge($tryoutAttempts);
+        $studyDays = $allAttempts->pluck('created_at')
+            ->map(function($date) {
+                return \Carbon\Carbon::parse($date)->format('Y-m-d');
+            })
+            ->unique()
+            ->count();
+        
+        // Calculate overall progress from ALL components
+        // Progress = (materi + jadwal + latihan + tryout selesai) / total semua
+        $totalItems = $totalMaterials + $totalSchedules + $totalExercises + $totalTryouts;
+        $completedItems = $completedMaterials + $completedSchedules + $completedExercises + $completedTryouts;
+        $progressPercentage = $totalItems > 0 ? round(($completedItems / $totalItems) * 100) : 0;
         
         return view('pages.program.dashboard', compact(
             'program',
@@ -271,8 +320,12 @@ class UserController extends Controller
             'totalExercises',
             'totalTryouts',
             'completedMaterials',
+            'completedSchedules',
+            'completedExercises',
+            'completedTryouts',
             'averageScore',
-            'studyDays'
+            'studyDays',
+            'progressPercentage'
         ));
     }
 
