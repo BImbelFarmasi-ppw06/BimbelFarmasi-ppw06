@@ -12,6 +12,11 @@ use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminClassController;
 use App\Http\Controllers\Admin\AdminCourseController;
 use App\Http\Controllers\Admin\AdminProgramController;
+<<<<<<< Updated upstream
+=======
+use App\Http\Controllers\Admin\AdminNotificationController;
+use App\Http\Controllers\Admin\JokiPersonController;
+>>>>>>> Stashed changes
 use App\Http\Controllers\TestimonialController;
 
 // =================== PUBLIC PAGES ===================
@@ -171,4 +176,12 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::delete('/courses/{course}/file', [AdminCourseController::class, 'deleteFile'])->name('courses.file.delete');
 
     Route::view('/statistics', 'admin.statistics')->name('statistics');
+
+    // Joki Person Management
+    Route::get('/joki', [JokiPersonController::class, 'index'])->name('joki.index');
+    Route::get('/joki/create', [JokiPersonController::class, 'create'])->name('joki.create');
+    Route::post('/joki', [JokiPersonController::class, 'store'])->name('joki.store');
+    Route::get('/joki/{id}/edit', [JokiPersonController::class, 'edit'])->name('joki.edit');
+    Route::put('/joki/{id}', [JokiPersonController::class, 'update'])->name('joki.update');
+    Route::delete('/joki/{id}', [JokiPersonController::class, 'destroy'])->name('joki.destroy');
 });
