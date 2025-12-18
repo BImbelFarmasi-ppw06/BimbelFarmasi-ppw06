@@ -39,23 +39,41 @@
     <div class="mb-6 grid gap-4 sm:grid-cols-4">
         <div class="rounded-xl bg-white p-4 shadow-sm">
             <p class="text-sm text-gray-500">Tingkat Kelulusan</p>
-            <p class="mt-2 text-3xl font-bold text-green-600">87.5%</p>
-            <p class="mt-1 text-xs text-gray-500">↑ 5.2% dari bulan lalu</p>
+            <p class="mt-2 text-3xl font-bold text-green-600">{{ $stats['passRate'] }}%</p>
+            <p class="mt-1 text-xs text-gray-500">
+                @if($stats['passRateChange'] >= 0)
+                    ↑ {{ $stats['passRateChange'] }}% dari bulan lalu
+                @else
+                    ↓ {{ abs($stats['passRateChange']) }}% dari bulan lalu
+                @endif
+            </p>
         </div>
         <div class="rounded-xl bg-white p-4 shadow-sm">
             <p class="text-sm text-gray-500">Rata-rata Nilai</p>
-            <p class="mt-2 text-3xl font-bold text-blue-600">82.3</p>
-            <p class="mt-1 text-xs text-gray-500">↑ 2.1 poin</p>
+            <p class="mt-2 text-3xl font-bold text-blue-600">{{ $stats['avgScore'] }}</p>
+            <p class="mt-1 text-xs text-gray-500">
+                @if($stats['avgScoreChange'] >= 0)
+                    ↑ {{ $stats['avgScoreChange'] }} poin
+                @else
+                    ↓ {{ abs($stats['avgScoreChange']) }} poin
+                @endif
+            </p>
         </div>
         <div class="rounded-xl bg-white p-4 shadow-sm">
             <p class="text-sm text-gray-500">Tingkat Penyelesaian</p>
-            <p class="mt-2 text-3xl font-bold text-purple-600">78.4%</p>
-            <p class="mt-1 text-xs text-gray-500">↑ 3.8% dari bulan lalu</p>
+            <p class="mt-2 text-3xl font-bold text-purple-600">{{ $stats['completionRate'] }}%</p>
+            <p class="mt-1 text-xs text-gray-500">
+                @if($stats['completionRateChange'] >= 0)
+                    ↑ {{ $stats['completionRateChange'] }}% dari bulan lalu
+                @else
+                    ↓ {{ abs($stats['completionRateChange']) }}% dari bulan lalu
+                @endif
+            </p>
         </div>
         <div class="rounded-xl bg-white p-4 shadow-sm">
             <p class="text-sm text-gray-500">Kepuasan Peserta</p>
-            <p class="mt-2 text-3xl font-bold text-yellow-600">4.6/5</p>
-            <p class="mt-1 text-xs text-gray-500">Dari 156 review</p>
+            <p class="mt-2 text-3xl font-bold text-yellow-600">{{ $stats['satisfaction'] }}/5</p>
+            <p class="mt-1 text-xs text-gray-500">Dari {{ $stats['totalReviews'] }} review</p>
         </div>
     </div>
 
@@ -72,14 +90,9 @@
         <!-- Top Categories -->
         <div class="rounded-xl bg-white p-6 shadow-sm">
             <h3 class="mb-4 text-lg font-semibold text-gray-900">Kategori Soal Terpopuler</h3>
+            @if($topCategories->count() > 0)
             <div class="space-y-4">
-                @foreach([
-                    ['name' => 'Farmakologi', 'count' => 1850, 'percentage' => 85],
-                    ['name' => 'Farmasetika', 'count' => 1420, 'percentage' => 68],
-                    ['name' => 'Etika & Hukum Farmasi', 'count' => 980, 'percentage' => 52],
-                    ['name' => 'Farmasi Klinik', 'count' => 750, 'percentage' => 40],
-                    ['name' => 'Manajemen Farmasi', 'count' => 300, 'percentage' => 25],
-                ] as $category)
+                @foreach($topCategories as $category)
                 <div>
                     <div class="mb-1 flex justify-between text-sm">
                         <span class="font-medium text-gray-700">{{ $category['name'] }}</span>
@@ -91,6 +104,11 @@
                 </div>
                 @endforeach
             </div>
+            @else
+            <div class="py-8 text-center text-gray-500">
+                <p>Belum ada data kategori soal</p>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -109,13 +127,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @foreach([
-                        ['name' => 'Siti Rahma', 'program' => 'UKOM D3', 'activity' => 'Menyelesaikan kuis', 'score' => '92', 'time' => '5 menit lalu'],
-                        ['name' => 'Budi Santoso', 'program' => 'CPNS', 'activity' => 'Menonton video', 'score' => '-', 'time' => '15 menit lalu'],
-                        ['name' => 'Dewi Lestari', 'program' => 'P3K', 'activity' => 'Mengumpulkan tugas', 'score' => '88', 'time' => '1 jam lalu'],
-                        ['name' => 'Ahmad Rizki', 'program' => 'UKOM D3', 'activity' => 'Try Out', 'score' => '76', 'time' => '2 jam lalu'],
-                        ['name' => 'Rina Wijaya', 'program' => 'Joki Tugas', 'activity' => 'Mengajukan tugas', 'score' => '-', 'time' => '3 jam lalu'],
-                    ] as $activity)
+                    @forelse($latestActivities as $activity)
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
@@ -126,15 +138,17 @@
                         <td class="px-4 py-3 text-sm text-gray-600">{{ $activity['program'] }}</td>
                         <td class="px-4 py-3 text-sm text-gray-600">{{ $activity['activity'] }}</td>
                         <td class="px-4 py-3">
-                            @if($activity['score'] !== '-')
-                                <span class="font-semibold text-gray-900">{{ $activity['score'] }}</span>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
+                            <span class="font-semibold text-gray-900">{{ $activity['score'] }}</span>
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-500">{{ $activity['time'] }}</td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                            Belum ada aktivitas terbaru
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -147,10 +161,10 @@
         new Chart(enrollmentCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+                labels: @json($enrollmentTrend['labels']),
                 datasets: [{
                     label: 'Peserta Baru',
-                    data: [12, 19, 15, 25, 22, 30, 28, 35, 32, 40],
+                    data: @json($enrollmentTrend['data']),
                     borderColor: '#2D3C8C',
                     backgroundColor: 'rgba(45, 60, 140, 0.1)',
                     fill: true,
@@ -167,7 +181,10 @@
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
@@ -178,10 +195,10 @@
         new Chart(revenueCtx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+                labels: @json($revenueTrend['labels']),
                 datasets: [{
                     label: 'Pendapatan (Juta Rp)',
-                    data: [15, 24, 20, 32, 28, 38, 35, 42, 38, 50],
+                    data: @json($revenueTrend['data']),
                     backgroundColor: '#10b981',
                 }]
             },
@@ -206,10 +223,10 @@
         new Chart(programCtx, {
             type: 'radar',
             data: {
-                labels: ['UKOM D3', 'CPNS', 'P3K', 'Joki Tugas'],
+                labels: @json($programPerformance['labels']),
                 datasets: [{
                     label: 'Tingkat Kelulusan (%)',
-                    data: [88, 82, 90, 85],
+                    data: @json($programPerformance['data']),
                     borderColor: '#2D3C8C',
                     backgroundColor: 'rgba(45, 60, 140, 0.2)',
                 }]

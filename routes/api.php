@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
 // API Controllers - Temporarily commented until implementation
 // use App\Http\Controllers\Api\AuthController;
 // use App\Http\Controllers\Api\ProgramController;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\Api\TestimonialController;
 // use App\Http\Controllers\Api\UserController;
 // use App\Http\Controllers\Api\PaymentController;
-
+Route::post('/midtrans/notification', [OrderController::class, 'handleNotification'])->name('midtrans.notification');
 // API Routes - Placeholder until controllers are implemented
 Route::prefix('v1')->group(function () {
     Route::get('/', function () {

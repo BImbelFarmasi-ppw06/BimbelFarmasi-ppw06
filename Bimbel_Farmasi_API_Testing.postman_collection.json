@@ -1,0 +1,596 @@
+{
+	"info": {
+		"name": "Bimbel Farmasi API Testing",
+		"description": "API Testing Collection untuk Bimbel Farmasi - Testimonial & Report Endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Testimonials",
+			"item": [
+				{
+					"name": "FR01-01-API - Get All Testimonials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test status code",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"// Test response body is array",
+									"pm.test(\"Response body is array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"// Test data structure if not empty",
+									"if (pm.response.json().length > 0) {",
+									"    pm.test(\"First item has required fields\", function () {",
+									"        var firstItem = pm.response.json()[0];",
+									"        pm.expect(firstItem).to.have.property('id');",
+									"        pm.expect(firstItem).to.have.property('pekerjaan');",
+									"        pm.expect(firstItem).to.have.property('program_studi');",
+									"        pm.expect(firstItem).to.have.property('angkatan');",
+									"        pm.expect(firstItem).to.have.property('judul_utama');",
+									"        pm.expect(firstItem).to.have.property('link_video');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/testimoni",
+							"host": ["{{base_url}}"],
+							"path": ["api", "testimoni"]
+						},
+						"description": "Mengambil semua data testimoni yang sudah disetujui"
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-02-API - Get Testimonial by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for successful response",
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Status code is 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response has testimonial data\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('pekerjaan');",
+									"        pm.expect(jsonData).to.have.property('program_studi');",
+									"        pm.expect(jsonData).to.have.property('angkatan');",
+									"        pm.expect(jsonData).to.have.property('judul_utama');",
+									"        pm.expect(jsonData).to.have.property('link_video');",
+									"    });",
+									"}",
+									"",
+									"// Test for not found response",
+									"if (pm.response.code === 404) {",
+									"    pm.test(\"Status code is 404 Not Found\", function () {",
+									"        pm.response.to.have.status(404);",
+									"    });",
+									"",
+									"    pm.test(\"Response has error message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Testimonial not found');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/testimoni/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "testimoni", "1"]
+						},
+						"description": "Mengambil testimoni berdasarkan ID tertentu. Ganti angka 1 dengan ID yang ingin dicari."
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-03-API - Create Testimonial (Valid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for successful creation",
+									"if (pm.response.code === 201) {",
+									"    pm.test(\"Status code is 201 Created\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"",
+									"    pm.test(\"Response has success message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Testimonial created successfully');",
+									"    });",
+									"",
+									"    pm.test(\"Response has data object\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"        pm.expect(jsonData.data).to.have.property('id');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 1,\n    \"pekerjaan\": \"Dosen\",\n    \"program_studi\": \"Sistem Informasi\",\n    \"angkatan\": \"2004\",\n    \"judul_utama\": \"SEBAGAI ALUMNI YANG BERPRESTASI\",\n    \"link_video\": \"https://youtu.be/BWoTU8cuueY?si=IiXNdyfB0SZO8ntk\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/posttestimoni",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posttestimoni"]
+						},
+						"description": "Membuat testimoni baru dengan data yang valid (termasuk user_id)"
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-03-API - Create Testimonial (Invalid - No user_id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for validation error",
+									"if (pm.response.code === 400) {",
+									"    pm.test(\"Status code is 400 Bad Request\", function () {",
+									"        pm.response.to.have.status(400);",
+									"    });",
+									"",
+									"    pm.test(\"Response has validation errors\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData).to.have.property('errors');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pekerjaan\": \"Dosen\",\n    \"program_studi\": \"Sistem Informasi\",\n    \"angkatan\": \"2004\",\n    \"judul_utama\": \"SEBAGAI ALUMNI YANG BERPRESTASI\",\n    \"link_video\": \"https://youtu.be/BWoTU8cuueY?si=IiXNdyfB0SZO8ntk\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/posttestimoni",
+							"host": ["{{base_url}}"],
+							"path": ["api", "posttestimoni"]
+						},
+						"description": "Mencoba membuat testimoni tanpa user_id (harus gagal dengan 400 Bad Request)"
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-04-API - Update Testimonial (Valid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for successful update",
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Status code is 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response has success message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Testimonial updated successfully');",
+									"    });",
+									"",
+									"    pm.test(\"Response has updated data\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pekerjaan\": \"Dosen\",\n    \"program_studi\": \"Teknik Elektro\",\n    \"angkatan\": \"2004\",\n    \"judul_utama\": \"SEBAGAI ALUMNI YANG BERPRESTASI\",\n    \"link_video\": \"https://youtu.be/BWoTU8cuueY?si=IiXNdyfB0SZO8ntk\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/updatetestimoni/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "updatetestimoni", "1"]
+						},
+						"description": "Mengupdate testimoni dengan data yang valid"
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-04-API - Update Testimonial (Invalid - Empty)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for validation error",
+									"if (pm.response.code === 422) {",
+									"    pm.test(\"Status code is 422 Unprocessable Entity\", function () {",
+									"        pm.response.to.have.status(422);",
+									"    });",
+									"",
+									"    pm.test(\"Response has validation errors\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData).to.have.property('errors');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pekerjaan\": \"\",\n    \"program_studi\": \"\",\n    \"angkatan\": \"\",\n    \"judul_utama\": \"\",\n    \"link_video\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/updatetestimoni/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "updatetestimoni", "1"]
+						},
+						"description": "Mencoba update dengan data kosong (harus gagal dengan 422)"
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-05-API - Delete Testimonial (Valid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for successful deletion",
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Status code is 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response has success message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Testimonial deleted successfully');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/deletetestimoni/15",
+							"host": ["{{base_url}}"],
+							"path": ["api", "deletetestimoni", "15"]
+						},
+						"description": "Menghapus testimoni berdasarkan ID"
+					},
+					"response": []
+				},
+				{
+					"name": "FR01-05-API - Delete Testimonial (Not Found)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test for not found",
+									"if (pm.response.code === 404) {",
+									"    pm.test(\"Status code is 404 Not Found\", function () {",
+									"        pm.response.to.have.status(404);",
+									"    });",
+									"",
+									"    pm.test(\"Response has error message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Testimonial not found');",
+									"    });",
+									"}",
+									"",
+									"// Test response is JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/deletetestimoni/9999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "deletetestimoni", "9999"]
+						},
+						"description": "Mencoba menghapus testimoni dengan ID yang tidak ada"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases untuk endpoint Testimonial API"
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Get All Reports",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is JSON array\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.expect(pm.response.json()).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reports",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reports"]
+						},
+						"description": "Mengambil semua data reports"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Report by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Status code is 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response has report data\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('judul_utama');",
+									"        pm.expect(jsonData).to.have.property('nama');",
+									"        pm.expect(jsonData).to.have.property('alasan');",
+									"    });",
+									"}",
+									"",
+									"if (pm.response.code === 404) {",
+									"    pm.test(\"Status code is 404 Not Found\", function () {",
+									"        pm.response.to.have.status(404);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reports/4",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reports", "4"]
+						},
+						"description": "Mengambil report berdasarkan ID tertentu"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.test(\"Status code is 201 Created\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"",
+									"    pm.test(\"Response has success message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Report created successfully');",
+									"    });",
+									"",
+									"    pm.test(\"Response has data object\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"judul_utama\": \"Pembinaan Character Menuju Masa depan Indah\",\n    \"nama\": \"gracia\",\n    \"alasan\": \"Kurang jelas suara videonya\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reports",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reports"]
+						},
+						"description": "Membuat report baru"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Status code is 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response has success message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"        pm.expect(jsonData.message).to.eql('Report deleted successfully');",
+									"    });",
+									"}",
+									"",
+									"if (pm.response.code === 404) {",
+									"    pm.test(\"Status code is 404 Not Found\", function () {",
+									"        pm.response.to.have.status(404);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/deletereports/5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "deletereports", "5"]
+						},
+						"description": "Menghapus report berdasarkan ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases untuk endpoint Report API"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		}
+	]
+}

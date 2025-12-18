@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('meta_description', 'Bimbel Farmasi: Solusi akademik dan karir farmasi terpercaya. Program UKOM D3 Farmasi, CPNS & P3K Farmasi, dan pendampingan tugas akademik dengan mentor profesional berpengalaman.')">
     <meta name="keywords" content="@yield('meta_keywords', 'bimbel farmasi, ukom d3 farmasi, cpns farmasi, p3k farmasi, joki tugas farmasi, bimbel apoteker, ujian kompetensi farmasi, tryout ukom, mentor farmasi, les privat farmasi')">

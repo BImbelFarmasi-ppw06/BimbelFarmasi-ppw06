@@ -135,19 +135,19 @@
             <div class="space-y-4">
                 <div class="flex items-center justify-between border-b border-gray-100 pb-3">
                     <span class="text-sm font-medium text-gray-700">Tingkat Kelulusan</span>
-                    <span class="text-lg font-bold text-green-600">87.5%</span>
+                    <span class="text-lg font-bold text-green-600">{{ $passRate }}%</span>
                 </div>
                 <div class="flex items-center justify-between border-b border-gray-100 pb-3">
                     <span class="text-sm font-medium text-gray-700">Rata-rata Nilai</span>
-                    <span class="text-lg font-bold text-blue-600">82.3</span>
+                    <span class="text-lg font-bold text-blue-600">{{ $avgScore }}</span>
                 </div>
                 <div class="flex items-center justify-between border-b border-gray-100 pb-3">
                     <span class="text-sm font-medium text-gray-700">Tingkat Penyelesaian</span>
-                    <span class="text-lg font-bold text-purple-600">78.4%</span>
+                    <span class="text-lg font-bold text-purple-600">{{ $completionRate }}%</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-sm font-medium text-gray-700">Kepuasan Peserta</span>
-                    <span class="text-lg font-bold text-yellow-600">4.6/5</span>
+                    <span class="text-lg font-bold text-yellow-600">{{ $avgRating }}/5</span>
                 </div>
             </div>
         </div>
@@ -355,13 +355,17 @@
         // Program Performance Chart
         const programCtx = document.getElementById('programPerformanceChart');
         if (programCtx) {
+            const programData = @json($programPerformance);
+            const labels = programData.map(p => p.name);
+            const data = programData.map(p => p.pass_rate);
+            
             new Chart(programCtx, {
                 type: 'radar',
                 data: {
-                    labels: ['UKOM D3', 'CPNS', 'P3K', 'Joki Tugas'],
+                    labels: labels.length > 0 ? labels : ['Belum ada data'],
                     datasets: [{
                         label: 'Tingkat Kelulusan (%)',
-                        data: [88, 82, 90, 85],
+                        data: data.length > 0 ? data : [0],
                         borderColor: '#2D3C8C',
                         backgroundColor: 'rgba(45, 60, 140, 0.2)',
                     }]

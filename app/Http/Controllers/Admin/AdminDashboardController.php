@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Program;
+use App\Models\QuizAttempt;
+use App\Models\QuizBank;
+use App\Models\Testimonial;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -117,6 +120,54 @@ class AdminDashboardController extends Controller
             ];
         }
         
+        // Statistik Kunci dari Quiz Attempts
+        $totalAttempts = QuizAttempt::whereNotNull('completed_at')->count();
+        $passedAttempts = QuizAttempt::whereNotNull('completed_at')
+            ->where('is_passed', true)
+            ->count();
+        $passRate = $totalAttempts > 0 ? round(($passedAttempts / $totalAttempts) * 100, 1) : 0;
+        
+        $avgScore = QuizAttempt::whereNotNull('completed_at')->avg('score');
+        $avgScore = $avgScore ? round($avgScore, 1) : 0;
+        
+        $totalStarted = QuizAttempt::count();
+        $totalCompleted = QuizAttempt::whereNotNull('completed_at')->count();
+        $completionRate = $totalStarted > 0 ? round(($totalCompleted / $totalStarted) * 100, 1) : 0;
+        
+        $avgRating = Testimonial::where('is_approved', true)->avg('rating');
+        $avgRating = $avgRating ? round($avgRating, 1) : 0;
+        
+        // Program Performance untuk radar chart
+        $programs = Program::all();
+        $programPerformance = [];
+        
+        foreach ($programs as $program) {
+            $quizBankIds = QuizBank::where('program_id', $program->id)->pluck('id');
+            
+            if ($quizBankIds->isEmpty()) {
+                continue;
+            }
+            
+            $programAttempts = QuizAttempt::whereIn('quiz_bank_id', $quizBankIds)
+                ->whereNotNull('completed_at')
+                ->count();
+            
+            $programPassed = QuizAttempt::whereIn('quiz_bank_id', $quizBankIds)
+                ->whereNotNull('completed_at')
+                ->where('is_passed', true)
+                ->count();
+            
+            $programPassRate = $programAttempts > 0 ? round(($programPassed / $programAttempts) * 100, 1) : 0;
+            
+            // Hanya tampilkan program yang ada datanya
+            if ($programAttempts > 0) {
+                $programPerformance[] = [
+                    'name' => $program->type === 'bimbel' ? 'UKOM D3' : ($program->type === 'cpns' ? 'CPNS' : $program->name),
+                    'pass_rate' => $programPassRate
+                ];
+            }
+        }
+        
         return view('admin.dashboard', compact(
             'totalUsers',
             'activeUsers',
@@ -129,7 +180,12 @@ class AdminDashboardController extends Controller
             'programDistribution',
             'monthlyEnrollment',
             'monthlyRevenue',
-            'weeklyActivity'
+            'weeklyActivity',
+            'passRate',
+            'avgScore',
+            'completionRate',
+            'avgRating',
+            'programPerformance'
         ));
     }
 }

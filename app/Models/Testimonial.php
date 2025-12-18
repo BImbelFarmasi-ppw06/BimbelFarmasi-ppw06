@@ -13,6 +13,7 @@ class Testimonial extends Model
         'order_id',
         'rating',
         'comment',
+        'link_video',
         'is_approved'
     ];
 

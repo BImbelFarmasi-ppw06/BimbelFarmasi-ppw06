@@ -179,7 +179,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::delete('/courses/{course}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
     Route::delete('/courses/{course}/file', [AdminCourseController::class, 'deleteFile'])->name('courses.file.delete');
 
-    Route::view('/statistics', 'admin.statistics')->name('statistics');
+    Route::get('/statistics', [App\Http\Controllers\Admin\AdminStatisticsController::class, 'index'])->name('statistics');
 
     // Joki Person Management
     Route::get('/joki', [JokiPersonController::class, 'index'])->name('joki.index');

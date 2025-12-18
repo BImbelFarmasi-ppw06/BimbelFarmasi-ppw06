@@ -582,8 +582,6 @@
                             <a href="{{ route('admin.classes.quizzes.questions', [$program->id, $quiz->id]) }}" class="text-green-600 hover:text-green-800 text-sm font-medium">Kelola Soal</a>
                             <button onclick="openEditTryoutModal({{ $quiz->id }})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
                             <button onclick="deleteTryout({{ $quiz->id }})" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
-                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
-                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
                         </div>
                     </div>
                 </div>
